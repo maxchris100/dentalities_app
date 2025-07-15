@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:foriyana_app/core/router/app_router.dart';
-import 'package:foriyana_app/presentation/blocs/cubit/auth_cubit.dart';
+import 'package:dentalities/core/router/app_router.dart';
+import 'package:dentalities/presentation/blocs/cubit/auth_cubit.dart';
 
-import 'package:foriyana_app/presentation/blocs/cubit/profile_cubit.dart';
+import 'package:dentalities/presentation/blocs/cubit/profile_cubit.dart';
 
-import 'package:foriyana_app/presentation/widgets/app_drawer.dart';
-import 'package:foriyana_app/presentation/widgets/feature_product.dart';
-import 'package:foriyana_app/presentation/widgets/recommended_product.dart';
-import 'package:foriyana_app/presentation/widgets/top_collection.dart';
+import 'package:dentalities/presentation/widgets/app_drawer.dart';
+import 'package:dentalities/presentation/widgets/feature_product.dart';
+import 'package:dentalities/presentation/widgets/recommended_product.dart';
+import 'package:dentalities/presentation/widgets/top_collection.dart';
 
 class SearchTab extends StatefulWidget {
   const SearchTab({super.key});

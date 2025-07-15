@@ -3,11 +3,11 @@
 // import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 // import 'package:get_it/get_it.dart';
 // import 'package:jwt_decoder/jwt_decoder.dart';
-// import 'package:foriyana_app/data/data_sources/local/user_local_data_source.dart';
-// import 'package:foriyana_app/data/models/user/profile_response_model.dart';
-// import 'package:foriyana_app/domain/entities/user/user.dart';
-// import 'package:foriyana_app/domain/repositories/profile_repository.dart';
-// import 'package:foriyana_app/presentation/blocs/user/user_bloc.dart';
+// import 'package:dentalities/data/data_sources/local/user_local_data_source.dart';
+// import 'package:dentalities/data/models/user/profile_response_model.dart';
+// import 'package:dentalities/domain/entities/user/user.dart';
+// import 'package:dentalities/domain/repositories/profile_repository.dart';
+// import 'package:dentalities/presentation/blocs/user/user_bloc.dart';
 
 // // Base class for all states
 // @immutable

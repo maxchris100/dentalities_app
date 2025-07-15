@@ -1,4 +1,4 @@
-import 'package:foriyana_app/core/util/string_util.dart';
+import 'package:dentalities/core/util/string_util.dart';
 
 class ProfileResponseModel {
   String? id;
@@ -26,10 +26,9 @@ class ProfileResponseModel {
     accountParent = json['account_parent'];
     code = json['code'];
     gwp = json['gwp'];
-    commission =
-        json['commission'] != null
-            ? Commission.fromJson(json['commission'])
-            : null;
+    commission = json['commission'] != null
+        ? Commission.fromJson(json['commission'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {

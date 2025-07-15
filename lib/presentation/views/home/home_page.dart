@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:foriyana_app/core/router/app_router.dart';
-import 'package:foriyana_app/presentation/views/home/cart_tab.dart';
-import 'package:foriyana_app/presentation/views/home/home_tab.dart';
-import 'package:foriyana_app/presentation/views/home/profile_tab.dart';
-import 'package:foriyana_app/presentation/views/home/search_tab.dart';
-import 'package:foriyana_app/presentation/widgets/app_drawer.dart';
+import 'package:dentalities/core/router/app_router.dart';
+import 'package:dentalities/presentation/views/home/cart_tab.dart';
+import 'package:dentalities/presentation/views/home/home_tab.dart';
+import 'package:dentalities/presentation/views/home/profile_tab.dart';
+import 'package:dentalities/presentation/views/home/search_tab.dart';
+import 'package:dentalities/presentation/widgets/app_drawer.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

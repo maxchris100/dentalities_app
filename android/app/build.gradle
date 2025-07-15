@@ -7,12 +7,12 @@ dependencies {
 }
 
 android {
-    namespace "com.foriyana.foriyana_app"
+    namespace "com.dentalities.dentalities"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion  
  
     defaultConfig {
-        applicationId "com.foriyana.foriyana_app"
+        applicationId "com.dentalities.dentalities"
         minSdkVersion 21
         targetSdkVersion 34
         versionCode 1

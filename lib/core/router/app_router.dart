@@ -1,21 +1,23 @@
+import 'package:dentalities/presentation/views/login/account_oncheck_page.dart';
+import 'package:dentalities/presentation/views/login/reset_password_linksent_page.dart';
 import 'package:flutter/material.dart';
-import 'package:foriyana_app/presentation/views/home/home_page.dart';
-import 'package:foriyana_app/presentation/views/login/create_new_password_page.dart';
-import 'package:foriyana_app/presentation/views/login/forgot_password_page.dart';
-import 'package:foriyana_app/presentation/views/login/login_page.dart';
-import 'package:foriyana_app/presentation/views/login/otp_page.dart';
-import 'package:foriyana_app/presentation/views/login/signup_page.dart';
-import 'package:foriyana_app/presentation/views/notification/notification_page.dart';
-import 'package:foriyana_app/presentation/views/order/cart_page.dart';
-import 'package:foriyana_app/presentation/views/order/order_detail_page.dart';
-import 'package:foriyana_app/presentation/views/order/order_page.dart';
-import 'package:foriyana_app/presentation/views/order/product_detail_page.dart';
-import 'package:foriyana_app/presentation/views/order/rate_product_page.dart';
-import 'package:foriyana_app/presentation/views/order/track_order_page.dart';
-import 'package:foriyana_app/presentation/views/profile/wishlist_page.dart';
-import 'package:foriyana_app/presentation/views/startup/startup_page.dart';
-import 'package:foriyana_app/presentation/views/startup/welcome_page.dart';
-import 'package:foriyana_app/presentation/views/profile/support_page.dart';
+import 'package:dentalities/presentation/views/home/home_page.dart';
+import 'package:dentalities/presentation/views/login/create_new_password_page.dart';
+import 'package:dentalities/presentation/views/login/forgot_password_page.dart';
+import 'package:dentalities/presentation/views/login/login_page.dart';
+import 'package:dentalities/presentation/views/login/otp_page.dart';
+import 'package:dentalities/presentation/views/login/signup_page.dart';
+import 'package:dentalities/presentation/views/notification/notification_page.dart';
+import 'package:dentalities/presentation/views/order/cart_page.dart';
+import 'package:dentalities/presentation/views/order/order_detail_page.dart';
+import 'package:dentalities/presentation/views/order/order_page.dart';
+import 'package:dentalities/presentation/views/order/product_detail_page.dart';
+import 'package:dentalities/presentation/views/order/rate_product_page.dart';
+import 'package:dentalities/presentation/views/order/track_order_page.dart';
+import 'package:dentalities/presentation/views/profile/wishlist_page.dart';
+import 'package:dentalities/presentation/views/startup/startup_page.dart';
+import 'package:dentalities/presentation/views/startup/welcome_page.dart';
+import 'package:dentalities/presentation/views/profile/support_page.dart';
 
 class AppRouter {
   //main menu
@@ -26,6 +28,8 @@ class AppRouter {
   //authentication
   static const String signIn = '/sign-in';
   static const String signUp = '/sign-up';
+  static const String accountOnCheck = '/account-on-check';
+  static const String resetPassSentLink = '/reset-pass-sentlink';
   //products
   static const String productDetail = '/product-detail';
   //other
@@ -47,6 +51,8 @@ class AppRouter {
     return {
       "/sign-in": (context) => LoginPage(),
       "/sign-up": (context) => SignUpPage(),
+      "/account-on-check": (context) => AccountOnCheckPage(),
+      resetPassSentLink: (context) => ResetPasswordLinksentPage(),
       "/forgot-password": (context) => ForgotPasswordPage(),
       "/create-new-password": (context) => CreateNewPasswordPage(),
       "/otp": (context) => OtpPage(),

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:foriyana_app/presentation/blocs/cubit/profile_cubit.dart';
+import 'package:dentalities/presentation/blocs/cubit/profile_cubit.dart';
 
 class NotificationPage extends StatefulWidget {
   const NotificationPage({super.key});

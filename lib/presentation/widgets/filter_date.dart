@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:foriyana_app/core/util/date_format.dart';
-import 'package:foriyana_app/generated/l10n.dart';
-import 'package:foriyana_app/presentation/widgets/on_tap_text.dart';
+import 'package:dentalities/core/util/date_format.dart';
+import 'package:dentalities/generated/l10n.dart';
+import 'package:dentalities/presentation/widgets/on_tap_text.dart';
 
 class FilterDateWidget extends StatefulWidget {
   const FilterDateWidget({super.key});
@@ -76,16 +76,14 @@ class _FilterDateWidgetState extends State<FilterDateWidget> {
                   child: CupertinoDatePicker(
                     mode: CupertinoDatePickerMode.date,
                     initialDateTime: initialDate(),
-                    minimumDate:
-                        selectedStartDate != null && type == "End"
-                            ? selectedStartDate
-                            : null,
-                    maximumDate:
-                        selectedEndDate != null && type == "Start"
-                            ? (DateTime.now().isAfter(selectedEndDate!))
-                                ? DateTime.now()
-                                : selectedEndDate
-                            : DateTime.now(),
+                    minimumDate: selectedStartDate != null && type == "End"
+                        ? selectedStartDate
+                        : null,
+                    maximumDate: selectedEndDate != null && type == "Start"
+                        ? (DateTime.now().isAfter(selectedEndDate!))
+                            ? DateTime.now()
+                            : selectedEndDate
+                        : DateTime.now(),
                     onDateTimeChanged: (DateTime newDate) {
                       setState(() {
                         if (type == "Start") {
@@ -118,13 +116,12 @@ class _FilterDateWidgetState extends State<FilterDateWidget> {
                         style: ButtonStyle(
                           backgroundColor:
                               WidgetStateProperty.resolveWith<Color>((states) {
-                                if (states.contains(WidgetState.disabled)) {
-                                  return Colors
-                                      .grey
-                                      .shade300; // warna saat disabled
-                                }
-                                return Colors.white; // warna aktif
-                              }),
+                            if (states.contains(WidgetState.disabled)) {
+                              return Colors
+                                  .grey.shade300; // warna saat disabled
+                            }
+                            return Colors.white; // warna aktif
+                          }),
                           shape: WidgetStateProperty.all(
                             RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
@@ -147,13 +144,12 @@ class _FilterDateWidgetState extends State<FilterDateWidget> {
                         style: ButtonStyle(
                           backgroundColor:
                               WidgetStateProperty.resolveWith<Color>((states) {
-                                if (states.contains(WidgetState.disabled)) {
-                                  return Colors
-                                      .grey
-                                      .shade300; // warna saat disabled
-                                }
-                                return Colors.red; // warna aktif
-                              }),
+                            if (states.contains(WidgetState.disabled)) {
+                              return Colors
+                                  .grey.shade300; // warna saat disabled
+                            }
+                            return Colors.red; // warna aktif
+                          }),
                           shape: WidgetStateProperty.all(
                             RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
@@ -161,12 +157,12 @@ class _FilterDateWidgetState extends State<FilterDateWidget> {
                           ),
                         ),
                         onPressed:
-                        //  selectedDay == null ||
-                        //         selectedMonth == null ||
-                        //         selectedYear == null
-                        //     ? null
-                        // :
-                        () {
+                            //  selectedDay == null ||
+                            //         selectedMonth == null ||
+                            //         selectedYear == null
+                            //     ? null
+                            // :
+                            () {
                           if (type == "Start") {
                             if (selectedStartDate == null) {
                               selectedStartDate = DateTime.now();
@@ -207,35 +203,34 @@ class _FilterDateWidgetState extends State<FilterDateWidget> {
           ),
           SizedBox(height: 12),
           Column(
-            children:
-                filterDateItems.asMap().entries.map((e) {
-                  final item = e.value;
-                  return ListTile(
-                    hoverColor: Colors.transparent,
-                    splashColor: Colors.transparent,
-                    focusColor: Colors.transparent,
-                    selectedColor: Colors.transparent,
-                    selectedTileColor: Colors.transparent,
-                    dense: true,
-                    contentPadding: EdgeInsets.all(0),
-                    onTap: () {
-                      setState(() {
-                        selectedFilterDate = item["value"];
-                      });
-                    },
-                    title: Text(item["name"]),
-                    trailing: Radio<dynamic>(
-                      activeColor: Colors.red,
-                      value: item["value"],
-                      groupValue: selectedFilterDate,
-                      onChanged: (dynamic value) {
-                        setState(() {
-                          selectedFilterDate = value!;
-                        });
-                      },
-                    ),
-                  );
-                }).toList(),
+            children: filterDateItems.asMap().entries.map((e) {
+              final item = e.value;
+              return ListTile(
+                hoverColor: Colors.transparent,
+                splashColor: Colors.transparent,
+                focusColor: Colors.transparent,
+                selectedColor: Colors.transparent,
+                selectedTileColor: Colors.transparent,
+                dense: true,
+                contentPadding: EdgeInsets.all(0),
+                onTap: () {
+                  setState(() {
+                    selectedFilterDate = item["value"];
+                  });
+                },
+                title: Text(item["name"]),
+                trailing: Radio<dynamic>(
+                  activeColor: Colors.red,
+                  value: item["value"],
+                  groupValue: selectedFilterDate,
+                  onChanged: (dynamic value) {
+                    setState(() {
+                      selectedFilterDate = value!;
+                    });
+                  },
+                ),
+              );
+            }).toList(),
           ),
           SizedBox(height: 12),
           Visibility(
@@ -246,12 +241,11 @@ class _FilterDateWidgetState extends State<FilterDateWidget> {
                   children: [
                     Expanded(
                       child: OnTapText(
-                        text:
-                            selectedStartDate == null
-                                ? "Start Date"
-                                : DateUtil.formatDateIndonesian(
-                                  selectedStartDate!,
-                                ),
+                        text: selectedStartDate == null
+                            ? "Start Date"
+                            : DateUtil.formatDateIndonesian(
+                                selectedStartDate!,
+                              ),
                         onTap: () {
                           selectFilterDate("Start").then((e) {
                             setState(() {});
@@ -262,24 +256,21 @@ class _FilterDateWidgetState extends State<FilterDateWidget> {
                     SizedBox(width: 16),
                     Expanded(
                       child: OnTapText(
-                        text:
-                            selectedEndDate == null
-                                ? "End Date"
-                                : DateUtil.formatDateIndonesian(
-                                  selectedEndDate!,
-                                ),
-                        color:
-                            selectedStartDate == null
-                                ? Color.fromARGB(255, 232, 232, 232)
-                                : Color(0xffFAFAFA),
-                        onTap:
-                            selectedStartDate == null
-                                ? null
-                                : () {
-                                  selectFilterDate("End").then((e) {
-                                    setState(() {});
-                                  });
-                                },
+                        text: selectedEndDate == null
+                            ? "End Date"
+                            : DateUtil.formatDateIndonesian(
+                                selectedEndDate!,
+                              ),
+                        color: selectedStartDate == null
+                            ? Color.fromARGB(255, 232, 232, 232)
+                            : Color(0xffFAFAFA),
+                        onTap: selectedStartDate == null
+                            ? null
+                            : () {
+                                selectFilterDate("End").then((e) {
+                                  setState(() {});
+                                });
+                              },
                       ),
                     ),
                   ],
@@ -335,24 +326,21 @@ class _FilterDateWidgetState extends State<FilterDateWidget> {
                       ),
                     ),
                   ),
-                  onPressed:
-                      selectedFilterDate == "4" &&
-                              selectedStartDate == null &&
-                              selectedEndDate == null
-                          ? null
-                          : () {
-                            Navigator.pop(context, {
-                              "value": selectedFilterDate,
-                              "start_date":
-                                  selectedStartDate != null
-                                      ? DateUtil.formatQuery(selectedStartDate!)
-                                      : null,
-                              "end_date":
-                                  selectedEndDate != null
-                                      ? DateUtil.formatQuery(selectedEndDate!)
-                                      : null,
-                            });
-                          },
+                  onPressed: selectedFilterDate == "4" &&
+                          selectedStartDate == null &&
+                          selectedEndDate == null
+                      ? null
+                      : () {
+                          Navigator.pop(context, {
+                            "value": selectedFilterDate,
+                            "start_date": selectedStartDate != null
+                                ? DateUtil.formatQuery(selectedStartDate!)
+                                : null,
+                            "end_date": selectedEndDate != null
+                                ? DateUtil.formatQuery(selectedEndDate!)
+                                : null,
+                          });
+                        },
                   child: Text(
                     S.current.save,
                     style: TextStyle(color: Colors.white),

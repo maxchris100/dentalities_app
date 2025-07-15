@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:foriyana_app/core/router/app_router.dart';
-import 'package:foriyana_app/presentation/widgets/product_model.dart';
+import 'package:dentalities/core/router/app_router.dart';
+import 'package:dentalities/presentation/widgets/product_model.dart';
 
 class FeatureProductSection extends StatelessWidget {
   const FeatureProductSection({super.key});

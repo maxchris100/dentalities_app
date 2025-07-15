@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:foriyana_app/presentation/widgets/product_model.dart';
+import 'package:dentalities/presentation/widgets/product_model.dart';
 
 class RecommendedProductSection extends StatelessWidget {
   const RecommendedProductSection({super.key});

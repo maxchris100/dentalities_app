@@ -1,5 +1,5 @@
 // App
-const String appTitle = 'foriyana_app';
+const String appTitle = 'dentalities';
 
 // Networking and APIs
 // const String baseUrl = 'https://e-commerce-mock-api-webservice.onrender.com';

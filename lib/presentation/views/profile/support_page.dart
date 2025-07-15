@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:foriyana_app/generated/l10n.dart';
+import 'package:dentalities/generated/l10n.dart';
 
 class SupportPage extends StatefulWidget {
   const SupportPage({super.key});

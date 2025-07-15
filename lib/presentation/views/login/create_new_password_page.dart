@@ -9,13 +9,13 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http_client;
 import 'package:http/http.dart' as dotenv;
 import 'package:http/http.dart' as http;
-import 'package:foriyana_app/data/data_sources/user_local_data_source.dart';
-import 'package:foriyana_app/data/models/auth_response_model.dart';
-import 'package:foriyana_app/data/models/user_model.dart';
-import 'package:foriyana_app/generated/l10n.dart';
-import 'package:foriyana_app/presentation/blocs/cubit/auth_cubit.dart';
-import 'package:foriyana_app/presentation/blocs/cubit/otp_cubit.dart';
-import 'package:foriyana_app/presentation/widgets/filter_language.dart';
+import 'package:dentalities/data/data_sources/user_local_data_source.dart';
+import 'package:dentalities/data/models/auth_response_model.dart';
+import 'package:dentalities/data/models/user_model.dart';
+import 'package:dentalities/generated/l10n.dart';
+import 'package:dentalities/presentation/blocs/cubit/auth_cubit.dart';
+import 'package:dentalities/presentation/blocs/cubit/otp_cubit.dart';
+import 'package:dentalities/presentation/widgets/filter_language.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CreateNewPasswordPage extends StatefulWidget {

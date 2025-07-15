@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:foriyana_app/core/constant/constant.dart';
-import 'package:foriyana_app/domain/repositories/auth_repository.dart';
+import 'package:dentalities/core/constant/constant.dart';
+import 'package:dentalities/domain/repositories/auth_repository.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:foriyana_app/data/data_sources/user_local_data_source.dart';
-import 'package:foriyana_app/data/models/auth_response_model.dart';
-import 'package:foriyana_app/data/models/user_model.dart';
+import 'package:dentalities/data/data_sources/user_local_data_source.dart';
+import 'package:dentalities/data/models/auth_response_model.dart';
+import 'package:dentalities/data/models/user_model.dart';
 
 @immutable
 abstract class AuthState {}

@@ -1,4 +1,4 @@
-import 'package:foriyana_app/core/util/string_util.dart';
+import 'package:dentalities/core/util/string_util.dart';
 
 class ProductResponseModel {
   String? id;
@@ -36,10 +36,9 @@ class ProductResponseModel {
       id = json['id'];
       channel = json['channel'];
       product = json['product'];
-      productData =
-          json['product_data'] != null
-              ? new ProductData.fromJson(json['product_data'])
-              : null;
+      productData = json['product_data'] != null
+          ? new ProductData.fromJson(json['product_data'])
+          : null;
       name = json['name'];
       url = json['url'];
       createdAt = json['created_at'];
@@ -100,14 +99,12 @@ class ProductData {
 
   ProductData.fromJson(Map<String, dynamic> json) {
     name = json['name'];
-    category =
-        json['category'] != null
-            ? new Category.fromJson(json['category'])
-            : null;
-    insurance =
-        json['insurance'] != null
-            ? new Insurance.fromJson(json['insurance'])
-            : null;
+    category = json['category'] != null
+        ? new Category.fromJson(json['category'])
+        : null;
+    insurance = json['insurance'] != null
+        ? new Insurance.fromJson(json['insurance'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -237,14 +234,12 @@ class AffiliatesCommissions {
     affiliate = StringUtil.castToString(json['affiliate']);
     source = json['source'];
     transaction = StringUtil.castToString(json['transaction']);
-    transactionData =
-        json['transaction_data'] != null
-            ? TransactionData.fromJson(json['transaction_data'])
-            : null;
-    commission =
-        json['commission'] != null
-            ? Commission.fromJson(json['commission'])
-            : null;
+    transactionData = json['transaction_data'] != null
+        ? TransactionData.fromJson(json['transaction_data'])
+        : null;
+    commission = json['commission'] != null
+        ? Commission.fromJson(json['commission'])
+        : null;
     commissionValue = StringUtil.castToString(json['commission_value']);
     currency = json['currency'];
     status = json['status'];
@@ -296,10 +291,9 @@ class TransactionData {
     status = json['status'];
     channel = json['channel'];
     category = json['category'];
-    insurance =
-        json['insurance'] != null
-            ? Insurance.fromJson(json['insurance'])
-            : null;
+    insurance = json['insurance'] != null
+        ? Insurance.fromJson(json['insurance'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {

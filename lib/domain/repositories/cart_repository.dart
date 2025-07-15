@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:foriyana_app/core/util/date_format.dart';
-import 'package:foriyana_app/core/util/dio_client.dart';
+import 'package:dentalities/core/util/date_format.dart';
+import 'package:dentalities/core/util/dio_client.dart';
 
 class CartRepository {
   CartRepository._();

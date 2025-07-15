@@ -1,5 +1,5 @@
-import 'package:foriyana_app/core/util/string_util.dart';
-import 'package:foriyana_app/data/models/profile_response_model.dart';
+import 'package:dentalities/core/util/string_util.dart';
+import 'package:dentalities/data/models/profile_response_model.dart';
 
 class StatisticResponseModel {
   int? downline;

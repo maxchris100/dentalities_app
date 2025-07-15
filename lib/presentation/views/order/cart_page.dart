@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:foriyana_app/presentation/widgets/cart_item.dart';
+import 'package:dentalities/presentation/widgets/cart_item.dart';
 
 class CartPage extends StatelessWidget {
   const CartPage({super.key});

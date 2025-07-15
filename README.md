@@ -1,4 +1,4 @@
-# foriyana_app
+# dentalities
 
 Affiliate App
 

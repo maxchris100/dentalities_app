@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:foriyana_app/data/models/product_response_model.dart';
-import 'package:foriyana_app/generated/l10n.dart';
+import 'package:dentalities/data/models/product_response_model.dart';
+import 'package:dentalities/generated/l10n.dart';
 
 class ProductCard extends StatelessWidget {
   final ProductResponseModel item;

@@ -3,9 +3,9 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:foriyana_app/core/constant/constant.dart';
-import 'package:foriyana_app/core/util/string_util.dart';
-import 'package:foriyana_app/data/data_sources/user_local_data_source.dart';
+import 'package:dentalities/core/constant/constant.dart';
+import 'package:dentalities/core/util/string_util.dart';
+import 'package:dentalities/data/data_sources/user_local_data_source.dart';
 
 class DioClient {
   static final instance = DioClient();

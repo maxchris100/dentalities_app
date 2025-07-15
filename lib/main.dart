@@ -1,9 +1,9 @@
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:foriyana_app/core/router/app_router.dart';
-import 'package:foriyana_app/core/util/appdevice.dart';
-import 'package:foriyana_app/core/util/appversion.dart';
+import 'package:dentalities/core/router/app_router.dart';
+import 'package:dentalities/core/util/appdevice.dart';
+import 'package:dentalities/core/util/appversion.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,14 +11,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:foriyana_app/core/constant/constant.dart';
-import 'package:foriyana_app/data/data_sources/user_local_data_source.dart';
-import 'package:foriyana_app/generated/l10n.dart';
-import 'package:foriyana_app/presentation/blocs/cubit/auth_cubit.dart';
-import 'package:foriyana_app/presentation/blocs/cubit/language_cubit.dart';
-import 'package:foriyana_app/presentation/views/home/home_page.dart';
-import 'package:foriyana_app/presentation/views/login/login_page.dart';
-import 'package:foriyana_app/presentation/views/startup/welcome_page.dart';
+import 'package:dentalities/core/constant/constant.dart';
+import 'package:dentalities/data/data_sources/user_local_data_source.dart';
+import 'package:dentalities/generated/l10n.dart';
+import 'package:dentalities/presentation/blocs/cubit/auth_cubit.dart';
+import 'package:dentalities/presentation/blocs/cubit/language_cubit.dart';
+import 'package:dentalities/presentation/views/home/home_page.dart';
+import 'package:dentalities/presentation/views/login/login_page.dart';
+import 'package:dentalities/presentation/views/startup/welcome_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Ensures Flutter is initialized
@@ -84,9 +84,9 @@ class MyApp extends StatelessWidget {
                 Locale('en', 'US'), // English
                 Locale('ms', 'MY'), // Malay (Malaysia)
                 Locale('id', 'ID'), // Indonesian
-                Locale('en', 'SG'), // Singapore
-                Locale('th', 'TH'), // Thai (Thailand)
-                Locale('fil', 'PH'), // Filipino (Philippines)
+                // Locale('en', 'SG'), // Singapore
+                // Locale('th', 'TH'), // Thai (Thailand)
+                // Locale('fil', 'PH'), // Filipino (Philippines)
               ],
               debugShowCheckedModeBanner: false,
               home: AuthWrapper(),
@@ -157,7 +157,7 @@ class AuthWrapper extends StatelessWidget {
         } else if (state is AuthInitial) {
           return LoginPage();
         } else if (state is AuthInitialStartup) {
-          return WelcomePage();
+          return LoginPage();
         }
         return Container();
       },

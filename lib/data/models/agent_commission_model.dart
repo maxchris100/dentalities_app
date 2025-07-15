@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:foriyana_app/domain/entities/user/agent_contribution.dart';
+import 'package:dentalities/domain/entities/user/agent_contribution.dart';
 
 AgentCommissionModel userModelFromJson(String str) =>
     AgentCommissionModel.fromJson(json.decode(str));

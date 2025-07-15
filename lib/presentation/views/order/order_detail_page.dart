@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:foriyana_app/core/router/app_router.dart';
+import 'package:dentalities/core/router/app_router.dart';
 
 class OrderDetailPage extends StatelessWidget {
   const OrderDetailPage({super.key});

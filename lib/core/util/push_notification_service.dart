@@ -3,7 +3,7 @@
 // import 'dart:developer';
 
 // import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-// import 'package:foriyana_app/core/util/string_util.dart'; 
+// import 'package:dentalities/core/util/string_util.dart'; 
 // import 'package:rxdart/rxdart.dart';
 
 // final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =

@@ -1,4 +1,4 @@
-import 'package:foriyana_app/core/constant/colors.dart';
+import 'package:dentalities/core/constant/colors.dart';
 import 'package:flutter/material.dart';
 
 class AppTheme {

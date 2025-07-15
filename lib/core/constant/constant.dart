@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_alice/alice.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:foriyana_app/data/data_sources/user_local_data_source.dart';
+import 'package:dentalities/data/data_sources/user_local_data_source.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Constant {

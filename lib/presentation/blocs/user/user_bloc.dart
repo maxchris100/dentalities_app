@@ -4,13 +4,13 @@
 
 // import 'package:bloc/bloc.dart';
 // import 'package:equatable/equatable.dart';
-// import 'package:foriyana_app/data/data_sources/local/user_local_data_source.dart';
-// import 'package:foriyana_app/data/models/user/agent_contribution_model.dart';
-// import 'package:foriyana_app/domain/entities/user/agent_contribution.dart';
-// import 'package:foriyana_app/domain/usecases/user/get_user_data_usecase.dart';
-// import 'package:foriyana_app/domain/usecases/user/get_user_token.dart';
-// import 'package:foriyana_app/domain/usecases/user/sign_out_usecase.dart';
-// import 'package:foriyana_app/domain/usecases/user/sign_up_usecase.dart';
+// import 'package:dentalities/data/data_sources/local/user_local_data_source.dart';
+// import 'package:dentalities/data/models/user/agent_contribution_model.dart';
+// import 'package:dentalities/domain/entities/user/agent_contribution.dart';
+// import 'package:dentalities/domain/usecases/user/get_user_data_usecase.dart';
+// import 'package:dentalities/domain/usecases/user/get_user_token.dart';
+// import 'package:dentalities/domain/usecases/user/sign_out_usecase.dart';
+// import 'package:dentalities/domain/usecases/user/sign_up_usecase.dart';
 // import 'package:flutter/cupertino.dart';
 
 // import '../../../core/error/failures.dart';

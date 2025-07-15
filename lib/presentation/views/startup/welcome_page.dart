@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:foriyana_app/core/router/app_router.dart';
+import 'package:dentalities/core/router/app_router.dart';
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
@@ -32,7 +32,7 @@ class WelcomePage extends StatelessWidget {
                 const Spacer(),
                 // Welcome text
                 const Text(
-                  'Welcome to M=Mart',
+                  'Welcome',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 24,

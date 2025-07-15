@@ -3,9 +3,9 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:foriyana_app/data/data_sources/user_local_data_source.dart';
-import 'package:foriyana_app/generated/l10n.dart';
-import 'package:foriyana_app/presentation/blocs/cubit/language_cubit.dart';
+import 'package:dentalities/data/data_sources/user_local_data_source.dart';
+import 'package:dentalities/generated/l10n.dart';
+import 'package:dentalities/presentation/blocs/cubit/language_cubit.dart';
 
 final List<Map<String, String>> flagItems = [
   {'asset': 'assets/icons/flags/us.svg', 'code': 'en', 'title': 'English'},

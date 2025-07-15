@@ -1,4 +1,6 @@
+import 'package:dentalities/core/router/app_router.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -23,6 +25,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text("Password reset instructions sent to $email")),
     );
+    Navigator.pushReplacementNamed(context, AppRouter.resetPassSentLink);
   }
 
   @override
@@ -33,49 +36,56 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         backgroundColor: Colors.white,
         elevation: 0,
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Forgot password?",
-              style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 15),
-            const Text(
-              "Enter email associated with your account\nand we’ll send an email with instructions to reset your password",
-              style: TextStyle(color: Colors.black54, fontSize: 16),
-            ),
-            const SizedBox(height: 30),
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(
-                hintText: "enter your email here",
-                prefixIcon: const Icon(Icons.email_outlined),
-                border: const UnderlineInputBorder(),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 60),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 40),
+
+              Text(
+                "Forget Password",
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
-              keyboardType: TextInputType.emailAddress,
-            ),
-            const SizedBox(height: 40),
-            Center(
-              child: ElevatedButton(
-                onPressed: _sendResetEmail,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+              const SizedBox(height: 8),
+              Text(
+                "Enter your email and we'll send you a reset link",
+                style: TextStyle(color: Colors.grey[600]),
+              ),
+              const SizedBox(height: 24),
+
+              // Email Field
+              TextField(
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  hintText: 'dentalities@gmail.com',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Log In Button
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    _sendResetEmail();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
                   ),
-                ),
-                child: const Text(
-                  "Send Email",
-                  style: TextStyle(fontSize: 16),
+                  child: const Text('Submit',
+                      style: TextStyle(fontSize: 16, color: Colors.white)),
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 20),
+            ],
+          ),
         ),
       ),
     );

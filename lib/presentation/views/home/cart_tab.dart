@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:foriyana_app/core/router/app_router.dart';
-import 'package:foriyana_app/presentation/blocs/cubit/auth_cubit.dart';
-import 'package:foriyana_app/presentation/blocs/cubit/profile_cubit.dart';
-import 'package:foriyana_app/presentation/widgets/order_item.dart';
+import 'package:dentalities/core/router/app_router.dart';
+import 'package:dentalities/presentation/blocs/cubit/auth_cubit.dart';
+import 'package:dentalities/presentation/blocs/cubit/profile_cubit.dart';
+import 'package:dentalities/presentation/widgets/order_item.dart';
 
 class CartTab extends StatefulWidget {
   const CartTab({super.key});

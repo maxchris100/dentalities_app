@@ -1,15 +1,15 @@
-// import 'package:foriyana_app/domain/repositories/auth_repository.dart';
-// import 'package:foriyana_app/domain/usecases/delivery_info/clear_local_delivery_info_usecase.dart';
-// import 'package:foriyana_app/domain/usecases/delivery_info/edit_delivery_info_usecase.dart';
-// import 'package:foriyana_app/domain/usecases/delivery_info/get_selected_delivery_info_usecase.dart';
-// import 'package:foriyana_app/domain/usecases/delivery_info/select_delivery_info_usecase.dart';
-// import 'package:foriyana_app/domain/usecases/order/clear_local_order_usecase.dart';
+// import 'package:dentalities/domain/repositories/auth_repository.dart';
+// import 'package:dentalities/domain/usecases/delivery_info/clear_local_delivery_info_usecase.dart';
+// import 'package:dentalities/domain/usecases/delivery_info/edit_delivery_info_usecase.dart';
+// import 'package:dentalities/domain/usecases/delivery_info/get_selected_delivery_info_usecase.dart';
+// import 'package:dentalities/domain/usecases/delivery_info/select_delivery_info_usecase.dart';
+// import 'package:dentalities/domain/usecases/order/clear_local_order_usecase.dart';
 // import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 // import 'package:get_it/get_it.dart';
 // import 'package:http/http.dart' as http;
 // import 'package:internet_connection_checker/internet_connection_checker.dart';
-// import 'package:foriyana_app/domain/usecases/user/get_user_data_usecase.dart';
-// import 'package:foriyana_app/domain/usecases/user/get_user_token.dart';
+// import 'package:dentalities/domain/usecases/user/get_user_data_usecase.dart';
+// import 'package:dentalities/domain/usecases/user/get_user_token.dart';
 // import 'package:shared_preferences/shared_preferences.dart';
 
 // import '../../data/data_sources/local/cart_local_data_source.dart';

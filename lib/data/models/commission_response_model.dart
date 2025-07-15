@@ -1,0 +1,237 @@
+class CommissionResponseModel {
+  List<CommissionResponseModelData>? data;
+  int? total;
+  int? limit;
+  int? pageTotal;
+  int? page;
+
+  CommissionResponseModel(
+      {this.data, this.total, this.limit, this.pageTotal, this.page});
+
+  CommissionResponseModel.fromJson(Map<String, dynamic> json) {
+    if (json['data'] != null) {
+      data = <CommissionResponseModelData>[];
+      json['data'].forEach((v) {
+        data!.add(new CommissionResponseModelData.fromJson(v));
+      });
+    }
+    total = json['total'];
+    limit = json['limit'];
+    pageTotal = json['pageTotal'];
+    page = json['page'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    if (this.data != null) {
+      data['data'] = this.data!.map((v) => v.toJson()).toList();
+    }
+    data['total'] = this.total;
+    data['limit'] = this.limit;
+    data['pageTotal'] = this.pageTotal;
+    data['page'] = this.page;
+    return data;
+  }
+}
+
+class CommissionResponseModelData {
+  String? createdAt;
+  Affiliate? affiliate;
+  Affiliate? source;
+  Transaction? transaction;
+  Commission? commission;
+  int? commissionValue;
+
+  CommissionResponseModelData(
+      {this.createdAt,
+      this.affiliate,
+      this.source,
+      this.transaction,
+      this.commission,
+      this.commissionValue});
+
+  CommissionResponseModelData.fromJson(Map<String, dynamic> json) {
+    createdAt = json['created_at'];
+    affiliate = json['affiliate'] != null
+        ? new Affiliate.fromJson(json['affiliate'])
+        : null;
+    source =
+        json['source'] != null ? new Affiliate.fromJson(json['source']) : null;
+    transaction = json['transaction'] != null
+        ? new Transaction.fromJson(json['transaction'])
+        : null;
+    commission = json['commission'] != null
+        ? new Commission.fromJson(json['commission'])
+        : null;
+    commissionValue = json['commission_value'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['created_at'] = this.createdAt;
+    if (this.affiliate != null) {
+      data['affiliate'] = this.affiliate!.toJson();
+    }
+    if (this.source != null) {
+      data['source'] = this.source!.toJson();
+    }
+    if (this.transaction != null) {
+      data['transaction'] = this.transaction!.toJson();
+    }
+    if (this.commission != null) {
+      data['commission'] = this.commission!.toJson();
+    }
+    data['commission_value'] = this.commissionValue;
+    return data;
+  }
+}
+
+class Affiliate {
+  String? code;
+  String? name;
+  String? email;
+  String? phoneNumber;
+
+  Affiliate({this.code, this.name, this.email, this.phoneNumber});
+
+  Affiliate.fromJson(Map<String, dynamic> json) {
+    code = json['code'];
+    name = json['name'];
+    email = json['email'];
+    phoneNumber = json['phone_number'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['code'] = this.code;
+    data['name'] = this.name;
+    data['email'] = this.email;
+    data['phone_number'] = this.phoneNumber;
+    return data;
+  }
+}
+
+class Transaction {
+  String? id;
+  String? code;
+  String? date;
+  String? status;
+  String? channel;
+  String? category;
+  Insurance? insurance;
+
+  Transaction(
+      {this.id,
+      this.code,
+      this.date,
+      this.status,
+      this.channel,
+      this.category,
+      this.insurance});
+
+  Transaction.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    code = json['code'];
+    date = json['date'];
+    status = json['status'];
+    channel = json['channel'];
+    category = json['category'];
+    insurance = json['insurance'] != null
+        ? new Insurance.fromJson(json['insurance'])
+        : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['code'] = this.code;
+    data['date'] = this.date;
+    data['status'] = this.status;
+    data['channel'] = this.channel;
+    data['category'] = this.category;
+    if (this.insurance != null) {
+      data['insurance'] = this.insurance!.toJson();
+    }
+    return data;
+  }
+}
+
+class Insurance {
+  String? id;
+  String? name;
+  Plan? plan;
+  String? premium;
+  Plan? product;
+  String? currency;
+
+  Insurance(
+      {this.id,
+      this.name,
+      this.plan,
+      this.premium,
+      this.product,
+      this.currency});
+
+  Insurance.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    plan = json['plan'] != null ? new Plan.fromJson(json['plan']) : null;
+    premium = json['premium'];
+    product =
+        json['product'] != null ? new Plan.fromJson(json['product']) : null;
+    currency = json['currency'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    if (this.plan != null) {
+      data['plan'] = this.plan!.toJson();
+    }
+    data['premium'] = this.premium;
+    if (this.product != null) {
+      data['product'] = this.product!.toJson();
+    }
+    data['currency'] = this.currency;
+    return data;
+  }
+}
+
+class Plan {
+  String? id;
+  String? name;
+
+  Plan({this.id, this.name});
+
+  Plan.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    return data;
+  }
+}
+
+class Commission {
+  String? type;
+  int? value;
+
+  Commission({this.type, this.value});
+
+  Commission.fromJson(Map<String, dynamic> json) {
+    type = json['type'];
+    value = json['value'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['type'] = this.type;
+    data['value'] = this.value;
+    return data;
+  }
+}

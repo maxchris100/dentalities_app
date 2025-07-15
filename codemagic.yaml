@@ -1,0 +1,26 @@
+workflows:
+  production_build:
+    name: Production Build
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: production
+          include: true
+    environment:
+      flutter: 3.29.3
+      xcode: latest
+    scripts:
+      - name: Check Git Version & Connectivity
+        script: |
+          git --version
+      - name: Install dependencies
+        script: flutter pub get
+      - name: Build Android APK
+        script: flutter build apk --release
+      - name: Build iOS
+        script: flutter build ipa --release
+
+    artifacts:
+      - build/app/outputs/flutter-apk/app-release.apk
+      - build/ios/ipa/*.ipa

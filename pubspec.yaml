@@ -1,0 +1,72 @@
+name: foriyana_app
+description: "A new Flutter project."
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.6.2
+  
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.8
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.19.0  
+  fluttertoast: ^8.2.12
+  # app_links: ^6.4.0
+  # webview_flutter: ^4.6.0 
+  path_provider:
+  bloc: ^9.0.0
+  equatable: ^2.0.7
+  internet_connection_checker: ^1.0.0+1
+  dartz: ^0.10.1
+  flutter_secure_storage: ^8.0.0 
+  shared_preferences: ^2.0.17 
+  flutter_bloc: ^9.0.0
+  get_it: ^8.0.3 
+  jwt_decoder: ^2.0.1 
+  dio: 
+  flutter_alice: ^2.0.1
+  flutter_svg:
+  fl_chart: ^0.70.2 
+  flutter_dotenv:
+  overlay_support:  
+
+  package_info_plus:
+  device_info_plus:
+  app_settings:
+
+  flutter_local_notifications:
+  
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  intl_utils: ^2.6.0 # or any newer version 
+  
+  
+flutter:
+  uses-material-design: true
+  generate: true # Add this line
+  
+  # To add assets to your application, add an assets section, like this:
+  assets:
+    - assets/
+    - assets/images/
+    - assets/icons/
+    - assets/icons/flags/
+    - assets/logos/
+    - assets/fonts/
+    - lib/l10n/
+    - .env
+  fonts:
+    - family: OpenSans
+      fonts:
+        - asset: assets/fonts/OpenSans-VariableFont_wdth,wght.ttf

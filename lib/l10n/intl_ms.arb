@@ -1,0 +1,11 @@
+{
+  "otpVerification_title": "Periksa emel atau WhatsApp anda untuk OTP",
+  "otpVerification_resend": "Hantar Semula Kod",
+  
+  "login_title": "Masukkan maklumat pemegang polisi untuk menerima OTP_",
+  "login_phoneInput_label": "Nombor Telefon (WhatsApp)",
+  "login_phoneInput_placeholder": "Masukkan Nombor Telefon",
+  "login_emailInput_label": "Emel",
+  "login_emailInput_placeholder": "Contoh: contoh@gmail_com",
+  "login_submit": "Hantar OTP"
+}

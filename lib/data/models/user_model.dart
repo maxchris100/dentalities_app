@@ -8,8 +8,8 @@ String userModelToJson(UserModel data) => json.encode(data.toJson());
 
 class UserModel extends User {
   const UserModel(
-      {
-      // required super.id,
+      {required super.id,
+      required super.iat,
       // required super.firstName,
       // required super.lastName,
       required super.email,
@@ -22,7 +22,8 @@ class UserModel extends User {
   factory UserModel.fromJson(Map<String, dynamic> json) {
     print(json.toString());
     return UserModel(
-      // id: json["_id"] ?? -1,
+      id: json["id"],
+      iat: json['iat'],
       // firstName: json["firstName"] ?? "",
       // lastName: json["lastName"] ?? "",
       email: json["email"] ?? "",
@@ -35,7 +36,7 @@ class UserModel extends User {
   }
 
   Map<String, dynamic> toJson() => {
-        // "_id": id,
+        "id": id,
         // "firstName": firstName,
         // "lastName": lastName,
         "email": email,

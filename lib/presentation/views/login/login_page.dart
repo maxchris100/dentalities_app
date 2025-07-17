@@ -32,8 +32,8 @@ class _LoginPageState extends State<LoginPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (dotenv.env["ENV"] != "production") {
         isDev = true;
-        _emailController.text = "johndoe@example.com";
-        _passController.text = "securePassword123";
+        _emailController.text = "demo@dentalities.shop";
+        _passController.text = "pass1234";
         setState(() {});
         //   _emailController.text = "123@yopmail.com";
         //   _passController.text = "123123123";
@@ -159,12 +159,25 @@ class _LoginPageState extends State<LoginPage> {
                         SizedBox(
                           height: 8,
                         ),
-                        TextField(
+                        TextFormField(
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
                             hintText: 'name@mail.com',
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12)),
                           ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Email is required';
+                            }
+                            final emailRegex =
+                                RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                            if (!emailRegex.hasMatch(value)) {
+                              return 'Email Format is not valid';
+                            }
+                            return null;
+                          },
                         ),
                         const SizedBox(height: 16),
 
@@ -173,7 +186,8 @@ class _LoginPageState extends State<LoginPage> {
                         SizedBox(
                           height: 8,
                         ),
-                        TextField(
+                        TextFormField(
+                          controller: _passController,
                           obscureText: obscureText,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(
@@ -272,7 +286,8 @@ class _LoginPageState extends State<LoginPage> {
                             const Text("Don't have an account?"),
                             TextButton(
                               onPressed: () {
-                                Navigator.pushNamed(context, AppRouter.signUp);
+                                Navigator.pushReplacementNamed(
+                                    context, AppRouter.signUp);
                               },
                               child: const Text("Register",
                                   style: TextStyle(color: Colors.blue)),

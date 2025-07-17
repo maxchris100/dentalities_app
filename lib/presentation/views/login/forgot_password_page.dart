@@ -11,8 +11,12 @@ class ForgotPasswordPage extends StatefulWidget {
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   final TextEditingController _emailController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   void _sendResetEmail() {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
     final email = _emailController.text.trim();
     if (email.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -36,55 +40,72 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         backgroundColor: Colors.white,
         elevation: 0,
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 60),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 40),
-
-              Text(
-                "Forget Password",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                "Enter your email and we'll send you a reset link",
-                style: TextStyle(color: Colors.grey[600]),
-              ),
-              const SizedBox(height: 24),
-
-              // Email Field
-              TextField(
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  hintText: 'dentalities@gmail.com',
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12)),
+      body: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Forget Password",
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
-              ),
-              const SizedBox(height: 16),
+                const SizedBox(height: 8),
+                Text(
+                  "Enter your email and we'll send you a reset link",
+                  style: TextStyle(color: Colors.grey[600]),
+                ),
+                const SizedBox(height: 24),
 
-              // Log In Button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    _sendResetEmail();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
+                // Email Field
+                Text("Email"),
+                SizedBox(
+                  height: 8,
+                ),
+                TextFormField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    hintText: 'name@mail.com',
+                    border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: const Text('Submit',
-                      style: TextStyle(fontSize: 16, color: Colors.white)),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Email is required';
+                    }
+                    final emailRegex =
+                        RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                    if (!emailRegex.hasMatch(value)) {
+                      return 'Email Format is not valid';
+                    }
+                    return null;
+                  },
                 ),
-              ),
-              const SizedBox(height: 20),
-            ],
+                const SizedBox(height: 16),
+
+                // Log In Button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _sendResetEmail();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                    ),
+                    child: const Text('Submit',
+                        style: TextStyle(fontSize: 16, color: Colors.white)),
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
           ),
         ),
       ),

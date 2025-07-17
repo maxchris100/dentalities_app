@@ -15,9 +15,9 @@ class AuthRepository {
     String deviceType = '';
     String deviceId = '';
     return await DioClient.instance.post(
-      "/v1/auth/login",
+      "/api/v2/auth/login",
       data: {
-        "emailOrPhone": emailOrPhone,
+        "email": emailOrPhone,
         "password": password,
         "fcmToken": fcmToken,
         "deviceModel": deviceModel,
@@ -30,20 +30,40 @@ class AuthRepository {
     );
   }
 
-  static Future<Response> signUp({
+  static Future<Response> register({
+    required String salutation,
+    required String titlePrefix,
+    required String fullName,
+    required String titleSuffix,
+    required String phoneCode,
+    required String phoneNumber,
     required String email,
-    required String phone,
     required String password,
-    required String name,
+    required String provinceId,
+    required String cityId,
+    required String districtId,
+    required String subdistrictId,
+    required String postalCode,
+    required String address,
     CancelToken? cancelToken,
   }) async {
     return await DioClient.instance.post(
-      "/v1/auth/register",
+      "/api/v2/auth/register",
       data: {
+        "salutation": salutation,
+        "title_prefix": titlePrefix,
+        "full_name": fullName,
+        "title_suffix": titleSuffix,
+        "phone_code": phoneCode,
+        "phone_number": phoneNumber,
         "email": email,
-        "phone": phone,
         "password": password,
-        "name": name,
+        "province_id": provinceId,
+        "city_id": cityId,
+        "district_id": districtId,
+        "subdistrict_id": subdistrictId,
+        "postal_code": postalCode,
+        "address": address,
       },
       cancelToken: cancelToken,
     );
@@ -58,11 +78,24 @@ class AuthRepository {
     );
   }
 
+  static Future<Response> forgotPassword({
+    required String email,
+    CancelToken? cancelToken,
+  }) async {
+    return await DioClient.instance.post(
+      "/api/v2/auth/forgot-password",
+      data: {
+        "email": email,
+      },
+      cancelToken: cancelToken,
+    );
+  }
+
   static Future<Response> signOut({
     CancelToken? cancelToken,
   }) async {
     return await DioClient.instance.post(
-      "/v1/auth/logout",
+      "/api/v2/auth/logout",
       queryParameters: {},
     );
   }

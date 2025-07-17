@@ -67,7 +67,7 @@ class MyApp extends StatelessWidget {
         builder: (context, locale) {
           return OverlaySupport.global(
             child: MaterialApp(
-              title: 'Foriyana App',
+              title: 'Dentalities',
               locale: locale,
               localeResolutionCallback: (locale, supportedLocales) {
                 // Handle locale resolution here

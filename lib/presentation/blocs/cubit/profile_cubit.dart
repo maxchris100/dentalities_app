@@ -31,19 +31,19 @@ class ProfileCubit extends Cubit<ProfileState> {
   Future<void> fetchProfileData(AuthCubit authCubit) async {
     try {
       emit(ProfileLoading());
-      String channel = UserLocalDataSource.userData?.channel ?? "";
-      var response = await ProfileRepository.getProfile(channel);
-      if (response.statusCode == 200) {
-        var res = ProfileResponseModel.fromJson(response.data);
-        emit(ProfileLoaded(res));
-      } else if (response.statusCode == 403) {
-        //FORBIDDEN SESSION EXPIRED
-        emit(ProfileError("Failed to load profile"));
-        Fluttertoast.showToast(msg: "Session Expired");
-        authCubit.logout();
-      } else {
-        emit(ProfileError("Failed to load profile"));
-      }
+      // String channel = UserLocalDataSource.userData?.channel ?? "";
+      // var response = await ProfileRepository.getProfile(channel);
+      // if (response.statusCode == 200) {
+      //   var res = ProfileResponseModel.fromJson(response.data);
+      //   emit(ProfileLoaded(res));
+      // } else if (response.statusCode == 403) {
+      //   //FORBIDDEN SESSION EXPIRED
+      //   emit(ProfileError("Failed to load profile"));
+      //   Fluttertoast.showToast(msg: "Session Expired");
+      //   authCubit.logout();
+      // } else {
+      //   emit(ProfileError("Failed to load profile"));
+      // }
     } catch (e) {
       print(e.toString());
       emit(ProfileError("Failed to load profile: $e"));

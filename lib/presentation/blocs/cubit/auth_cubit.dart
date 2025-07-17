@@ -109,7 +109,7 @@ class AuthCubit extends Cubit<AuthState> {
           loginType: loginType,
           accessToken: accessToken);
 
-      var responseLogin = authResponseModelFromJson(response.data["data"]);
+      var responseLogin = AuthResponseModel.fromJson(response.data["data"]);
       debugPrint('responseLogin.token: ${responseLogin.token}');
 
       await Constant.userLocalDataSource.saveToken(responseLogin.token);

@@ -33,21 +33,21 @@ class NotificationCubit<T> extends Cubit<NotificationState> {
   Future<void> fetchNotifications() async {
     try {
       emit(NotificationInitial()); // Set initial state before fetching data
-      String channel = UserLocalDataSource.userData?.channel ?? "";
-      var response = await ProfileRepository.getDownline(channel);
-      if (response.statusCode == 200) {
-        List<NotificationResponseModel> res = [];
-        // response.data
-        //     .forEach((item) => res.add(NotificationResponseModel.fromJson(item)));
+      // String channel = UserLocalDataSource.userData?.channel ?? "";
+      // var response = await ProfileRepository.getDownline(channel);
+      // if (response.statusCode == 200) {
+      //   List<NotificationResponseModel> res = [];
+      //   // response.data
+      //   //     .forEach((item) => res.add(NotificationResponseModel.fromJson(item)));
 
-        emit(
-          NotificationLoaded<T>(res),
-        ); // Emit the loaded state with notifications
-      } else {
-        emit(
-          NotificationError('Failed to load notifications:'),
-        ); // Emit error state if the API fails
-      }
+      //   emit(
+      //     NotificationLoaded<T>(res),
+      //   ); // Emit the loaded state with notifications
+      // } else {
+      //   emit(
+      //     NotificationError('Failed to load notifications:'),
+      //   ); // Emit error state if the API fails
+      // }
     } catch (e) {
       emit(
         NotificationError('Failed to load notifications: $e'),

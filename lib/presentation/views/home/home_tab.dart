@@ -41,11 +41,7 @@ class _HomeTabState extends State<HomeTab> {
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: ListView(
-            children: [
-              FeatureProductSection(),
-              RecommendedProductSection(),
-              TopCollectionSection(),
-            ],
+            children: [],
           ),
         ),
       ),

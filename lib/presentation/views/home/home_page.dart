@@ -18,9 +18,9 @@ class _HomePageState extends State<HomePage> {
 
   final List<Widget> _pages = [
     const HomeTab(),
-    const SearchTab(),
-    const CartTab(),
-    const ProfileTab(),
+    // const SearchTab(),
+    // const CartTab(),
+    // const ProfileTab(),
   ];
 
   void _onItemTapped(int index) {
@@ -31,16 +31,16 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:
-            const Text("M-Mart", style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text("Dentalities",
+            style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
-        leading: Builder(builder: (context) {
-          return GestureDetector(
-              onTap: () {
-                Scaffold.of(context).openDrawer();
-              },
-              child: const Icon(Icons.menu));
-        }),
+        // leading: Builder(builder: (context) {
+        //   return GestureDetector(
+        //       onTap: () {
+        //         Scaffold.of(context).openDrawer();
+        //       },
+        //       child: const Icon(Icons.menu));
+        // }),
         actions: [
           Padding(
               padding: EdgeInsets.only(right: 16),
@@ -52,36 +52,36 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       body: _pages[_selectedIndex],
-      drawer: const AppDrawer(selectedMenu: "Homepage"),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.grey.shade400,
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-        backgroundColor: Colors.white,
-        elevation: 12,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            label: "Home",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: "Search",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_bag_outlined),
-            label: "Cart",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            label: "Profile",
-          ),
-        ],
-      ),
+      // drawer: const AppDrawer(selectedMenu: "Homepage"),
+      // bottomNavigationBar: BottomNavigationBar(
+      //   currentIndex: _selectedIndex,
+      //   onTap: _onItemTapped,
+      //   type: BottomNavigationBarType.fixed,
+      //   selectedItemColor: Colors.black,
+      //   unselectedItemColor: Colors.grey.shade400,
+      //   showSelectedLabels: false,
+      //   showUnselectedLabels: false,
+      //   backgroundColor: Colors.white,
+      //   elevation: 12,
+      //   items: const [
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.home_outlined),
+      //       label: "Home",
+      //     ),
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.search),
+      //       label: "Search",
+      //     ),
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.shopping_bag_outlined),
+      //       label: "Cart",
+      //     ),
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.person_outline),
+      //       label: "Profile",
+      //     ),
+      //   ],
+      // ),
     );
   }
 }

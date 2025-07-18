@@ -1,10 +1,12 @@
+import 'package:dentalities/presentation/views/home/wishlist_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:dentalities/core/router/app_router.dart';
 import 'package:dentalities/presentation/views/home/cart_tab.dart';
 import 'package:dentalities/presentation/views/home/home_tab.dart';
 import 'package:dentalities/presentation/views/home/profile_tab.dart';
-import 'package:dentalities/presentation/views/home/search_tab.dart';
+import 'package:dentalities/presentation/views/home/cs_tab.dart';
 import 'package:dentalities/presentation/widgets/app_drawer.dart';
+import 'package:flutter_svg/svg.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -18,9 +20,10 @@ class _HomePageState extends State<HomePage> {
 
   final List<Widget> _pages = [
     const HomeTab(),
-    // const SearchTab(),
-    // const CartTab(),
-    // const ProfileTab(),
+    const WishlistTab(),
+    const CSTab(),
+    const CartTab(),
+    const ProfileTab(),
   ];
 
   void _onItemTapped(int index) {
@@ -42,6 +45,31 @@ class _HomePageState extends State<HomePage> {
         //       child: const Icon(Icons.menu));
         // }),
         actions: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                decoration: InputDecoration(
+                  suffixIcon: const Icon(Icons.search),
+                  hintText: 'Search product',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    borderSide: BorderSide(color: Colors.grey),
+                  ),
+                  contentPadding:
+                      const EdgeInsets.symmetric(vertical: 0, horizontal: 12),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Padding(
+              padding: EdgeInsets.only(right: 16),
+              child: GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, AppRouter.cart);
+                  },
+                  child: Icon(Icons.shopping_cart_outlined))),
           Padding(
               padding: EdgeInsets.only(right: 16),
               child: GestureDetector(
@@ -53,35 +81,39 @@ class _HomePageState extends State<HomePage> {
       ),
       body: _pages[_selectedIndex],
       // drawer: const AppDrawer(selectedMenu: "Homepage"),
-      // bottomNavigationBar: BottomNavigationBar(
-      //   currentIndex: _selectedIndex,
-      //   onTap: _onItemTapped,
-      //   type: BottomNavigationBarType.fixed,
-      //   selectedItemColor: Colors.black,
-      //   unselectedItemColor: Colors.grey.shade400,
-      //   showSelectedLabels: false,
-      //   showUnselectedLabels: false,
-      //   backgroundColor: Colors.white,
-      //   elevation: 12,
-      //   items: const [
-      //     BottomNavigationBarItem(
-      //       icon: Icon(Icons.home_outlined),
-      //       label: "Home",
-      //     ),
-      //     BottomNavigationBarItem(
-      //       icon: Icon(Icons.search),
-      //       label: "Search",
-      //     ),
-      //     BottomNavigationBarItem(
-      //       icon: Icon(Icons.shopping_bag_outlined),
-      //       label: "Cart",
-      //     ),
-      //     BottomNavigationBarItem(
-      //       icon: Icon(Icons.person_outline),
-      //       label: "Profile",
-      //     ),
-      //   ],
-      // ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: Color(0xff0C73C7),
+        unselectedItemColor: Colors.grey,
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+        backgroundColor: Colors.white,
+        elevation: 12,
+        items: [
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset("assets/icons/home_wishlist.svg"),
+            label: "Home",
+          ),
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset("assets/icons/home_wishlist.svg"),
+            label: "Wishlist",
+          ),
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset("assets/icons/home_cs.svg"),
+            label: "CS",
+          ),
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset("assets/icons/home_transaction.svg"),
+            label: "Transaction",
+          ),
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset("assets/icons/home_profile.svg"),
+            label: "Profile",
+          ),
+        ],
+      ),
     );
   }
 }

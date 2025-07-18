@@ -329,55 +329,14 @@ class _OtpPageState extends State<OtpPage> with WidgetsBindingObserver {
     return BlocProvider(
       create: (_) => OtpCubit()..startTimer(),
       child: Scaffold(
-        backgroundColor: Color(0xffEE1C25),
         appBar: AppBar(
-          title: Text("Pengesahan OTP"),
+          title: Text("OTP"),
           leading: IconButton(
             icon: Icon(CupertinoIcons.chevron_back),
             onPressed: () {
               Navigator.pop(context);
             },
           ),
-          actions: [
-            GestureDetector(
-              onTap: () async {
-                var res = await showModalBottomSheet(
-                  context: context,
-                  builder: (ctx) {
-                    return FilterLanguage();
-                  },
-                );
-                if (res != null) {
-                  setState(() {
-                    selectedLocal = res;
-                  });
-                }
-              },
-              child: Container(
-                padding: EdgeInsets.all(8),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 40,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
-                        child: SvgPicture.asset(
-                          getFlagCode(UserLocalDataSource.language),
-                          height: 20,
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                    ),
-                    // SizedBox(
-                    //   width: 4,
-                    // ),
-                    // Icon(CupertinoIcons.chevron_down)
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(width: 10),
-          ],
         ),
         body: BlocBuilder<OtpCubit, int>(
           builder: (context, state) {

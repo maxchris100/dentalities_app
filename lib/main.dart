@@ -121,6 +121,13 @@ class MyApp extends StatelessWidget {
                     color: Colors.black,
                     fontFamily: 'OpenSans',
                   ),
+                  backgroundColor: Colors.white, // warna dasar tetap putih
+                  foregroundColor: Colors.black, // warna teks/icon
+                  elevation: 0, // hilangkan bayangan default
+                  scrolledUnderElevation:
+                      0, // HINDARI efek scroll bawaan Material 3
+                  surfaceTintColor:
+                      Colors.transparent, // HINDARI tinting Material 3
                 ),
                 listTileTheme: ListTileThemeData(
                   selectedColor: Colors.transparent,

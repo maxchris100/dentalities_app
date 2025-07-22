@@ -59,7 +59,11 @@ class RecommendedProductSection extends StatelessWidget {
           Text(title,
               style:
                   const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-          const Text("Show all", style: TextStyle(color: Colors.grey)),
+          const Text("See All",
+              style: TextStyle(
+                color: Colors.blue,
+                fontWeight: FontWeight.bold,
+              )),
         ],
       ),
     );

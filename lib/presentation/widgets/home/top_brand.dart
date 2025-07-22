@@ -26,7 +26,13 @@ class TopBrandSection extends StatelessWidget {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               TextButton(
                 onPressed: () {},
-                child: const Text("See All"),
+                child: const Text(
+                  "See All",
+                  style: TextStyle(
+                    color: Colors.blue,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ],
           ),

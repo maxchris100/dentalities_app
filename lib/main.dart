@@ -16,7 +16,7 @@ import 'package:dentalities/data/data_sources/user_local_data_source.dart';
 import 'package:dentalities/generated/l10n.dart';
 import 'package:dentalities/presentation/blocs/cubit/auth_cubit.dart';
 import 'package:dentalities/presentation/blocs/cubit/language_cubit.dart';
-import 'package:dentalities/presentation/views/home/home_page.dart';
+import 'package:dentalities/presentation/views/index/home_page.dart';
 import 'package:dentalities/presentation/views/login/login_page.dart';
 import 'package:dentalities/presentation/views/startup/welcome_page.dart';
 
@@ -155,8 +155,12 @@ class AuthWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AuthCubit authCubit = context.watch<AuthCubit>();
     return BlocBuilder<AuthCubit, AuthState>(
       builder: (context, state) {
+        if (Constant.getQAEnvironment() && authCubit.tokenKey != "") {
+          return HomePage();
+        }
         if (state is AuthLoading) {
           return const Center(child: CircularProgressIndicator());
         } else if (state is AuthAuthenticated) {

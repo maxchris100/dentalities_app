@@ -1,3 +1,7 @@
+import 'package:dentalities/core/util/string_util.dart';
+import 'package:dentalities/domain/repositories/cart_repository.dart';
+import 'package:dentalities/presentation/widgets/add_tocart_widget.dart';
+import 'package:dentalities/presentation/widgets/added_tocart_widget.dart';
 import 'package:flutter/material.dart';
 
 class ProductDetailPage extends StatefulWidget {
@@ -8,237 +12,304 @@ class ProductDetailPage extends StatefulWidget {
 }
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
-  int selectedColor = 0;
-  int selectedSize = 2; // 0=S, 1=M, 2=L
+  @override
+  void initState() {
+    super.initState();
+  }
 
-  final List<Color> colorOptions = [
-    const Color(0xFFF5D7CC), // cream
-    Colors.black,
-    Colors.pink,
-  ];
-
-  final List<String> sizeOptions = ['S', 'M', 'L'];
+  addToCart() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => AddToCartWidget(
+        onTap: () {
+          Navigator.pop(ctx);
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            builder: (_) => AddedToCartWidget(),
+          );
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xfff9f9f9),
-      body: Stack(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text('Product Detail'),
+      ),
+      body: Column(
         children: [
-          Column(
-            children: [
-              const SizedBox(height: 40),
-              _buildTopBar(context),
-              Image.asset(
-                'assets/images/startup1.webp',
-                height: 300,
-                fit: BoxFit.contain,
-              ),
-              Expanded(
-                child: _buildDetails(context),
-              ),
-            ],
+          Expanded(
+            child: ListView(
+              children: [
+                // ===== Gambar Produk =====
+                Center(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.asset(
+                      'assets/images/banner.png',
+                      height: 250,
+                      width: 250,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // ===== Nama Produk =====
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Digital Impression Scanner',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      // ===== Harga =====
+                      Row(
+                        children: [
+                          Text(
+                            StringUtil.castToString(10000),
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Visibility(
+                            visible: true,
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: 8,
+                                ),
+                                Text(
+                                  StringUtil.castToString(10000),
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey,
+                                      fontWeight: FontWeight.normal,
+                                      decoration: TextDecoration.lineThrough),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Visibility(
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: 8,
+                                ),
+                                Text(
+                                  "10 %",
+                                  style: TextStyle(
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                      Text(
+                        "DentoCrown HD Self-Curing Resin Automix Catridge (50ml) - limited to 3 rows",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      Row(
+                        children: [
+                          Container(
+                              height: 40,
+                              width: 70,
+                              child: Image.asset("assets/images/banner.png")),
+                          SizedBox(
+                            width: 8,
+                          ),
+                          Expanded(
+                              child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Implants Diffusion International",
+                                style: TextStyle(color: Colors.black),
+                              ),
+                              Text(
+                                "French",
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                            ],
+                          )),
+                          SizedBox(
+                            width: 8,
+                          ),
+                          Icon(Icons.favorite_border_outlined),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // ===== Tentang Produk (key-value) =====
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'About Product',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      _buildKeyValue('Specialization', 'General Dentistry'),
+                      _buildKeyValue('Treatment', 'Cracked Tooth'),
+                      _buildKeyValue(
+                          'Product Type', 'Digital Impression Scanners'),
+                      const SizedBox(height: 24),
+                    ],
+                  ),
+                ),
+                // ===== Advantages =====
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: const _ExpandableSection(
+                    title: 'Advantages',
+                    content: '''
+                              • Mess-free restorations
+                              • Saves time and reduces mess
+                              • Cures well and bonds strongly
+                              • Easy digital workflow''',
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // ===== Indications =====
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: const _ExpandableSection(
+                    title: 'Indications',
+                    content: '''
+                              • Suitable for core build-ups
+                              • Post cementation
+                              • Cavity lining
+                              • Crown and bridge impressions''',
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                const SizedBox(height: 32),
+              ],
+            ),
           ),
-          _buildAddToCartButton(context),
+          // ===== Tombol Tambah ke Keranjang =====
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  addToCart();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blueAccent,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                ),
+                child: const Text(
+                  'Add to Cart',
+                  style: TextStyle(fontSize: 16, color: Colors.white),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildTopBar(BuildContext context) {
+  /// Helper untuk menampilkan informasi produk dalam format key-value
+  static Widget _buildKeyValue(String key, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const CircleAvatar(
-            backgroundColor: Colors.white,
-            child: Icon(Icons.arrow_back_ios_new, size: 16),
+          SizedBox(
+            width: 140,
+            child: Text(
+              key,
+              style: const TextStyle(fontWeight: FontWeight.w500),
+            ),
           ),
-          const CircleAvatar(
-            backgroundColor: Colors.white,
-            child: Icon(Icons.favorite_border),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(color: Colors.black87),
+            ),
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildDetails(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(top: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.only(bottom: 80),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildTitleAndPrice(),
-            const SizedBox(height: 12),
-            _buildRating(),
-            const SizedBox(height: 12),
-            _buildColorSelector(),
-            const SizedBox(height: 16),
-            _buildSizeSelector(),
-            const Divider(height: 24),
-            ExpansionTile(
-              title: const Text("Description"),
-              children: const [
-                Padding(
-                  padding: EdgeInsets.all(12.0),
-                  child: Text(
-                    "Soft cotton sportwear set, comfortable for daily wear or light training activities.",
-                    style: TextStyle(fontSize: 14),
-                  ),
-                ),
-              ],
-            ),
-            ExpansionTile(
-              title: const Text("Reviews"),
-              children: const [
-                Padding(
-                  padding: EdgeInsets.all(12.0),
-                  child: Text(
-                    "⭐️⭐️⭐️⭐️⭐️  - Very comfy and stylish!\n⭐️⭐️⭐️⭐️   - Good material but size runs small.",
-                    style: TextStyle(fontSize: 14),
-                  ),
-                ),
-              ],
-            ),
-          ],
+/// Widget reusable untuk bagian expandable seperti Advantages dan Indications
+class _ExpandableSection extends StatelessWidget {
+  final String title;
+  final String content;
+
+  const _ExpandableSection({
+    required this.title,
+    required this.content,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ExpansionTile(
+      tilePadding: const EdgeInsets.symmetric(horizontal: 0),
+      title: Text(
+        title,
+        style: const TextStyle(
+          fontWeight: FontWeight.w600,
+          color: Colors.black,
         ),
       ),
-    );
-  }
-
-  Widget _buildTitleAndPrice() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: const [
-        Text(
-          'Sportwear Set',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        Text(
-          '\$ 80.00',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildRating() {
-    return Row(
-      children: const [
-        Icon(Icons.star, color: Colors.green, size: 20),
-        Icon(Icons.star, color: Colors.green, size: 20),
-        Icon(Icons.star, color: Colors.green, size: 20),
-        Icon(Icons.star, color: Colors.green, size: 20),
-        Icon(Icons.star, color: Colors.green, size: 20),
-        SizedBox(width: 8),
-        Text("(83)", style: TextStyle(color: Colors.grey)),
-      ],
-    );
-  }
-
-  Widget _buildColorSelector() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      childrenPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       children: [
-        const Text("Color", style: TextStyle(fontWeight: FontWeight.w600)),
-        const SizedBox(height: 8),
-        Row(
-          children: List.generate(
-            colorOptions.length,
-            (index) {
-              final selected = selectedColor == index;
-              return GestureDetector(
-                onTap: () => setState(() => selectedColor = index),
-                child: Container(
-                  margin: const EdgeInsets.only(right: 12),
-                  padding: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: selected ? Colors.black : Colors.transparent,
-                      width: 2,
-                    ),
-                  ),
-                  child: CircleAvatar(
-                    backgroundColor: colorOptions[index],
-                    radius: 14,
-                  ),
-                ),
-              );
-            },
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            content,
+            textAlign: TextAlign.left,
+            style: const TextStyle(color: Colors.black87),
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildSizeSelector() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text("Size", style: TextStyle(fontWeight: FontWeight.w600)),
-        const SizedBox(height: 8),
-        Row(
-          children: List.generate(
-            sizeOptions.length,
-            (index) {
-              final selected = selectedSize == index;
-              return GestureDetector(
-                onTap: () => setState(() => selectedSize = index),
-                child: Container(
-                  margin: const EdgeInsets.only(right: 12),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: selected ? Colors.black : Colors.grey[200],
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    sizeOptions[index],
-                    style: TextStyle(
-                      color: selected ? Colors.white : Colors.black,
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildAddToCartButton(BuildContext context) {
-    return Positioned(
-      bottom: 0,
-      left: 0,
-      right: 0,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16)
-            .copyWith(bottom: 16, top: 8),
-        color: Colors.white,
-        child: ElevatedButton.icon(
-          onPressed: () {},
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.black,
-            minimumSize: const Size.fromHeight(50),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-          icon: const Icon(Icons.shopping_bag),
-          label: const Text("Add To Cart"),
-        ),
-      ),
     );
   }
 }

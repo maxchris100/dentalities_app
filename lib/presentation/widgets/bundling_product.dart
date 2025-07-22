@@ -18,7 +18,15 @@ class BundlingProductSection extends StatelessWidget {
             children: [
               const Text("Save more with bundling",
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              TextButton(onPressed: () {}, child: const Text("See All"))
+              TextButton(
+                  onPressed: () {},
+                  child: const Text(
+                    "See All",
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ))
             ],
           ),
         ),

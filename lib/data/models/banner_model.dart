@@ -1,0 +1,47 @@
+class Banner {
+  final int id;
+  final String imageUrl;
+  final String image;
+  final bool isPublish;
+  final int sortOrder;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+
+  Banner({
+    required this.id,
+    required this.imageUrl,
+    required this.image,
+    required this.isPublish,
+    required this.sortOrder,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  static List<Banner> fromList(List<dynamic> list) {
+    return list.map((item) => Banner.fromJson(item)).toList();
+  }
+
+  factory Banner.fromJson(Map<String, dynamic> json) {
+    return Banner(
+      id: json['id'],
+      imageUrl: json['image_url'],
+      image: json['image'],
+      isPublish: json['is_publish'],
+      sortOrder: json['sort_order'],
+      createdAt: DateTime.parse(json['createdAt'] ?? json['created_at']),
+      updatedAt: DateTime.parse(json['updatedAt'] ?? json['updated_at']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'image_url': imageUrl,
+      'image': image,
+      'is_publish': isPublish,
+      'sort_order': sortOrder,
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt.toIso8601String(),
+    };
+  }
+}

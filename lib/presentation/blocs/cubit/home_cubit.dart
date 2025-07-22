@@ -1,83 +1,110 @@
-// import 'package:flutter/material.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-// import 'package:get_it/get_it.dart';
-// import 'package:jwt_decoder/jwt_decoder.dart';
-// import 'package:dentalities/data/data_sources/local/user_local_data_source.dart';
-// import 'package:dentalities/data/models/user/profile_response_model.dart';
-// import 'package:dentalities/domain/entities/user/user.dart';
-// import 'package:dentalities/domain/repositories/profile_repository.dart';
-// import 'package:dentalities/presentation/blocs/user/user_bloc.dart';
+import 'package:dentalities/data/models/banner_model.dart';
+import 'package:dentalities/data/models/category_model.dart';
+import 'package:dentalities/domain/repositories/home_repository.dart';
+import 'package:dio/src/response.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:meta/meta.dart';
 
-// // Base class for all states
-// @immutable
-// abstract class DataState {}
+import '../../widgets/product_model.dart';
 
-// // Initial state (when nothing has been loaded yet)
-// class DataInitial extends DataState {}
+class HomeData {
+  final List<Category> featureCategories;
+  final List<dynamic> topDoctors;
+  final List<Banner> banners;
+  final List<Product> recommendedProducts;
 
-// // Data loaded state (when data is successfully fetched)
-// class DataLoaded<T> extends DataState {
-//   final T data;
+  HomeData({
+    required this.featureCategories,
+    required this.topDoctors,
+    required this.banners,
+    required this.recommendedProducts,
+  });
 
-//   DataLoaded(this.data);
-// }
+  HomeData copyWith({
+    List<Category>? featureCategories,
+    List<Banner>? banners,
+    List<dynamic>? topDoctors,
+    List<Product>? recommendedProducts,
+  }) {
+    return HomeData(
+      featureCategories: featureCategories ?? this.featureCategories,
+      banners: banners ?? this.banners,
+      topDoctors: topDoctors ?? this.topDoctors,
+      recommendedProducts: recommendedProducts ?? this.recommendedProducts,
+    );
+  }
+}
 
-// // Data error state (when an error occurs during data fetching)
-// class DataError extends DataState {
-//   final String message;
+@immutable
+abstract class HomeState {}
 
-//   DataError(this.message);
-// }
+class HomeInitial extends HomeState {}
 
-// class HomeCubit<T> extends Cubit<DataState> {
-//   HomeCubit() : super(DataInitial()); // Initial state is DataInitial
+class HomeLoading extends HomeState {}
 
-//   // Fetch data method (simulated)
-//   Future<void> fetchData() async {
-//     try {
-//       emit(DataInitial()); // Emit initial state before data loading
-//       var data =
-//           await getProfile(); // Fetch data (replace with actual API call)
-//       emit(DataLoaded<T>(data)); // Emit loaded data state on success
-//     } catch (e) {
-//       emit(
-//           DataError('Failed to fetch data: $e')); // Emit error state on failure
-//     }
-//   }
+class HomeLoaded extends HomeState {
+  final HomeData data;
+  HomeLoaded(this.data);
+}
 
-//   Future<T?> getProfile() async {
-//     try {
-//       String channel = UserLocalDataSource.userData?.channel ?? "";
-//       var response = await ProfileRepository.getProfile(channel);
+class HomeError extends HomeState {
+  final String message;
+  HomeError(this.message);
+}
 
-//       if (response.statusCode == 200) {
-//         var res = ProfileResponseModel.fromJson(response.data);
-//         return res;
-//       } else {
-//         return null;
-//       }
-//     } catch (e) {
-//       return null;
-//     }
-//   }
-// }
+class HomeCubit extends Cubit<HomeState> {
+  HomeData data = HomeData(
+      featureCategories: [],
+      banners: [],
+      recommendedProducts: [],
+      topDoctors: []);
+  HomeCubit() : super(HomeInitial());
 
-// // class HomeCubit extends Cubit<HomeState> {
-// //   HomeCubit() : super(HomeState.loading);
+  Future<void> fetchFeatureCategories() async {
+    try {
+      final categories = await HomeRepository.getFeatureCategories();
+      List<Category> list =
+          Category.fromList(categories.data["data"]["categories"]);
+      data = data.copyWith(featureCategories: list);
+      emit(HomeLoaded(data));
+    } catch (e) {
+      emit(HomeError('Failed to load categories: $e'));
+    }
+  }
 
-// //   Future<void> getProfile() async {
-// //     try {
-// //       String channel = UserLocalDataSource.userData?.channel ?? "";
-// //       var response = await ProfileRepository.getProfile(channel);
+  Future<void> fetchBanners() async {
+    try {
+      final banners = await HomeRepository.getBanners();
+      List<Banner> list = Banner.fromList(banners.data["data"]);
+      data = data.copyWith(banners: list);
+      emit(HomeLoaded(data));
+    } catch (e) {
+      emit(HomeError('Failed to load banners: $e'));
+    }
+  }
 
-// //       if (response.statusCode == 200) {
-// //         ProfileResponseModel res = ProfileResponseModel.fromJson(response.data);
-// //       } else {
-// //         emit(HomeState.normal);
-// //       }
-// //     } catch (e) {
-// //       emit(HomeState.normal);
-// //     }
-// //   }
-// // }
+  Future<void> fetchTopDoctors() async {
+    try {
+      // final doctors = await HomeRepository.getTopDoctors();
+      // data = data.copyWith(topDoctors: doctors);
+      // emit(HomeLoaded(data));
+    } catch (e) {
+      emit(HomeError('Failed to load doctors: $e'));
+    }
+  }
+
+  Future<void> fetchRecommendedProducts() async {
+    try {
+      // final products = await HomeRepository.getRecommendedProducts();
+      // data = data.copyWith(recommendedProducts: products);
+      // emit(HomeLoaded(data));
+    } catch (e) {
+      emit(HomeError('Failed to load products: $e'));
+    }
+  }
+
+  init() {
+    fetchFeatureCategories();
+    fetchBanners();
+  }
+}

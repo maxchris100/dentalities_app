@@ -1,7 +1,11 @@
+import 'package:dentalities/presentation/views/home/doctor_testimony_page.dart';
+import 'package:dentalities/presentation/views/home/product_video_page.dart';
+import 'package:dentalities/presentation/views/home/search_page.dart';
 import 'package:dentalities/presentation/views/login/account_oncheck_page.dart';
 import 'package:dentalities/presentation/views/login/reset_password_linksent_page.dart';
+import 'package:dentalities/presentation/views/order/checkout1_page.dart';
 import 'package:flutter/material.dart';
-import 'package:dentalities/presentation/views/home/home_page.dart';
+import 'package:dentalities/presentation/views/index/home_page.dart';
 import 'package:dentalities/presentation/views/login/create_new_password_page.dart';
 import 'package:dentalities/presentation/views/login/forgot_password_page.dart';
 import 'package:dentalities/presentation/views/login/login_page.dart';
@@ -31,11 +35,14 @@ class AppRouter {
   static const String accountOnCheck = '/account-on-check';
   static const String resetPassSentLink = '/reset-pass-sentlink';
   //products
+  static const String search = '/search';
   static const String productDetail = '/product-detail';
   //other
   static const String userProfile = '/user-profile';
   static const String orderCheckout = '/order-checkout';
   static const String trackOrder = '/track-order';
+  static const String doctorTestimonial = '/doctor-testimonial';
+  static const String productVideo = '/product-video';
   static const String order = '/order';
   static const String orderDetail = '/order-detail';
   static const String cart = '/cart';
@@ -59,9 +66,13 @@ class AppRouter {
       "/welcome": (context) => WelcomePage(),
       "/startup": (context) => StartupPage(),
       "/home": (context) => HomePage(),
+      search: (context) => SearchPage(),
+      doctorTestimonial: (context) => DoctorTestimonialPage(),
+      productVideo: (context) => ProductVideoPage(),
       "/product-detail": (context) => ProductDetailPage(),
       "/track-order": (context) => TrackOrderPage(),
       "/cart": (context) => CartPage(),
+      orderCheckout: (context) => Checkout1Page(),
       // "/order": (context) => OrderPage(),
       "/wishlist": (context) => WishlistPage(),
       "/order-detail": (context) => OrderDetailPage(),

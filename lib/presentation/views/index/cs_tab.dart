@@ -6,9 +6,9 @@ import 'package:dentalities/presentation/blocs/cubit/auth_cubit.dart';
 import 'package:dentalities/presentation/blocs/cubit/profile_cubit.dart';
 
 import 'package:dentalities/presentation/widgets/app_drawer.dart';
-import 'package:dentalities/presentation/widgets/feature_product.dart';
+import 'package:dentalities/presentation/widgets/home/feature_product.dart';
 import 'package:dentalities/presentation/widgets/recommended_product.dart';
-import 'package:dentalities/presentation/widgets/top_collection.dart';
+import 'package:dentalities/presentation/widgets/home/top_collection.dart';
 
 class CSTab extends StatefulWidget {
   const CSTab({super.key});

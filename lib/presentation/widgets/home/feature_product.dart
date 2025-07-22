@@ -1,31 +1,26 @@
 import 'package:dentalities/core/router/app_router.dart';
-import 'package:dentalities/data/models/product_response_model.dart';
+import 'package:dentalities/data/models/brand_model.dart';
+import 'package:dentalities/data/models/product_model.dart';
+import 'package:dentalities/data/models/product_variant_model.dart';
 import 'package:dentalities/presentation/widgets/product_card.dart';
-import 'package:dentalities/presentation/widgets/product_model.dart';
 import 'package:flutter/material.dart';
 
-class NewArrivalProductSection extends StatelessWidget {
-  const NewArrivalProductSection({super.key});
+class FeatureProductSection extends StatelessWidget {
+  const FeatureProductSection({super.key});
 
   @override
   Widget build(BuildContext context) {
     final products = [
-      ProductResponseModel(
-        title: 'PureOffice Professional Intracanal Dental Whiten...',
-        brand: 'Semorr',
-        image: 'assets/images/banner.png',
-        price: 'Rp1.070.000',
-        oldPrice: 'Rp1.189.000',
-        badge: 'New arrival 10%',
+      Product(
+        name: "Test",
+        // title: 'PureOffice Professional Intracanal Dental Whiten...',
+        // brand: Brand(name: ""),
+        // image: 'assets/images/banner.png',
+        price: 107000,
+        // oldPrice: 'Rp1.189.000',
+        // badge: 'New arrival 10%',
       ),
-      ProductResponseModel(
-        title: 'ProviTemp Temporary Cement (5ml Syringe)',
-        brand: 'Implants Diffusion Internati...',
-        image: 'assets/images/banner.png',
-        price: 'Rp450.000',
-        oldPrice: 'Rp475.000',
-        badge: '5%',
-      ),
+      Product(name: ""),
     ];
 
     return Padding(
@@ -33,7 +28,7 @@ class NewArrivalProductSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildHeader(context, "New Arrival"),
+          _buildHeader(context, "Special for your speciality"),
           SizedBox(
               height: 500,
               child: GridView.count(
@@ -68,8 +63,11 @@ class NewArrivalProductSection extends StatelessWidget {
                 Navigator.pushNamed(context, AppRouter.productDetail,
                     arguments: {"title": "Feature Product"});
               },
-              child:
-                  const Text("Show all", style: TextStyle(color: Colors.grey))),
+              child: const Text("See All",
+                  style: TextStyle(
+                    color: Colors.blue,
+                    fontWeight: FontWeight.bold,
+                  ))),
         ],
       ),
     );

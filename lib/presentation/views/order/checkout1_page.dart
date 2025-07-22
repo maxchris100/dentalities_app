@@ -8,170 +8,179 @@ class Checkout1Page extends StatefulWidget {
 }
 
 class _Checkout1PageState extends State<Checkout1Page> {
-  final _formKey = GlobalKey<FormState>();
-  int _selectedShippingMethod = 0;
-  bool _copyAddress = false;
+  bool isSubmit = false;
 
-  final _firstNameController = TextEditingController();
-  final _lastNameController = TextEditingController();
-  final _countryController = TextEditingController();
-  final _streetController = TextEditingController();
-  final _cityController = TextEditingController();
-  final _stateController = TextEditingController();
-  final _zipController = TextEditingController();
-  final _phoneController = TextEditingController();
-  final _couponController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Check out", style: TextStyle(color: Colors.black)),
-        backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(color: Colors.black),
-        centerTitle: true,
-        elevation: 0,
+        title: const Text('Checkout'),
+        leading: const BackButton(),
       ),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.all(20),
+      body: SafeArea(
+        child: Column(
           children: [
-            const Text("STEP 1", style: TextStyle(color: Colors.grey)),
-            const SizedBox(height: 4),
-            const Text("Shipping",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
-            _buildTextField("First name *", _firstNameController, true),
-            _buildTextField("Last name *", _lastNameController, true),
-            _buildTextField("Country *", _countryController, true),
-            _buildTextField("Street name *", _streetController, true),
-            _buildTextField("City *", _cityController, true),
-            _buildTextField("State / Province", _stateController, false),
-            _buildTextField("Zip-code *", _zipController, true),
-            _buildTextField("Phone number *", _phoneController, true),
-            const SizedBox(height: 24),
-            const Text("Shipping method",
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 12),
-            _buildShippingOption(
-              0,
-              "Free",
-              "Delivery to home",
-              "Delivery from 3 to 7 business days",
-            ),
-            _buildShippingOption(
-              1,
-              "\$9.90",
-              "Delivery to home",
-              "Delivery from 4 to 6 business days",
-            ),
-            _buildShippingOption(
-              2,
-              "\$9.90",
-              "Fast Delivery",
-              "Delivery from 2 to 3 business days",
-            ),
-            const SizedBox(height: 20),
-            const Text("Coupon Code",
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _couponController,
-                    decoration: InputDecoration(
-                      hintText: "Have a code? type it here...",
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 10),
-                    ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      // Shipping Address
+                      const Text('Shipping Address',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Jl. Margacinta Rt 02 Rw 01, RT.02/RW.No: 424A,\nMargasari, Kec. Buahbatu, Kota Bandung, Jawa Barat 40286',
+                      ),
+                      const SizedBox(height: 16),
+                      const Divider(),
+
+                      // Shipment
+                      const SizedBox(height: 16),
+                      Text('Shipment',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        subtitle: const Text('JTR > 130\nEstimated 3-4 days'),
+                        leading: Image.asset(
+                          'assets/images/banner.png',
+                          height: 40,
+                          width: 50,
+                          fit: BoxFit.cover,
+                        ),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => showModalBottomSheet(
+                          context: context,
+                          shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(20))),
+                          builder: (_) {
+                            return Container();
+                          },
+                        ),
+                      ),
+
+                      const Divider(),
+
+                      // Payment Method
+                      const SizedBox(height: 16),
+                      Text('Payment Method',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        subtitle: const Text('Transfer to BCA'),
+                        leading: Image.asset('assets/images/banner.png',
+                            height: 40, width: 50, fit: BoxFit.cover),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => showModalBottomSheet(
+                          context: context,
+                          shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(20))),
+                          builder: (_) {
+                            return Container();
+                          },
+                        ),
+                      ),
+
+                      const Divider(),
+
+                      // Payment Summary
+                      const SizedBox(height: 16),
+                      const Text('Payment Summary',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: const [
+                          Text('Product (1.220 items)'),
+                          Text('Rp1.520.000')
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: const [Text('Shipment'), Text('Rp50.000')],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: const [
+                          Text('Discount', style: TextStyle(color: Colors.red)),
+                          Text('-Rp150.000',
+                              style: TextStyle(color: Colors.red))
+                        ],
+                      ),
+                      const Divider(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: const [
+                          Text('Total',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold)),
+                          Text('Rp1.420.000',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold))
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                    ],
                   ),
                 ),
-                const SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10))),
-                  child: const Text("Validate"),
-                )
-              ],
-            ),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                Checkbox(
-                  value: _copyAddress,
-                  onChanged: (value) {
-                    setState(() {
-                      _copyAddress = value ?? false;
-                    });
-                  },
-                ),
-                const Text("Copy address data from shipping"),
-              ],
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              height: 50,
-              child: ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    // lanjut ke payment page
-                    Navigator.pushNamed(context, "/checkout2");
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30)),
-                ),
-                child: const Text("Continue to payment"),
               ),
-            )
+            ),
+            SizedBox(
+              height: 12,
+            ),
+            Container(
+              padding: const EdgeInsets.all(16),
+              width: double.infinity,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30)),
+                      ),
+                      child: isSubmit
+                          ? CircularProgressIndicator()
+                          : const Text('Pay',
+                              style:
+                                  TextStyle(fontSize: 18, color: Colors.white)),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(children: [
+                        TextSpan(
+                            text: "Continue with payment means you accept ",
+                            style: TextStyle(color: Colors.grey, fontSize: 11)),
+                        TextSpan(
+                            text: "our Terms and Conditions",
+                            style: TextStyle(color: Colors.grey, fontSize: 11))
+                      ])),
+                  SizedBox(
+                    height: 8,
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildTextField(
-      String label, TextEditingController controller, bool required) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: TextFormField(
-        controller: controller,
-        validator: (value) {
-          if (required && (value == null || value.isEmpty)) {
-            return 'Field is required';
-          }
-          return null;
-        },
-        decoration: InputDecoration(
-          labelText: label,
-          border: const UnderlineInputBorder(),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildShippingOption(
-      int index, String price, String title, String subtitle) {
-    return RadioListTile(
-      value: index,
-      groupValue: _selectedShippingMethod,
-      onChanged: (value) {
-        setState(() {
-          _selectedShippingMethod = value!;
-        });
-      },
-      title: Text("$price  $title"),
-      subtitle: Text(subtitle),
-      activeColor: Colors.black,
-      contentPadding: EdgeInsets.zero,
     );
   }
 }

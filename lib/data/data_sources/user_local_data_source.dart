@@ -59,10 +59,10 @@ class UserLocalDataSourceImpl implements UserLocalDataSource {
     final token = await getToken();
     Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
     // User user = User.fromJson(decodedToken);
-    UserModel user = UserModel.fromJson(decodedToken);
+    UserModel user = UserModel.fromMap(decodedToken);
     UserLocalDataSource.userData = user; //set static
     UserLocalDataSource.token = token; //set static
-    return Future.value(UserModel.fromJson(decodedToken));
+    return Future.value(UserModel.fromMap(decodedToken));
     // final jsonString = sharedPreferences.getString(cachedUser);
     // if (jsonString != null) {
     //   return Future.value(userModelFromJson(jsonString));

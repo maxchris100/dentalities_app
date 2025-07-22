@@ -64,7 +64,7 @@ class AuthCubit extends Cubit<AuthState> {
 
         //decode token
         Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
-        UserModel user = UserModel.fromJson(decodedToken);
+        UserModel user = UserModel.fromMap(decodedToken);
         UserLocalDataSource.userData = user;
         UserLocalDataSource.token = token;
 
@@ -86,7 +86,7 @@ class AuthCubit extends Cubit<AuthState> {
     await secureStorage.write(key: tokenKey, value: token);
     //decode token
     Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
-    UserModel user = UserModel.fromJson(decodedToken);
+    UserModel user = UserModel.fromMap(decodedToken);
     UserLocalDataSource.userData = user;
     emit(AuthAuthenticated(user));
   }

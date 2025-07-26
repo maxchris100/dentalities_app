@@ -1,4 +1,5 @@
 import 'package:dentalities/data/models/product_model.dart';
+import 'package:dentalities/presentation/blocs/cubit/product_cubit.dart';
 import 'package:dentalities/presentation/views/index/wishlist_tab.dart';
 import 'package:dentalities/presentation/widgets/filter_bar.dart';
 import 'package:dentalities/presentation/widgets/product_card.dart';
@@ -9,6 +10,7 @@ import 'package:dentalities/presentation/views/index/home_tab.dart';
 import 'package:dentalities/presentation/views/index/profile_tab.dart';
 import 'package:dentalities/presentation/views/index/cs_tab.dart';
 import 'package:dentalities/presentation/widgets/app_drawer.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 
 class SearchPage extends StatefulWidget {
@@ -23,6 +25,13 @@ class _SearchPageState extends State<SearchPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    productCubit = ProductCubit();
+    // Tunggu sampai context ready
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final args = ModalRoute.of(context)?.settings.arguments as Map?;
+      String slug = args?['categoryslug'] ?? "";
+      productCubit.getProductByCategorySlug(slug);
+    });
   }
 
   final products = [
@@ -37,70 +46,93 @@ class _SearchPageState extends State<SearchPage> {
     ),
     Product(name: ""),
   ];
+  late ProductCubit productCubit;
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        actions: [
-          Padding(padding: EdgeInsets.only(left: 30)),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: TextField(
-                decoration: InputDecoration(
-                  suffixIcon: const Icon(Icons.search),
-                  hintText: 'Search product',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: BorderSide(color: Colors.grey),
+    // var args = ModalRoute.of(context)?.settings.arguments as Map?;
+    // String slug = args?['categoryslug'] ?? "";
+
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<ProductCubit>(
+          create: (context) => productCubit,
+        ),
+      ],
+      child: BlocBuilder<ProductCubit, ProductState>(
+          bloc: productCubit,
+          builder: (context, state) {
+            List<Product> product = [];
+            if (state is ProductLoaded) {
+              product = state.data.relatedProduct;
+              print(product);
+            }
+            return Scaffold(
+              appBar: AppBar(
+                actions: [
+                  Padding(padding: EdgeInsets.only(left: 30)),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      child: TextField(
+                        decoration: InputDecoration(
+                          suffixIcon: const Icon(Icons.search),
+                          hintText: 'Search product',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(24),
+                            borderSide: BorderSide(color: Colors.grey),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                              vertical: 0, horizontal: 12),
+                        ),
+                      ),
+                    ),
                   ),
-                  contentPadding:
-                      const EdgeInsets.symmetric(vertical: 0, horizontal: 12),
-                ),
+                  const SizedBox(width: 8),
+                  Padding(
+                      padding: EdgeInsets.only(right: 16),
+                      child: GestureDetector(
+                          onTap: () {
+                            Navigator.pushReplacementNamed(
+                                context, AppRouter.cart);
+                          },
+                          child: Icon(Icons.shopping_cart_outlined))),
+                  Padding(
+                      padding: EdgeInsets.only(right: 16),
+                      child: GestureDetector(
+                          onTap: () {
+                            Navigator.pushReplacementNamed(
+                                context, AppRouter.notification);
+                          },
+                          child: Icon(Icons.notifications_none)))
+                ],
               ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Padding(
-              padding: EdgeInsets.only(right: 16),
-              child: GestureDetector(
-                  onTap: () {
-                    Navigator.pushReplacementNamed(context, AppRouter.cart);
-                  },
-                  child: Icon(Icons.shopping_cart_outlined))),
-          Padding(
-              padding: EdgeInsets.only(right: 16),
-              child: GestureDetector(
-                  onTap: () {
-                    Navigator.pushReplacementNamed(
-                        context, AppRouter.notification);
-                  },
-                  child: Icon(Icons.notifications_none)))
-        ],
-      ),
-      body: SafeArea(
-          child: Column(
-        children: [
-          FilterBar(),
-          SizedBox(
-            height: 8,
-          ),
-          Expanded(
-              child: GridView.count(
-            crossAxisCount: 2,
-            padding: const EdgeInsets.all(12),
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 16,
-            childAspectRatio: 0.6, // sesuaikan tinggi/lebarnya
-            shrinkWrap: true,
-            physics:
-                NeverScrollableScrollPhysics(), // kalau sudah dalam scroll view
-            children: products.map((product) {
-              return ProductCard(product: product);
-            }).toList(),
-          )),
-        ],
-      )),
+              body: SafeArea(
+                  child: Column(
+                children: [
+                  FilterBar(),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  Expanded(
+                      child: GridView.count(
+                    crossAxisCount: 2,
+                    padding: const EdgeInsets.all(12),
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 16,
+                    childAspectRatio: 0.6, // sesuaikan tinggi/lebarnya
+                    shrinkWrap: true,
+                    physics:
+                        NeverScrollableScrollPhysics(), // kalau sudah dalam scroll view
+                    children: products.map((product) {
+                      return ProductCard(product: product);
+                    }).toList(),
+                  )),
+                ],
+              )),
+            );
+          }),
     );
   }
 }

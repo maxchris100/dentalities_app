@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dentalities/core/router/app_router.dart';
 import 'package:dentalities/core/util/appdevice.dart';
 import 'package:dentalities/core/util/appversion.dart';
+import 'package:dentalities/presentation/views/login/signup_page.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -34,7 +35,8 @@ Future<void> main() async {
   // await CFirebase.init();
 
   await dotenv.load(fileName: ".env");
-  Constant.initializeUserLocalDataSource();
+  await Constant.initializeUserLocalDataSource();
+  Constant.initNavigatorKey();
   await setLanguage();
   runApp(MyApp());
 }
@@ -94,6 +96,10 @@ class MyApp extends StatelessWidget {
               routes: AppRouter.onGenerateRoute(),
               onGenerateRoute: (settings) {
                 final args = settings.arguments as Map<String, dynamic>?;
+                if (settings.name == AppRouter.signUp) {
+                  return MaterialPageRoute(builder: (_) => SignUpPage());
+                }
+
                 // if (settings.name == '/policy-insurance') {}
               },
               theme: ThemeData(
@@ -155,10 +161,10 @@ class AuthWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AuthCubit authCubit = context.watch<AuthCubit>();
     return BlocBuilder<AuthCubit, AuthState>(
       builder: (context, state) {
-        if (Constant.getQAEnvironment() && authCubit.tokenKey != "") {
+        if (Constant.getQAEnvironment() &&
+            Constant.userLocalDataSource.token != null) {
           return HomePage();
         }
         if (state is AuthLoading) {

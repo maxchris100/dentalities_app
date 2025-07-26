@@ -1,6 +1,10 @@
 import 'package:dentalities/core/router/app_router.dart';
+import 'package:dentalities/core/util/string_util.dart';
+import 'package:dentalities/presentation/blocs/cubit/cart_cubit.dart';
 import 'package:dentalities/presentation/widgets/cart_item.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -10,124 +14,174 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  List<bool> selected = [true, true, true];
-  List<int> quantity = [2, 2, 2];
+  Map<int, bool> selected = {};
+  Map<int, int> quantity = {};
   bool selectAll = true;
+  bool isGrid = true;
+
+  CartCubit cartCubit = CartCubit();
+
+  @override
+  void initState() {
+    super.initState();
+    cartCubit.fetchCart();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Cart'),
-        leading: const BackButton(),
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              children: [
-                Text("${selected.where((e) => e).length} products selected"),
-                const Spacer(),
-                TextButton(
-                  onPressed: _clearAll,
-                  child: const Text("Clear"),
-                )
-              ],
+    return BlocProvider.value(
+      value: cartCubit,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Cart'),
+          leading: const BackButton(),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: _buildViewToggle(),
+            )
+          ],
+        ),
+        body: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                      "${selected.values.where((e) => e).length} products selected"),
+                  TextButton(
+                    onPressed: _clearAll,
+                    child: const Text(
+                      "Clear",
+                      style: TextStyle(
+                          color: Colors.blue, fontWeight: FontWeight.bold),
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
-          Expanded(
-            child: ListView(
-              children: [
-                CartItem(
-                  isSelected: selected[0],
-                  imageUrl: 'assets/images/banner.png',
-                  name:
-                      'PureOffice Professional Intracanal Dental Whitening Kit 35% HP (5g Syringe)',
-                  variant: 'S, Dark Purple',
-                  price: 'Rp1.070.000',
-                  quantity: quantity[0],
-                  onAdd: () => _changeQty(0, 1),
-                  onRemove: () => _changeQty(0, -1),
-                  onChecked: (val) => _toggleItem(0, val),
-                ),
-                CartItem(
-                  isSelected: selected[1],
-                  imageUrl: 'assets/images/banner.png',
-                  name: 'ProviTemp Temporary Cement (5ml Syringe)',
-                  variant: 'S, Dark Purple',
-                  price: 'Rp450.000',
-                  quantity: quantity[1],
-                  onAdd: () => _changeQty(1, 1),
-                  onRemove: () => _changeQty(1, -1),
-                  onChecked: (val) => _toggleItem(1, val),
-                ),
-                CartItem(
-                  isSelected: selected[2],
-                  imageUrl: 'assets/images/banner.png',
-                  name:
-                      'Hydrospeed HD Light Body Quick (2 × 50ml 1:1 Cartridges with 12 Yellow EcoMix Mixing Tips)',
-                  variant: 'S, Dark Purple',
-                  price: 'FREE',
-                  quantity: quantity[2],
-                  onAdd: () => _changeQty(2, 1),
-                  onRemove: () => _changeQty(2, -1),
-                  onChecked: (val) => _toggleItem(2, val),
-                ),
-              ],
+            Expanded(
+              child: BlocBuilder<CartCubit, CartState>(
+                builder: (context, state) {
+                  if (state is CartLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (state is CartLoaded) {
+                    final items = state.data.cart?.cartItems ?? [];
+
+                    // Inisialisasi selected dan quantity jika belum ada
+                    for (var item in items) {
+                      if (item.id != null) {
+                        selected.putIfAbsent(item.id!, () => true);
+                        quantity.putIfAbsent(
+                            item.id!, () => item.quantity ?? 1);
+                      }
+                    }
+
+                    return ListView.builder(
+                      itemCount: items.length,
+                      itemBuilder: (context, index) {
+                        final item = items[index];
+                        final id = item.id;
+                        if (id == null) return const SizedBox.shrink();
+
+                        return CartItem(
+                          isSelected: selected[id] ?? false,
+                          imageUrl: item.productImage ?? "",
+                          name: item.productName ?? "",
+                          slug: item.productSlug ?? "",
+                          variant: [
+                            item.variantOneName,
+                            item.variantTwoName,
+                            item.variantThreeName,
+                          ].where((e) => e?.isNotEmpty ?? false).join(', '),
+                          price: StringUtil.formatMoney(item.price),
+                          quantity: quantity[id]!,
+                          onAdd: () => _changeQty(id, 1),
+                          onRemove: () => _changeQty(id, -1),
+                          onChecked: (val) => _toggleItem(id, val),
+                          isGrid: isGrid,
+                        );
+                      },
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
             ),
-          ),
-          _buildBottomBar()
-        ],
+            _buildBottomBar(),
+          ],
+        ),
       ),
     );
   }
 
-  void _toggleItem(int index, bool? val) {
+  void _toggleItem(int id, bool? val) {
     setState(() {
-      selected[index] = val ?? false;
-      selectAll = selected.every((e) => e);
+      selected[id] = val ?? false;
+      selectAll = selected.values.every((e) => e);
     });
   }
 
-  void _changeQty(int index, int delta) {
+  void _changeQty(int id, int delta) {
     setState(() {
-      quantity[index] = (quantity[index] + delta).clamp(1, 99);
+      quantity[id] = (quantity[id]! + delta).clamp(1, 99);
     });
   }
 
   void _clearAll() {
     setState(() {
-      selected = List.filled(selected.length, false);
+      for (var key in selected.keys) {
+        selected[key] = false;
+      }
       selectAll = false;
     });
   }
 
   Widget _buildBottomBar() {
-    int total = selected[0] ? 1070000 * quantity[0] : 0;
-    total += selected[1] ? 450000 * quantity[1] : 0;
-    // FREE item = 0
+    int total = 0;
+    selected.forEach((id, isSelected) {
+      if (isSelected) {
+        final qty = quantity[id] ?? 1;
+        total += (cartCubit.state is CartLoaded)
+            ? ((cartCubit.state as CartLoaded)
+                        .data
+                        .cart
+                        ?.cartItems
+                        ?.firstWhere((e) => e.id == id)
+                        .price ??
+                    0) *
+                qty
+            : 0;
+      }
+    });
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border(top: BorderSide(color: Colors.grey.shade200))),
+        color: Colors.white,
+        border: Border(top: BorderSide(color: Colors.grey.shade200)),
+      ),
       child: Row(
         children: [
           Checkbox(
-              activeColor: Colors.blue,
-              value: selectAll,
-              onChanged: (val) {
-                setState(() {
-                  selectAll = val ?? false;
-                  selected = List.filled(selected.length, selectAll);
-                });
-              }),
+            activeColor: Colors.blue,
+            value: selectAll,
+            onChanged: (val) {
+              setState(() {
+                selectAll = val ?? false;
+                for (var key in selected.keys) {
+                  selected[key] = selectAll;
+                }
+              });
+            },
+          ),
           const Text("All"),
           const Spacer(),
           Text(
-            "Rp${_formatCurrency(total)}",
+            StringUtil.formatMoney(total),
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(width: 12),
@@ -141,7 +195,8 @@ class _CartPageState extends State<CartPage> {
               backgroundColor: Colors.blue,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             child: const Text('Payment',
                 style: TextStyle(fontSize: 16, color: Colors.white)),
@@ -151,8 +206,67 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
-  String _formatCurrency(int amount) {
-    return amount.toString().replaceAllMapped(
-        RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.');
+  Widget _buildViewToggle() {
+    return Container(
+      width: 80,
+      height: 40,
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(50),
+      ),
+      child: Stack(
+        children: [
+          AnimatedAlign(
+            duration: const Duration(milliseconds: 250),
+            alignment: isGrid ? Alignment.centerLeft : Alignment.centerRight,
+            child: Container(
+              width: 38,
+              height: 38,
+              margin: const EdgeInsets.all(2),
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              buildIcon(
+                icon: "assets/icons/view_grid.svg",
+                selected: isGrid,
+                onTap: () => setState(() => isGrid = true),
+              ),
+              const SizedBox(width: 8),
+              buildIcon(
+                icon: "assets/icons/view_list.svg",
+                selected: !isGrid,
+                onTap: () => setState(() => isGrid = false),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildIcon({
+    required String icon,
+    required bool selected,
+    required VoidCallback onTap,
+  }) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Center(
+          child: SvgPicture.asset(
+            icon,
+            height: 20,
+            width: 20,
+            color: selected ? Colors.blue : Colors.grey,
+          ),
+        ),
+      ),
+    );
   }
 }

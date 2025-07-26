@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:dentalities/core/constant/constant.dart';
 import 'package:dentalities/core/router/app_router.dart';
 import 'package:dentalities/presentation/blocs/cubit/signup_cubit.dart';
 import 'package:dentalities/presentation/widgets/search_bottom_sheet.dart';
@@ -36,6 +37,25 @@ class _SignUpPageState extends State<SignUpPage> {
   final _formKey1 = GlobalKey<FormState>();
   final _formKey2 = GlobalKey<FormState>();
   final _formKey3 = GlobalKey<FormState>();
+  bool onSubmit = false;
+  bool isSubmiting = false;
+  @override
+  void initState() {
+    if (Constant.getQAEnvironment()) {
+      emailController.text = "test001@yopmail.com";
+      phoneController.text = "62878321731";
+      passwordController.text = "123456";
+      fullNameController.text = "Test 1";
+      prefixController.text = "Mr";
+      suffixController.text = "Mr";
+
+      postalController.text = "11840";
+      addressController.text = "test ";
+    }
+    super.initState();
+    signUpCubit = SignUpCubit();
+    signUpCubit.loadProvinces(); // 👈 Panggil di sini
+  }
 
   void _nextStep() {
     if (_currentStep < 2) {
@@ -66,9 +86,29 @@ class _SignUpPageState extends State<SignUpPage> {
     }
   }
 
-  void _register() {
+  Future _register() async {
     log("@Register Account");
-    signUpCubit.register(
+    onSubmit = true;
+    if (selectedSalutation == null) {
+      return;
+    }
+    if (signUpCubit.state.selectedProvinceId == null) {
+      return;
+    }
+    if (signUpCubit.state.selectedCityId == null) {
+      return;
+    }
+    if (signUpCubit.state.selectedDistrictId == null) {
+      return;
+    }
+    if (signUpCubit.state.selectedSubdistrictId == null) {
+      return;
+    }
+    setState(() {
+      isSubmiting = true;
+    });
+
+    var res = await signUpCubit.register(
       salutation: selectedSalutation ?? '',
       titlePrefix: prefixController.text.trim(),
       fullName: fullNameController.text.trim(),
@@ -77,13 +117,20 @@ class _SignUpPageState extends State<SignUpPage> {
       phoneNumber: phoneController.text.replaceFirst('62', ''),
       email: emailController.text.trim().toLowerCase(),
       password: passwordController.text,
-      provinceId: signUpCubit.state.selectedProvinceId!,
-      cityId: signUpCubit.state.selectedCityId!,
-      districtId: signUpCubit.state.selectedDistrictId!,
-      subdistrictId: signUpCubit.state.selectedSubdistrictId!,
+      provinceId: signUpCubit.state.selectedProvinceId!["id"].toString(),
+      cityId: signUpCubit.state.selectedCityId!["id"].toString(),
+      districtId: signUpCubit.state.selectedDistrictId!["id"].toString(),
+      subdistrictId: signUpCubit.state.selectedSubdistrictId!["id"].toString(),
       postalCode: postalController.text,
       address: addressController.text,
     );
+    if (res != null) {
+      Navigator.pop(context);
+      Navigator.pushNamed(context, AppRouter.accountOnCheck);
+    }
+    setState(() {
+      isSubmiting = false;
+    });
   }
 
   Widget _stepIndicator(String title, int step) {
@@ -337,60 +384,98 @@ class _SignUpPageState extends State<SignUpPage> {
               SizedBox(
                 height: 8,
               ),
-              BottomSheetSelector<String>(
+              BottomSheetSelector<Map>(
                 label: "Province",
-                selectedValue: signUpCubit.state.selectedProvinceId,
-                items: signUpCubit.state.provinces
-                    .map((e) => e['name'].toString())
-                    .toList(),
+                selectedValue: signUpCubit.state.selectedProvinceId?["name"],
+                items:
+                    signUpCubit.state.provinces.map((e) => e as Map).toList(),
+                itemLabel: (p0) {
+                  return p0["name"];
+                },
                 onSelected: (value) {
                   signUpCubit.selectProvince(value);
                 },
               ),
+              Visibility(
+                  visible:
+                      onSubmit && signUpCubit.state.selectedProvinceId == null,
+                  child: Text(
+                    "Province is required",
+                    style: TextStyle(color: Colors.red),
+                  )),
               const SizedBox(height: 12),
               Text("City/Regency"),
               SizedBox(
                 height: 8,
               ),
-              BottomSheetSelector<String>(
+              BottomSheetSelector<Map>(
                 label: "City/Regency",
-                selectedValue: signUpCubit.state.selectedCityId,
-                items: signUpCubit.state.cities
-                    .map((e) => e['name'].toString())
-                    .toList(),
+                selectedValue: signUpCubit.state.selectedCityId?["name"],
+                items: signUpCubit.state.cities.map((e) => e as Map).toList(),
+                itemLabel: (p0) {
+                  return p0["name"];
+                },
                 onSelected: (value) {
                   signUpCubit.selectCity(value);
                 },
+              ),
+              Visibility(
+                visible: onSubmit && signUpCubit.state.selectedCityId == null,
+                child: Text(
+                  "City/Regency is required",
+                  style: TextStyle(color: Colors.red),
+                ),
               ),
               const SizedBox(height: 12),
               Text("District"),
               SizedBox(
                 height: 8,
               ),
-              BottomSheetSelector<String>(
+              BottomSheetSelector<Map>(
                 label: "District",
-                selectedValue: signUpCubit.state.selectedDistrictId,
-                items: signUpCubit.state.districts
-                    .map((e) => e['name'].toString())
-                    .toList(),
+                selectedValue: signUpCubit.state.selectedDistrictId?["name"],
+                items:
+                    signUpCubit.state.districts.map((e) => e as Map).toList(),
+                itemLabel: (p0) {
+                  return p0["name"];
+                },
                 onSelected: (value) {
                   signUpCubit.selectDistrict(value);
                 },
+              ),
+              Visibility(
+                visible:
+                    onSubmit && signUpCubit.state.selectedDistrictId == null,
+                child: Text(
+                  "District is required",
+                  style: TextStyle(color: Colors.red),
+                ),
               ),
               const SizedBox(height: 12),
               Text("Sub-district/Village"),
               SizedBox(
                 height: 8,
               ),
-              BottomSheetSelector<String>(
+              BottomSheetSelector<Map>(
                 label: "Sub-district/Village",
-                selectedValue: signUpCubit.state.selectedSubdistrictId,
+                selectedValue: signUpCubit.state.selectedSubdistrictId?["name"],
                 items: signUpCubit.state.subdistricts
-                    .map((e) => e['name'].toString())
+                    .map((e) => e as Map)
                     .toList(),
+                itemLabel: (p0) {
+                  return p0["name"];
+                },
                 onSelected: (value) {
                   signUpCubit.selectSubdistrict(value);
                 },
+              ),
+              Visibility(
+                visible:
+                    onSubmit && signUpCubit.state.selectedSubdistrictId == null,
+                child: Text(
+                  "Sub-district/Village is required",
+                  style: TextStyle(color: Colors.red),
+                ),
               ),
               const SizedBox(height: 12),
               Text("Postal Code"),
@@ -446,162 +531,151 @@ class _SignUpPageState extends State<SignUpPage> {
     }
   }
 
-  SignUpCubit signUpCubit = SignUpCubit();
+  late SignUpCubit signUpCubit;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext contextPage) {
     return PopScope(
         onPopInvokedWithResult: (didPop, result) {
-          Navigator.pushReplacementNamed(context, AppRouter.signIn);
+          // print("POP");
+          Navigator.pop(contextPage);
         },
-        child: MultiBlocProvider(
-            providers: [
-              BlocProvider(create: (context) => signUpCubit..loadProvinces()),
-            ],
-            child: BlocBuilder<SignUpCubit, SignUpState>(
-                bloc: signUpCubit,
-                builder: (context, state) {
-                  if (state.success) {
-                    Navigator.pushReplacementNamed(
-                        context, AppRouter.accountOnCheck);
-                  }
-                  return Scaffold(
-                    body: SafeArea(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: SingleChildScrollView(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 24, vertical: 32),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+        child: BlocBuilder<SignUpCubit, SignUpState>(
+            bloc: signUpCubit,
+            builder: (context, state) {
+              return Scaffold(
+                body: SafeArea(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: SingleChildScrollView(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 24, vertical: 32),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text("Registration",
+                                  style: TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold)),
+                              const SizedBox(height: 4),
+                              const Text(
+                                  "Complete the informations to create your account"),
+                              const SizedBox(height: 20),
+
+                              // Step Indicator
+                              Row(
                                 children: [
-                                  const Text("Registration",
-                                      style: TextStyle(
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.bold)),
-                                  const SizedBox(height: 4),
-                                  const Text(
-                                      "Complete the informations to create your account"),
-                                  const SizedBox(height: 20),
-
-                                  // Step Indicator
-                                  Row(
-                                    children: [
-                                      _stepIndicator("Account", 0),
-                                      Expanded(
-                                        child: Padding(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 8),
-                                          child: Divider(
-                                            color: Colors.grey,
-                                            thickness: 1,
-                                          ),
-                                        ),
+                                  _stepIndicator("Account", 0),
+                                  Expanded(
+                                    child: Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 8),
+                                      child: Divider(
+                                        color: Colors.grey,
+                                        thickness: 1,
                                       ),
-                                      _stepIndicator("Personal", 1),
-                                      Expanded(
-                                        child: Padding(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 8),
-                                          child: Divider(
-                                            color: Colors.grey,
-                                            thickness: 1,
-                                          ),
-                                        ),
-                                      ),
-                                      _stepIndicator("Address", 2),
-                                    ],
+                                    ),
                                   ),
-                                  const SizedBox(height: 24),
-
-                                  // Dynamic Step Content
-                                  _buildStepContent(),
-                                  const SizedBox(height: 30),
+                                  _stepIndicator("Personal", 1),
+                                  Expanded(
+                                    child: Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 8),
+                                      child: Divider(
+                                        color: Colors.grey,
+                                        thickness: 1,
+                                      ),
+                                    ),
+                                  ),
+                                  _stepIndicator("Address", 2),
                                 ],
                               ),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
+                              const SizedBox(height: 24),
 
-                          // Action Buttons
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 24),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: ElevatedButton(
-                                    onPressed:
-                                        _currentStep > 0 ? _prevStep : null,
-                                    style: ElevatedButton.styleFrom(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 16),
-                                      backgroundColor: Colors.white,
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(12)),
-                                    ),
-                                    child: Text(
-                                      "Previous",
-                                      style: TextStyle(color: Colors.black),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: ElevatedButton(
-                                    onPressed: _currentStep == 2
-                                        ? _register
-                                        : _nextStep,
-                                    style: ElevatedButton.styleFrom(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 16),
-                                        backgroundColor: _currentStep == 2
-                                            ? Colors.blue
-                                            : Colors.white,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(12)),
-                                        side: BorderSide(
-                                            color: _currentStep == 2
-                                                ? Colors.white
-                                                : Colors.blue)),
-                                    child: Text(
-                                      _currentStep == 2 ? "Register" : "Next",
-                                      style: TextStyle(
-                                          color: _currentStep == 2
-                                              ? Colors.white
-                                              : Colors.blue),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text("Already have an account? "),
-                              GestureDetector(
-                                  onTap: () {
-                                    Navigator.pushReplacementNamed(
-                                        context, AppRouter.signIn);
-                                  },
-                                  child: Text(
-                                    "Login",
-                                    style: TextStyle(
-                                        color: Colors.blue,
-                                        fontWeight: FontWeight.bold),
-                                  ))
+                              // Dynamic Step Content
+                              _buildStepContent(),
+                              const SizedBox(height: 30),
                             ],
                           ),
-                          const SizedBox(height: 20),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+
+                      // Action Buttons
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: _currentStep > 0 ? _prevStep : null,
+                                style: ElevatedButton.styleFrom(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 16),
+                                  backgroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12)),
+                                ),
+                                child: Text(
+                                  "Previous",
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed:
+                                    _currentStep == 2 ? _register : _nextStep,
+                                style: ElevatedButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 16),
+                                    backgroundColor: _currentStep == 2
+                                        ? Colors.blue
+                                        : Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(12)),
+                                    side: BorderSide(
+                                        color: _currentStep == 2
+                                            ? Colors.white
+                                            : Colors.blue)),
+                                child: Text(
+                                  _currentStep == 2 ? "Register" : "Next",
+                                  style: TextStyle(
+                                      color: _currentStep == 2
+                                          ? Colors.white
+                                          : Colors.blue),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text("Already have an account? "),
+                          GestureDetector(
+                              onTap: () {
+                                Navigator.pop(contextPage);
+                              },
+                              child: Text(
+                                "Login",
+                                style: TextStyle(
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.bold),
+                              ))
                         ],
                       ),
-                    ),
-                  );
-                })));
+                      const SizedBox(height: 20),
+                    ],
+                  ),
+                ),
+              );
+            }));
   }
 }

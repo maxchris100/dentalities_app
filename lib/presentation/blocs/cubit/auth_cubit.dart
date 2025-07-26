@@ -1,3 +1,4 @@
+import 'package:dentalities/core/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -49,7 +50,7 @@ class AuthCubit extends Cubit<AuthState> {
 
   Future<void> checkAuthStatus() async {
     try {
-      String? token = await secureStorage.read(key: tokenKey);
+      String? token = await Constant.userLocalDataSource.getToken();
       if (token != null && token.isNotEmpty) {
         //check token
         handleSessionCode().then((value) {
@@ -65,8 +66,8 @@ class AuthCubit extends Cubit<AuthState> {
         //decode token
         Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
         UserModel user = UserModel.fromMap(decodedToken);
-        UserLocalDataSource.userData = user;
-        UserLocalDataSource.token = token;
+        await Constant.userLocalDataSource.saveToken(token);
+        await Constant.userLocalDataSource.saveUser(user);
 
         emit(AuthAuthenticated(user));
       } else {
@@ -82,19 +83,18 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  Future<void> saveToken(String token) async {
-    await secureStorage.write(key: tokenKey, value: token);
-    //decode token
-    Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
-    UserModel user = UserModel.fromMap(decodedToken);
-    UserLocalDataSource.userData = user;
-    emit(AuthAuthenticated(user));
-  }
+  // Future<void> saveToken(String token) async {
+  //   await secureStorage.write(key: tokenKey, value: token);
+  //   //decode token
+  //   Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+  //   UserModel user = UserModel.fromMap(decodedToken);
+  //   UserLocalDataSource.userData = user;
+  //   emit(AuthAuthenticated(user));
+  // }
 
   Future<void> logout() async {
     await secureStorage.delete(key: tokenKey);
-    UserLocalDataSource.userData = null;
-    UserLocalDataSource.token = null;
+    Constant.userLocalDataSource.clearCache();
     // UserLocalDataSource.language = 'en';
     emit(AuthInitial());
   }
@@ -112,20 +112,14 @@ class AuthCubit extends Cubit<AuthState> {
       var responseLogin = AuthResponseModel.fromJson(response.data["data"]);
       debugPrint('responseLogin.token: ${responseLogin.token}');
 
-      await Constant.userLocalDataSource.saveToken(responseLogin.token);
-
       Map<String, dynamic> decodedToken =
           JwtDecoder.decode(responseLogin.token);
       print("decodedToken: $decodedToken");
+      UserModel user = UserModel.fromMap(decodedToken);
+      await Constant.userLocalDataSource.saveToken(responseLogin.token);
+      await Constant.userLocalDataSource.saveUser(user);
 
-      // UserModel user = await Constant.userLocalDataSource.getUser();
-      // await userLocalDataSource.saveUser(user);
-      // context.read<AuthCubit>().getUserInformation(responseLogin.token);
-
-      // UserModel u = await userLocalDataSource.getUser();
-      // context.read<AuthCubit>().checkAuthStatus();
-
-      Navigator.of(context).pushReplacementNamed('/home');
+      emit(AuthAuthenticated(user));
     } catch (e) {
       debugPrint('Refresh Token error: $e');
     }

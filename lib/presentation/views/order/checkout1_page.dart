@@ -8,11 +8,19 @@ class Checkout1Page extends StatefulWidget {
 }
 
 class _Checkout1PageState extends State<Checkout1Page> {
-  bool isSubmit = false;
+  bool isProcessing = false;
 
   @override
   void initState() {
     super.initState();
+  }
+
+  void submitCheckout() async {
+    setState(() => isProcessing = true);
+
+    // await Future.delayed(const Duration(seconds: 3));
+
+    // setState(() => isProcessing = false);
   }
 
   @override
@@ -23,161 +31,210 @@ class _Checkout1PageState extends State<Checkout1Page> {
         leading: const BackButton(),
       ),
       body: SafeArea(
-        child: Column(
+        child: Stack(
           children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: SingleChildScrollView(
+            Column(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Shipping Address
+                          const Text('Shipping Address',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 8),
+                          const Text(
+                            'Jl. Margacinta Rt 02 Rw 01, RT.02/RW.No: 424A,\nMargasari, Kec. Buahbatu, Kota Bandung, Jawa Barat 40286',
+                          ),
+                          const SizedBox(height: 16),
+                          const Divider(),
+
+                          // Shipment
+                          const SizedBox(height: 16),
+                          Text('Shipment',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            subtitle:
+                                const Text('JTR > 130\nEstimated 3-4 days'),
+                            leading: Image.asset(
+                              'assets/images/banner.png',
+                              height: 40,
+                              width: 50,
+                              fit: BoxFit.cover,
+                            ),
+                            trailing: const Icon(Icons.chevron_right),
+                            onTap: () => showModalBottomSheet(
+                              context: context,
+                              shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(20))),
+                              builder: (_) {
+                                return Container();
+                              },
+                            ),
+                          ),
+
+                          const Divider(),
+
+                          // Payment Method
+                          const SizedBox(height: 16),
+                          Text('Payment Method',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            subtitle: const Text('Transfer to BCA'),
+                            leading: Image.asset('assets/images/banner.png',
+                                height: 40, width: 50, fit: BoxFit.cover),
+                            trailing: const Icon(Icons.chevron_right),
+                            onTap: () => showModalBottomSheet(
+                              context: context,
+                              shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(20))),
+                              builder: (_) {
+                                return Container();
+                              },
+                            ),
+                          ),
+
+                          const Divider(),
+
+                          // Payment Summary
+                          const SizedBox(height: 16),
+                          const Text('Payment Summary',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 8),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const [
+                              Text('Product (1.220 items)'),
+                              Text('Rp1.520.000')
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const [
+                              Text('Shipment'),
+                              Text('Rp50.000')
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const [
+                              Text('Discount',
+                                  style: TextStyle(color: Colors.red)),
+                              Text('-Rp150.000',
+                                  style: TextStyle(color: Colors.red))
+                            ],
+                          ),
+                          const Divider(),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const [
+                              Text('Total',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold)),
+                              Text('Rp1.420.000',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold))
+                            ],
+                          ),
+                          const SizedBox(height: 24),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 12,
+                ),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  width: double.infinity,
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // Shipping Address
-                      const Text('Shipping Address',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Jl. Margacinta Rt 02 Rw 01, RT.02/RW.No: 424A,\nMargasari, Kec. Buahbatu, Kota Bandung, Jawa Barat 40286',
-                      ),
-                      const SizedBox(height: 16),
-                      const Divider(),
-
-                      // Shipment
-                      const SizedBox(height: 16),
-                      Text('Shipment',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        subtitle: const Text('JTR > 130\nEstimated 3-4 days'),
-                        leading: Image.asset(
-                          'assets/images/banner.png',
-                          height: 40,
-                          width: 50,
-                          fit: BoxFit.cover,
-                        ),
-                        trailing: const Icon(Icons.chevron_right),
-                        onTap: () => showModalBottomSheet(
-                          context: context,
-                          shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(20))),
-                          builder: (_) {
-                            return Container();
+                      Container(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            submitCheckout();
                           },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30)),
+                          ),
+                          child: isProcessing
+                              ? CircularProgressIndicator()
+                              : const Text('Pay',
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.white)),
                         ),
                       ),
-
-                      const Divider(),
-
-                      // Payment Method
-                      const SizedBox(height: 16),
-                      Text('Payment Method',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        subtitle: const Text('Transfer to BCA'),
-                        leading: Image.asset('assets/images/banner.png',
-                            height: 40, width: 50, fit: BoxFit.cover),
-                        trailing: const Icon(Icons.chevron_right),
-                        onTap: () => showModalBottomSheet(
-                          context: context,
-                          shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(20))),
-                          builder: (_) {
-                            return Container();
-                          },
-                        ),
+                      SizedBox(
+                        height: 8,
                       ),
-
-                      const Divider(),
-
-                      // Payment Summary
-                      const SizedBox(height: 16),
-                      const Text('Payment Summary',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
-                          Text('Product (1.220 items)'),
-                          Text('Rp1.520.000')
-                        ],
+                      RichText(
+                          textAlign: TextAlign.center,
+                          text: TextSpan(children: [
+                            TextSpan(
+                                text: "Continue with payment means you accept ",
+                                style: TextStyle(
+                                    color: Colors.grey, fontSize: 11)),
+                            TextSpan(
+                                text: "our Terms and Conditions",
+                                style:
+                                    TextStyle(color: Colors.grey, fontSize: 11))
+                          ])),
+                      SizedBox(
+                        height: 8,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [Text('Shipment'), Text('Rp50.000')],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
-                          Text('Discount', style: TextStyle(color: Colors.red)),
-                          Text('-Rp150.000',
-                              style: TextStyle(color: Colors.red))
-                        ],
-                      ),
-                      const Divider(),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
-                          Text('Total',
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold)),
-                          Text('Rp1.420.000',
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold))
-                        ],
-                      ),
-                      const SizedBox(height: 24),
                     ],
                   ),
                 ),
-              ),
+              ],
             ),
-            SizedBox(
-              height: 12,
-            ),
-            Container(
-              padding: const EdgeInsets.all(16),
-              width: double.infinity,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30)),
-                      ),
-                      child: isSubmit
-                          ? CircularProgressIndicator()
-                          : const Text('Pay',
-                              style:
-                                  TextStyle(fontSize: 18, color: Colors.white)),
+            if (isProcessing)
+              Positioned.fill(
+                child: Container(
+                  color: Colors.white.withOpacity(0.9),
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const CircularProgressIndicator(),
+                        const SizedBox(height: 24),
+                        const Text(
+                          "Processing Your Order",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: Colors.black,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 40),
+                          child: Text(
+                            "Hang tight! We're confirming your payment and getting things ready. This won't take long",
+                            style:
+                                TextStyle(fontSize: 14, color: Colors.black54),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  RichText(
-                      textAlign: TextAlign.center,
-                      text: TextSpan(children: [
-                        TextSpan(
-                            text: "Continue with payment means you accept ",
-                            style: TextStyle(color: Colors.grey, fontSize: 11)),
-                        TextSpan(
-                            text: "our Terms and Conditions",
-                            style: TextStyle(color: Colors.grey, fontSize: 11))
-                      ])),
-                  SizedBox(
-                    height: 8,
-                  ),
-                ],
+                ),
               ),
-            ),
           ],
         ),
       ),

@@ -74,7 +74,7 @@ class AccountOnCheckPage extends StatelessWidget {
                   width: double.infinity,
                   child: TextButton(
                     onPressed: () {
-                      Navigator.pushReplacementNamed(context, AppRouter.signIn);
+                      Navigator.pop(context);
                     },
                     style: TextButton.styleFrom(
                       backgroundColor: Colors.grey[100],

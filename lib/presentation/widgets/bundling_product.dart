@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 class BundlingProductSection extends StatelessWidget {
-  const BundlingProductSection({super.key});
+  final String title;
+  const BundlingProductSection({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -16,10 +17,10 @@ class BundlingProductSection extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Save more with bundling",
+              Text(title,
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              TextButton(
-                  onPressed: () {},
+              GestureDetector(
+                  onTap: () {},
                   child: const Text(
                     "See All",
                     style: TextStyle(

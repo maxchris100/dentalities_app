@@ -53,16 +53,6 @@ class _OtpPageState extends State<OtpPage> with WidgetsBindingObserver {
     return controllers.map((c) => c.text).join();
   }
 
-  Future<void> _initializeUserLocalDataSource() async {
-    final sharedPreferences = await SharedPreferences.getInstance();
-    final secureStorage = const FlutterSecureStorage();
-
-    userLocalDataSource = UserLocalDataSourceImpl(
-      sharedPreferences: sharedPreferences,
-      secureStorage: secureStorage,
-    );
-  }
-
   void checkOtpComplete() {
     final otp = controllers.map((c) => c.text).join().trim();
     if (otp.length == otpLength) {
@@ -127,8 +117,6 @@ class _OtpPageState extends State<OtpPage> with WidgetsBindingObserver {
 
   @override
   void initState() {
-    _initializeUserLocalDataSource();
-
     for (int i = 0; i < otpLength; i++) {
       controllers[i].addListener(checkOtpComplete);
     }
@@ -310,7 +298,7 @@ class _OtpPageState extends State<OtpPage> with WidgetsBindingObserver {
       setState(() {
         isLoading = false;
       });
-      context.read<AuthCubit>().saveToken(responseLogin.token);
+      // context.read<AuthCubit>().saveToken(responseLogin.token);
       Navigator.of(context).pushReplacementNamed('/home');
     } catch (e) {
       debugPrint('Login error: $e');

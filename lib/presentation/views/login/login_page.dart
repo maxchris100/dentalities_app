@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:dentalities/core/router/app_router.dart';
@@ -48,7 +49,9 @@ class _LoginPageState extends State<LoginPage> {
       });
       String email = _emailController.text.trim().toLowerCase();
       String password = _passController.text;
-      await AuthCubit().login(context, email, password);
+
+      AuthCubit authCubit = context.read<AuthCubit>();
+      await authCubit.login(context, email, password);
 
       setState(() {
         _isLoading = false;
@@ -97,29 +100,29 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 24),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        isDev
-                            ? GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context)
-                                      .pushReplacementNamed('/home');
-                                },
-                                child: Icon(Icons.home))
-                            : Text(""),
-                        isDev
-                            ? GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context).pushNamed('/otp');
-                                },
-                                child: Text("OTP"))
-                            : Text("")
-                      ],
-                    ),
-                  ),
+                  // Container(
+                  //   padding: EdgeInsets.symmetric(horizontal: 24),
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //     children: [
+                  //       isDev
+                  //           ? GestureDetector(
+                  //               onTap: () {
+                  //                 Navigator.of(context)
+                  //                     .pushReplacementNamed('/home');
+                  //               },
+                  //               child: Icon(Icons.home))
+                  //           : Text(""),
+                  //       isDev
+                  //           ? GestureDetector(
+                  //               onTap: () {
+                  //                 Navigator.of(context).pushNamed('/otp');
+                  //               },
+                  //               child: Text("OTP"))
+                  //           : Text("")
+                  //     ],
+                  //   ),
+                  // ),
                   Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 24.0, vertical: 0),
@@ -286,8 +289,7 @@ class _LoginPageState extends State<LoginPage> {
                             const Text("Don't have an account?"),
                             TextButton(
                               onPressed: () {
-                                Navigator.pushReplacementNamed(
-                                    context, AppRouter.signUp);
+                                Navigator.pushNamed(context, AppRouter.signUp);
                               },
                               child: const Text("Register",
                                   style: TextStyle(color: Colors.blue)),

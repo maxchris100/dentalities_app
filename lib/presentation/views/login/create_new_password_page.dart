@@ -56,16 +56,6 @@ class _CreateNewPasswordPageState extends State<CreateNewPasswordPage>
     return controllers.map((c) => c.text).join();
   }
 
-  Future<void> _initializeUserLocalDataSource() async {
-    final sharedPreferences = await SharedPreferences.getInstance();
-    final secureStorage = const FlutterSecureStorage();
-
-    userLocalDataSource = UserLocalDataSourceImpl(
-      sharedPreferences: sharedPreferences,
-      secureStorage: secureStorage,
-    );
-  }
-
   void checkOtpComplete() {
     final otp = controllers.map((c) => c.text).join().trim();
     if (otp.length == otpLength) {
@@ -130,8 +120,6 @@ class _CreateNewPasswordPageState extends State<CreateNewPasswordPage>
 
   @override
   void initState() {
-    _initializeUserLocalDataSource();
-
     for (int i = 0; i < otpLength; i++) {
       controllers[i].addListener(checkOtpComplete);
     }
@@ -313,7 +301,7 @@ class _CreateNewPasswordPageState extends State<CreateNewPasswordPage>
       setState(() {
         isLoading = false;
       });
-      context.read<AuthCubit>().saveToken(responseLogin.token);
+      // context.read<AuthCubit>().saveToken(responseLogin.token);
       Navigator.of(context).pushReplacementNamed('/home');
     } catch (e) {
       debugPrint('Login error: $e');

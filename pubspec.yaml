@@ -45,6 +45,7 @@ dependencies:
 
   flutter_local_notifications:
   carousel_slider:
+  flutter_html:
   
 dev_dependencies:
   flutter_test:

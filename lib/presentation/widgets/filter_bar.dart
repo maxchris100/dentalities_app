@@ -1,3 +1,5 @@
+import 'package:dentalities/presentation/widgets/filter_brand.dart';
+import 'package:dentalities/presentation/widgets/filter_category.dart';
 import 'package:flutter/material.dart';
 
 class FilterBar extends StatefulWidget {
@@ -10,7 +12,9 @@ class FilterBar extends StatefulWidget {
 class _FilterBarState extends State<FilterBar> {
   String? selectedSort;
   bool onPromo = false;
+  bool readyStock = false;
   List<String> selectedCategories = [];
+  List<String> selectedBrands = [];
 
   void _showSortOptions() {
     showModalBottomSheet(
@@ -29,70 +33,106 @@ class _FilterBarState extends State<FilterBar> {
     );
   }
 
+  void _showReadyStockOptions() {
+    setState(() => readyStock = !readyStock);
+    // showModalBottomSheet(
+    //   context: context,
+    //   builder: (_) => ListView(
+    //     children: [
+    //       SwitchListTile(
+    //         title: const Text('Only show promotional items'),
+    //         value: onPromo,
+    //         onChanged: (val) {
+    //           setState(() => onPromo = val);
+    //           Navigator.pop(context);
+    //         },
+    //       )
+    //     ],
+    //   ),
+    // );
+  }
+
   void _showPromoOptions() {
-    showModalBottomSheet(
-      context: context,
-      builder: (_) => ListView(
-        children: [
-          SwitchListTile(
-            title: const Text('Only show promotional items'),
-            value: onPromo,
-            onChanged: (val) {
-              setState(() => onPromo = val);
-              Navigator.pop(context);
-            },
-          )
-        ],
-      ),
-    );
+    setState(() => onPromo = !onPromo);
+    // showModalBottomSheet(
+    //   context: context,
+    //   builder: (_) => ListView(
+    //     children: [
+    //       SwitchListTile(
+    //         title: const Text('Only show promotional items'),
+    //         value: onPromo,
+    //         onChanged: (val) {
+    //           setState(() => onPromo = val);
+    //           Navigator.pop(context);
+    //         },
+    //       )
+    //     ],
+    //   ),
+    // );
   }
 
   void _showCategoryOptions() {
-    final allCategories = ['Electronics', 'Books', 'Fashion', 'Home'];
+    // final allCategories = ['Electronics', 'Books', 'Fashion', 'Home'];
     showModalBottomSheet(
-      context: context,
-      builder: (_) => StatefulBuilder(
-        builder: (context, setModalState) => Column(
-          children: [
-            Expanded(
-              child: ListView(
-                children: allCategories
-                    .map(
-                      (cat) => CheckboxListTile(
-                        title: Text(cat),
-                        value: selectedCategories.contains(cat),
-                        onChanged: (val) {
-                          setModalState(() {
-                            if (val == true) {
-                              selectedCategories.add(cat);
-                            } else {
-                              selectedCategories.remove(cat);
-                            }
-                          });
-                        },
-                      ),
-                    )
-                    .toList(),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                setState(() {});
-                Navigator.pop(context);
-              },
-              child: const Text("Apply"),
-            )
-          ],
-        ),
-      ),
-    );
+        context: context,
+        builder: (_) {
+          return FilterCategory();
+        }
+
+        // StatefulBuilder(
+        //   builder: (context, setModalState) =>
+
+        //   Column(
+        //     children: [
+        //       Expanded(
+        //         child: ListView(
+        //           children: allCategories
+        //               .map(
+        //                 (cat) => CheckboxListTile(
+        //                   title: Text(cat),
+        //                   value: selectedCategories.contains(cat),
+        //                   onChanged: (val) {
+        //                     setModalState(() {
+        //                       if (val == true) {
+        //                         selectedCategories.add(cat);
+        //                       } else {
+        //                         selectedCategories.remove(cat);
+        //                       }
+        //                     });
+        //                   },
+        //                 ),
+        //               )
+        //               .toList(),
+        //         ),
+        //       ),
+        //       TextButton(
+        //         onPressed: () {
+        //           setState(() {});
+        //           Navigator.pop(context);
+        //         },
+        //         child: const Text("Apply"),
+        //       )
+        //     ],
+        //   ),
+        // ),
+        );
+  }
+
+  void _showBrandsOptions() {
+    showModalBottomSheet(
+        context: context,
+        builder: (_) {
+          return FilterBrand();
+        });
   }
 
   void _clearFilters() {
     setState(() {
       selectedSort = null;
       onPromo = false;
+      readyStock = false;
       selectedCategories.clear();
+      selectedBrands.clear();
     });
   }
 
@@ -108,6 +148,8 @@ class _FilterBarState extends State<FilterBar> {
             Visibility(
               visible: selectedSort != null &&
                   onPromo &&
+                  readyStock &&
+                  selectedBrands.isNotEmpty &&
                   selectedCategories.isNotEmpty,
               child: OutlinedButton.icon(
                 onPressed: _clearFilters,
@@ -178,6 +220,51 @@ class _FilterBarState extends State<FilterBar> {
                 ],
               ),
             ),
+            const SizedBox(width: 8),
+            OutlinedButton(
+              onPressed: _showBrandsOptions,
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(
+                  color: selectedBrands.isNotEmpty ? Colors.blue : Colors.grey,
+                ),
+                foregroundColor:
+                    selectedBrands.isNotEmpty ? Colors.blue : Colors.grey,
+              ),
+              child: Row(
+                children: [
+                  Text(
+                    'Brand${selectedBrands.isNotEmpty ? ' (${selectedBrands.length})' : ''}',
+                    style: TextStyle(
+                        color: selectedBrands.isNotEmpty
+                            ? Colors.blue
+                            : Colors.grey),
+                  ),
+                  SizedBox(
+                    width: 8,
+                  ),
+                  Icon(
+                    Icons.arrow_drop_down,
+                    color:
+                        selectedBrands.isNotEmpty ? Colors.blue : Colors.grey,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            OutlinedButton.icon(
+              onPressed: _showReadyStockOptions,
+              icon: Icon(Icons.percent,
+                  color: readyStock ? Colors.blue : Colors.grey),
+              label: Text(
+                'Ready Stock',
+                style: TextStyle(color: readyStock ? Colors.blue : Colors.grey),
+              ),
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: readyStock ? Colors.blue : Colors.grey),
+                foregroundColor: readyStock ? Colors.blue : Colors.grey,
+              ),
+            ),
+            const SizedBox(width: 8),
           ],
         ),
       ),

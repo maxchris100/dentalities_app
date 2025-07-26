@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class BottomSheetSelector<T> extends StatelessWidget {
   final String? label;
-  final T? selectedValue;
+  final String? selectedValue;
   final List<T> items;
   final void Function(T) onSelected;
   final String Function(T)? itemLabel;
@@ -33,7 +33,7 @@ class BottomSheetSelector<T> extends StatelessWidget {
       },
       child: InputDecorator(
         decoration: InputDecoration(
-          labelText: label,
+          // labelText: label,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
@@ -42,9 +42,7 @@ class BottomSheetSelector<T> extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              selectedValue != null
-                  ? getLabel(selectedValue!)
-                  : 'Select $label',
+              selectedValue ?? 'Select $label',
               style: TextStyle(
                 fontSize: 16,
                 color: selectedValue == null ? Colors.grey : Colors.black,

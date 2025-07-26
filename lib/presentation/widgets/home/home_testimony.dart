@@ -65,7 +65,7 @@ class HomeTestimonialSection extends StatelessWidget {
         const SizedBox(height: 16),
         ElevatedButton(
           onPressed: () {
-            Navigator.pushNamed(context, AppRouter.trackOrder);
+            Navigator.pushNamed(context, AppRouter.doctorTestimonial);
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.white,

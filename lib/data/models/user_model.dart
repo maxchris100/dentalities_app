@@ -108,13 +108,13 @@ class UserModel extends Equatable {
       phone: map['phone'],
       isApproved: map['isApproved'],
       loginToken: map['loginToken'],
-      createdAt: DateTime.tryParse(map['createdAt']),
-      updatedAt: DateTime.tryParse(map['updatedAt']),
-      userAddresses: List<UserAddress>.from(
-        (map['userAddresses'] as List<int>).map<UserAddress>(
-          (x) => UserAddress.fromJson(x as Map<String, dynamic>),
-        ),
-      ),
+      userAddresses: map['userAddresses'] != null
+          ? List<UserAddress>.from(
+              (map['userAddresses'] as List<int>).map<UserAddress>(
+                (x) => UserAddress.fromJson(x as Map<String, dynamic>),
+              ),
+            )
+          : [],
     );
   }
 

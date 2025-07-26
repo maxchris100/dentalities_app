@@ -36,95 +36,101 @@ class _ProfileTabState extends State<ProfileTab> {
         ],
         child: Scaffold(
           body: SafeArea(
-            child: Container(),
-            // child: Padding(
-            //   padding: const EdgeInsets.all(16),
-            //   child: Column(
-            //     children: [
-            //       Row(
-            //         crossAxisAlignment: CrossAxisAlignment.center,
-            //         children: [
-            //           const CircleAvatar(
-            //             radius: 30,
-            //             backgroundColor: Colors.pinkAccent,
-            //             child:
-            //                 Icon(Icons.person, color: Colors.white, size: 40),
-            //           ),
-            //           const SizedBox(width: 16),
-            //           Expanded(
-            //             child: Column(
-            //               crossAxisAlignment: CrossAxisAlignment.start,
-            //               children: const [
-            //                 Text(
-            //                   "Sunie Pham",
-            //                   style: TextStyle(
-            //                       fontSize: 18, fontWeight: FontWeight.bold),
-            //                 ),
-            //                 Text(
-            //                   "sunieux@gmail.com",
-            //                   style: TextStyle(color: Colors.grey),
-            //                 ),
-            //               ],
-            //             ),
-            //           ),
-            //           IconButton(
-            //             onPressed: () {},
-            //             icon: const Icon(Icons.settings),
-            //           ),
-            //         ],
-            //       ),
-            //       const SizedBox(height: 32),
+            // child: Container(),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      authCubit.logout();
+                    },
+                    icon: const Icon(Icons.logout),
+                  ),
+                  // Row(
+                  //   crossAxisAlignment: CrossAxisAlignment.center,
+                  //   children: [
+                  //     const CircleAvatar(
+                  //       radius: 30,
+                  //       backgroundColor: Colors.pinkAccent,
+                  //       child:
+                  //           Icon(Icons.person, color: Colors.white, size: 40),
+                  //     ),
+                  //     const SizedBox(width: 16),
+                  //     Expanded(
+                  //       child: Column(
+                  //         crossAxisAlignment: CrossAxisAlignment.start,
+                  //         children: const [
+                  //           Text(
+                  //             "Sunie Pham",
+                  //             style: TextStyle(
+                  //                 fontSize: 18, fontWeight: FontWeight.bold),
+                  //           ),
+                  //           Text(
+                  //             "sunieux@gmail.com",
+                  //             style: TextStyle(color: Colors.grey),
+                  //           ),
+                  //         ],
+                  //       ),
+                  //     ),
+                  //     IconButton(
+                  //       onPressed: () {},
+                  //       icon: const Icon(Icons.settings),
+                  //     ),
+                  //   ],
+                  // ),
+                  // const SizedBox(height: 32),
 
-            //       // Menu Cards
-            //       Container(
-            //         decoration: BoxDecoration(
-            //           color: Colors.white,
-            //           borderRadius: BorderRadius.circular(16),
-            //           boxShadow: [
-            //             BoxShadow(
-            //               color: Colors.black12.withOpacity(0.05),
-            //               blurRadius: 8,
-            //               offset: const Offset(0, 4),
-            //             ),
-            //           ],
-            //         ),
-            //         child: Column(
-            //           children: [
-            //             _buildMenuItem(
-            //               icon: Icons.location_on_outlined,
-            //               title: "Address",
-            //               onTap: () {},
-            //             ),
-            //             _buildDivider(),
-            //             _buildMenuItem(
-            //               icon: Icons.account_balance_wallet_outlined,
-            //               title: "Payment method",
-            //               onTap: () {},
-            //             ),
-            //             _buildDivider(),
-            //             _buildMenuItem(
-            //               icon: Icons.favorite_border,
-            //               title: "My Wishlist",
-            //               onTap: () {},
-            //             ),
-            //             _buildDivider(),
-            //             _buildMenuItem(
-            //               icon: Icons.star_border,
-            //               title: "Rate this app",
-            //               onTap: () {},
-            //             ),
-            //             _buildDivider(),
-            //             _buildMenuItem(
-            //               icon: Icons.logout,
-            //               title: "Log out",
-            //               onTap: () {},
-            //             ),
-            //           ],
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
+                  // // Menu Cards
+                  // Container(
+                  //   decoration: BoxDecoration(
+                  //     color: Colors.white,
+                  //     borderRadius: BorderRadius.circular(16),
+                  //     boxShadow: [
+                  //       BoxShadow(
+                  //         color: Colors.black12.withOpacity(0.05),
+                  //         blurRadius: 8,
+                  //         offset: const Offset(0, 4),
+                  //       ),
+                  //     ],
+                  //   ),
+                  //   child: Column(
+                  //     children: [
+                  //       _buildMenuItem(
+                  //         icon: Icons.location_on_outlined,
+                  //         title: "Address",
+                  //         onTap: () {},
+                  //       ),
+                  //       _buildDivider(),
+                  //       _buildMenuItem(
+                  //         icon: Icons.account_balance_wallet_outlined,
+                  //         title: "Payment method",
+                  //         onTap: () {},
+                  //       ),
+                  //       _buildDivider(),
+                  //       _buildMenuItem(
+                  //         icon: Icons.favorite_border,
+                  //         title: "My Wishlist",
+                  //         onTap: () {},
+                  //       ),
+                  //       _buildDivider(),
+                  //       _buildMenuItem(
+                  //         icon: Icons.star_border,
+                  //         title: "Rate this app",
+                  //         onTap: () {},
+                  //       ),
+                  //       _buildDivider(),
+                  //       _buildMenuItem(
+                  //         icon: Icons.logout,
+                  //         title: "Log out",
+                  //         onTap: () {},
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+                ],
+              ),
+            ),
           ),
         ));
   }

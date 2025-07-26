@@ -11,10 +11,13 @@ class Constant {
     return dotenv.env['ENV'] == 'development';
   }
 
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
   static Alice? alice;
+  static SharedPreferences? sharedPreferences;
+  static FlutterSecureStorage? secureStorage;
 
-  static GlobalKey<NavigatorState> getNavigatorKey() {
-    final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  static GlobalKey<NavigatorState> initNavigatorKey() {
     if (getQAEnvironment()) {
       alice = Alice();
       return alice!.getNavigatorKey()!;
@@ -22,14 +25,22 @@ class Constant {
     return navigatorKey;
   }
 
+  static GlobalKey<NavigatorState> getNavigatorKey() {
+    if (getQAEnvironment()) {
+      return alice!.getNavigatorKey()!;
+    }
+    return navigatorKey;
+  }
+
   static late UserLocalDataSource userLocalDataSource;
   static Future<void> initializeUserLocalDataSource() async {
-    final sharedPreferences = await SharedPreferences.getInstance();
-    final secureStorage = const FlutterSecureStorage();
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    FlutterSecureStorage secureStorage = const FlutterSecureStorage();
 
-    userLocalDataSource = UserLocalDataSourceImpl(
+    userLocalDataSource = UserLocalDataSource(
       sharedPreferences: sharedPreferences,
       secureStorage: secureStorage,
     );
+    await userLocalDataSource.init();
   }
 }

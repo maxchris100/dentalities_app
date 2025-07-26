@@ -1,7 +1,10 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:dentalities/core/router/app_router.dart';
+import 'package:dentalities/presentation/blocs/cubit/auth_cubit.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:dentalities/core/constant/constant.dart';
 import 'package:dentalities/core/util/string_util.dart';
@@ -30,9 +33,9 @@ class DioClient {
   InterceptorsWrapper _defaultInterceptor() {
     return InterceptorsWrapper(
       onRequest: (options, handler) {
-        final token = UserLocalDataSource.token ?? "";
+        final token = Constant.userLocalDataSource.token;
         options.headers["Authorization"] = "Bearer $token";
-        log("REQUEST => ${options.method}: ${options.uri}");
+        log("REQUEST => ${options.method}: ${options.uri} ${token}");
         return handler.next(options);
       },
       onResponse: (response, handler) {
@@ -56,11 +59,20 @@ class DioClient {
 
   void _goToLogin() {
     log("Redirecting to LoginPage due to 401...");
+    Constant.userLocalDataSource.clearCache();
+    final navigator = Constant.getNavigatorKey().currentState;
+    if (navigator == null) {
+      log('Navigator is NULL!');
+      return;
+    }
 
-    Constant.getNavigatorKey().currentState?.pushNamedAndRemoveUntil(
-          '/login',
-          (route) => false,
-        );
+    AuthCubit authCubit =
+        Constant.navigatorKey.currentContext!.read<AuthCubit>();
+    authCubit.logout();
+    // navigator.pushNamedAndRemoveUntil(
+    //   AppRouter.signIn,
+    //   (route) => false,
+    // );
   }
 
   void reInitiateDio() {

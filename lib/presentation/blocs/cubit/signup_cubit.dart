@@ -12,10 +12,10 @@ class SignUpState extends Equatable {
   final List<dynamic> cities;
   final List<dynamic> districts;
   final List<dynamic> subdistricts;
-  final String? selectedProvinceId;
-  final String? selectedCityId;
-  final String? selectedDistrictId;
-  final String? selectedSubdistrictId;
+  final Map? selectedProvinceId;
+  final Map? selectedCityId;
+  final Map? selectedDistrictId;
+  final Map? selectedSubdistrictId;
   final String? error;
   final bool success;
 
@@ -43,10 +43,10 @@ class SignUpState extends Equatable {
     List<dynamic>? cities,
     List<dynamic>? districts,
     List<dynamic>? subdistricts,
-    String? selectedProvinceId,
-    String? selectedCityId,
-    String? selectedDistrictId,
-    String? selectedSubdistrictId,
+    Map? selectedProvinceId, // ✅ ubah jadi Map
+    Map? selectedCityId, // ✅ ubah jadi Map
+    Map? selectedDistrictId, // ✅ ubah jadi Map
+    Map? selectedSubdistrictId, // ✅ ubah jadi Map
     String? error,
     bool success = false,
   }) {
@@ -92,7 +92,7 @@ class SignUpCubit extends Cubit<SignUpState> {
     emit(state.copyWith(currentStep: step));
   }
 
-  Future<void> register({
+  Future<dynamic> register({
     required String salutation,
     required String titlePrefix,
     required String fullName,
@@ -127,11 +127,12 @@ class SignUpCubit extends Cubit<SignUpState> {
         address: address,
       );
 
-      final data = res.data['data'];
       // Optional: handle data / simpan user, dll
       emit(state.copyWith(isSubmit: false, success: true));
+      return res;
     } catch (e) {
       emit(state.copyWith(isSubmit: false, error: e.toString()));
+      return null;
     }
   }
 
@@ -145,7 +146,8 @@ class SignUpCubit extends Cubit<SignUpState> {
     }
   }
 
-  Future<void> selectProvince(String provinceId) async {
+  Future<void> selectProvince(Map provinceId) async {
+    print(provinceId);
     emit(state.copyWith(
       selectedProvinceId: provinceId,
       selectedCityId: null,
@@ -158,17 +160,18 @@ class SignUpCubit extends Cubit<SignUpState> {
     await loadCities(provinceId);
   }
 
-  Future<void> loadCities(String provinceId) async {
+  Future<void> loadCities(Map provinceId) async {
     emit(state.copyWith(isLoading: true, error: null));
     try {
-      final res = await GeneralRepository.getCities(provinceId);
+      final res =
+          await GeneralRepository.getCities(provinceId["id"].toString());
       emit(state.copyWith(cities: res.data['data'], isLoading: false));
     } catch (e) {
       emit(state.copyWith(isLoading: false, error: e.toString()));
     }
   }
 
-  Future<void> selectCity(String cityId) async {
+  Future<void> selectCity(Map cityId) async {
     emit(state.copyWith(
       selectedCityId: cityId,
       selectedDistrictId: null,
@@ -179,17 +182,17 @@ class SignUpCubit extends Cubit<SignUpState> {
     await loadDistricts(cityId);
   }
 
-  Future<void> loadDistricts(String cityId) async {
+  Future<void> loadDistricts(Map cityId) async {
     emit(state.copyWith(isLoading: true, error: null));
     try {
-      final res = await GeneralRepository.getDistricts(cityId);
+      final res = await GeneralRepository.getDistricts(cityId["id"].toString());
       emit(state.copyWith(districts: res.data['data'], isLoading: false));
     } catch (e) {
       emit(state.copyWith(isLoading: false, error: e.toString()));
     }
   }
 
-  Future<void> selectDistrict(String districtId) async {
+  Future<void> selectDistrict(Map districtId) async {
     emit(state.copyWith(
       selectedDistrictId: districtId,
       selectedSubdistrictId: null,
@@ -198,17 +201,18 @@ class SignUpCubit extends Cubit<SignUpState> {
     await loadSubdistricts(districtId);
   }
 
-  Future<void> loadSubdistricts(String districtId) async {
+  Future<void> loadSubdistricts(Map districtId) async {
     emit(state.copyWith(isLoading: true, error: null));
     try {
-      final res = await GeneralRepository.getSubdistricts(districtId);
+      final res =
+          await GeneralRepository.getSubdistricts(districtId["id"].toString());
       emit(state.copyWith(subdistricts: res.data['data'], isLoading: false));
     } catch (e) {
       emit(state.copyWith(isLoading: false, error: e.toString()));
     }
   }
 
-  void selectSubdistrict(String subdistrictId) {
+  void selectSubdistrict(Map subdistrictId) {
     emit(state.copyWith(selectedSubdistrictId: subdistrictId));
   }
 }

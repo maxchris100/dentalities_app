@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:dentalities/core/router/app_router.dart';
 import 'package:dentalities/presentation/blocs/cubit/cart_cubit.dart';
 import 'package:dentalities/presentation/blocs/cubit/home_cubit.dart';
 import 'package:dentalities/presentation/widgets/bundling_product.dart';
@@ -13,7 +14,6 @@ import 'package:dentalities/presentation/widgets/home/top_brand.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dentalities/presentation/blocs/cubit/auth_cubit.dart';
-import 'package:dentalities/presentation/blocs/cubit/profile_cubit.dart';
 import 'package:dentalities/presentation/widgets/home/feature_product.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -67,10 +67,16 @@ class _HomeTabState extends State<HomeTab> {
                         crossAxisSpacing: 12,
                         childAspectRatio: 1,
                         children: homeCubit.data.featureCategories.map((e) {
-                          log("@${e.featureImageUrl}");
-                          return _CategoryItem(
-                              e.featureImageUrl ?? 'assets/icons/home_icon.svg',
-                              e.name);
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(context, AppRouter.search,
+                                  arguments: {"categoryslug": e.slug});
+                            },
+                            child: _CategoryItem(
+                                e.featureImageUrl ??
+                                    'assets/icons/home_icon.svg',
+                                e.name),
+                          );
                         }).toList()),
                   ),
                 );
@@ -99,11 +105,26 @@ class _HomeTabState extends State<HomeTab> {
                     runSpacing: 0,
                     children: [
                       _FilterChip(
-                          'All product', Icons.space_dashboard_outlined),
-                      _FilterChip('My speciality products', Icons.star),
-                      _FilterChip('Promotions', Icons.local_offer),
-                      _FilterChip('Product videos', Icons.play_circle_outline),
-                      _FilterChip('Doctor testimonials', Icons.chat_bubble),
+                          'Just show me everything you have',
+                          Icon(
+                            Icons.space_dashboard_outlined,
+                            color: Colors.black,
+                          )),
+                      _FilterChip(
+                          'I want to see your speciality products',
+                          SvgPicture.asset("assets/icons/filterai.svg",
+                              color: Colors.black)),
+                      _FilterChip(
+                          "I'm looking for videos of product tutorials or clinical cases",
+                          Icon(Icons.play_circle_outline, color: Colors.black)),
+                      _FilterChip(
+                          'Get lucky',
+                          SvgPicture.asset("assets/icons/discount.svg",
+                              color: Colors.black)),
+                      _FilterChip(
+                          "I'd like to know my colleague's opinions",
+                          SvgPicture.asset("assets/icons/chat.svg",
+                              color: Colors.black)),
                     ],
                   )
                 ],
@@ -121,7 +142,9 @@ class _HomeTabState extends State<HomeTab> {
           SizedBox(
             height: 20,
           ),
-          BundlingProductSection(),
+          BundlingProductSection(
+            title: "Save more with bundling",
+          ),
           SizedBox(
             height: 20,
           ),
@@ -181,8 +204,12 @@ class _CategoryItem extends StatelessWidget {
       children: [
         Image.network(image, width: 48, height: 48),
         const SizedBox(height: 6),
-        Text(title,
-            textAlign: TextAlign.center, style: const TextStyle(fontSize: 12)),
+        Text(
+          title,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 12),
+          maxLines: 2,
+        ),
       ],
     );
   }
@@ -190,14 +217,14 @@ class _CategoryItem extends StatelessWidget {
 
 class _FilterChip extends StatelessWidget {
   final String label;
-  final IconData icon;
+  final Widget icon;
 
   const _FilterChip(this.label, this.icon, {super.key});
 
   @override
   Widget build(BuildContext context) {
     return Chip(
-      avatar: Icon(icon, size: 18, color: Colors.blue),
+      avatar: icon,
       label: Text(label, style: const TextStyle(fontSize: 12)),
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),

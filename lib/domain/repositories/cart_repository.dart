@@ -11,7 +11,7 @@ class CartRepository {
     CancelToken? cancelToken,
   }) async {
     return await DioClient.instance.get(
-      "/v1/cart",
+      "/api/cart",
       queryParameters: {
         "page": page,
         "limit": limit,

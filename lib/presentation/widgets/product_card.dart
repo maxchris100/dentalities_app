@@ -3,6 +3,7 @@ import 'package:dentalities/core/router/app_router.dart';
 import 'package:dentalities/core/util/string_util.dart';
 import 'package:dentalities/data/models/product_model.dart';
 import 'package:dentalities/presentation/blocs/cubit/cart_cubit.dart';
+import 'package:dentalities/presentation/blocs/cubit/product_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -32,7 +33,7 @@ class ProductCard extends StatelessWidget {
                 height: 100,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                      image: AssetImage(product.featureImageUrl ?? ""),
+                      image: NetworkImage(product.featureImageUrl ?? ""),
                       fit: BoxFit.contain),
                 ),
               ),
@@ -94,14 +95,21 @@ class ProductCard extends StatelessWidget {
           const SizedBox(height: 4),
           Row(
             children: [
-              Text(StringUtil.castToString(product.price),
+              Text(StringUtil.formatMoney(product.price),
                   style: const TextStyle(fontWeight: FontWeight.bold)),
               SizedBox(
                 width: 8,
               ),
-              Text(StringUtil.castToString(product.price),
+              Visibility(
+                visible: (product.discountPercentage ?? 0) > 0,
+                child: Text(
+                  StringUtil.formatMoney(product.priceBeforeDiscount),
                   style: const TextStyle(
-                      decoration: TextDecoration.lineThrough, fontSize: 11)),
+                      decoration: TextDecoration.lineThrough, fontSize: 9),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
             ],
           ),
           Row(
@@ -110,14 +118,20 @@ class ProductCard extends StatelessWidget {
               SizedBox(
                 width: 8,
               ),
-              Text("Semor")
+              Text(product.brand?.name ?? "")
             ],
           ),
           const SizedBox(height: 6),
           OutlinedButton.icon(
             onPressed: () {
-              CartCubit cartCubit = context.read<CartCubit>();
-              cartCubit.addToCart();
+              try {
+                CartCubit cartCubit = context.read<CartCubit>();
+                cartCubit.addToCart();
+              } catch (e) {}
+              try {
+                ProductCubit productCubit = context.read<ProductCubit>();
+                productCubit.addToCart();
+              } catch (e) {}
             },
             icon: Icon(
               Icons.add,

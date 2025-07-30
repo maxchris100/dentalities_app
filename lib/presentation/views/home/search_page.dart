@@ -21,6 +21,8 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
+  FocusNode searchFocus = FocusNode();
+
   @override
   void initState() {
     // TODO: implement initState
@@ -31,6 +33,8 @@ class _SearchPageState extends State<SearchPage> {
       final args = ModalRoute.of(context)?.settings.arguments as Map?;
       String slug = args?['categoryslug'] ?? "";
       productCubit.getProductByCategorySlug(slug);
+      productCubit.getSearchProduct(null);
+      searchFocus.requestFocus();
     });
   }
 
@@ -62,11 +66,6 @@ class _SearchPageState extends State<SearchPage> {
       child: BlocBuilder<ProductCubit, ProductState>(
           bloc: productCubit,
           builder: (context, state) {
-            List<Product> product = [];
-            if (state is ProductLoaded) {
-              product = state.data.relatedProduct;
-              print(product);
-            }
             return Scaffold(
               appBar: AppBar(
                 actions: [
@@ -76,16 +75,27 @@ class _SearchPageState extends State<SearchPage> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 8),
                       child: TextField(
+                        focusNode: searchFocus,
+                        textInputAction: TextInputAction.search,
                         decoration: InputDecoration(
                           suffixIcon: const Icon(Icons.search),
                           hintText: 'Search product',
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(24),
+                            borderRadius: BorderRadius.circular(50),
                             borderSide: BorderSide(color: Colors.grey),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50),
+                            borderSide: BorderSide(color: Colors.blue),
                           ),
                           contentPadding: const EdgeInsets.symmetric(
                               vertical: 0, horizontal: 12),
                         ),
+                        onSubmitted: (value) {
+                          print("@value");
+                          productCubit.getSearchProduct(value.trim());
+                          //search
+                        },
                       ),
                     ),
                   ),
@@ -109,28 +119,34 @@ class _SearchPageState extends State<SearchPage> {
                 ],
               ),
               body: SafeArea(
-                  child: Column(
-                children: [
-                  FilterBar(),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  Expanded(
-                      child: GridView.count(
-                    crossAxisCount: 2,
-                    padding: const EdgeInsets.all(12),
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 16,
-                    childAspectRatio: 0.6, // sesuaikan tinggi/lebarnya
-                    shrinkWrap: true,
-                    physics:
-                        NeverScrollableScrollPhysics(), // kalau sudah dalam scroll view
-                    children: products.map((product) {
-                      return ProductCard(product: product);
-                    }).toList(),
-                  )),
-                ],
-              )),
+                  child: state is ProductLoading
+                      ? Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : Column(
+                          children: [
+                            FilterBar(),
+                            SizedBox(
+                              height: 8,
+                            ),
+                            Expanded(
+                                child: GridView.count(
+                              crossAxisCount: 2,
+                              padding: const EdgeInsets.all(12),
+                              crossAxisSpacing: 12,
+                              mainAxisSpacing: 16,
+                              childAspectRatio:
+                                  0.6, // sesuaikan tinggi/lebarnya
+                              shrinkWrap: true,
+                              physics:
+                                  NeverScrollableScrollPhysics(), // kalau sudah dalam scroll view
+                              children:
+                                  productCubit.data.listProduct.map((product) {
+                                return ProductCard(product: product);
+                              }).toList(),
+                            )),
+                          ],
+                        )),
             );
           }),
     );

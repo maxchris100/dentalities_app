@@ -4,6 +4,8 @@ import 'package:dentalities/core/util/string_util.dart';
 import 'package:dentalities/data/models/product_model.dart';
 import 'package:dentalities/presentation/blocs/cubit/cart_cubit.dart';
 import 'package:dentalities/presentation/blocs/cubit/product_cubit.dart';
+import 'package:dentalities/presentation/widgets/add_tocart_widget.dart';
+import 'package:dentalities/presentation/widgets/custom_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -29,13 +31,19 @@ class ProductCard extends StatelessWidget {
         children: [
           Stack(
             children: [
-              Container(
-                height: 100,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                      image: NetworkImage(product.featureImageUrl ?? ""),
-                      fit: BoxFit.contain),
-                ),
+              Column(
+                children: [
+                  Container(
+                    height: 100,
+                    child: Image.network(
+                      product.featureImage ?? "",
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 30,
+                  )
+                ],
               ),
               Positioned(
                 bottom: 0,
@@ -90,7 +98,7 @@ class ProductCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          Text(product.brand?.name ?? "",
+          Text(product.name ?? "",
               maxLines: 2, overflow: TextOverflow.ellipsis),
           const SizedBox(height: 4),
           Row(
@@ -123,14 +131,37 @@ class ProductCard extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           OutlinedButton.icon(
-            onPressed: () {
-              try {
-                CartCubit cartCubit = context.read<CartCubit>();
-                cartCubit.addToCart();
-              } catch (e) {}
+            onPressed: () async {
+              // try {
+              //   CartCubit cartCubit = context.read<CartCubit>();
+              //   cartCubit.addToCart();
+              // } catch (e) {}
               try {
                 ProductCubit productCubit = context.read<ProductCubit>();
-                productCubit.addToCart();
+                Product? p =
+                    await productCubit.getProductDetail(product.slug ?? "");
+                if (p != null) {
+                  //tampilkan cart
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(20)),
+                    ),
+                    builder: (ctx) => AddToCartWidget(
+                      product: p,
+                      onTap: (int quantity) {
+                        //add to cart
+                        try {
+                          productCubit.addToCart(p, quantity);
+                          CustomToast.show(context,
+                              message: "Successfully added to cart");
+                        } catch (e) {}
+                      },
+                    ),
+                  );
+                }
               } catch (e) {}
             },
             icon: Icon(

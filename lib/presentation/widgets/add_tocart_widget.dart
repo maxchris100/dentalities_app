@@ -1,9 +1,12 @@
+import 'package:dentalities/core/util/string_util.dart';
+import 'package:dentalities/data/models/product_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class AddToCartWidget extends StatefulWidget {
-  final VoidCallback onTap;
-  const AddToCartWidget({super.key, required this.onTap});
+  final Function(int quantity) onTap;
+  final Product? product;
+  const AddToCartWidget({super.key, required this.onTap, this.product});
 
   @override
   State<AddToCartWidget> createState() => _AddToCartWidgetState();
@@ -57,24 +60,32 @@ class _AddToCartWidgetState extends State<AddToCartWidget> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Image.asset(
-                    'assets/images/banner.png',
+                  child: Image.network(
+                    widget.product?.featureImageUrl ?? "",
                     width: 60,
                     height: 60,
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        "assets/images/banner.png",
+                        width: 60,
+                        height: 60,
+                        fit: BoxFit.cover,
+                      );
+                    },
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       Text(
-                        'PureOffice Professional Intracanal Dental Whitening Kit 35% HP (5g Syringe)',
+                        widget.product?.name ?? "",
                         style: TextStyle(fontWeight: FontWeight.w500),
                       ),
                       SizedBox(height: 4),
-                      Text('Rp1.070.000',
+                      Text(StringUtil.formatMoney(widget.product?.price),
                           style: TextStyle(
                               fontSize: 16, fontWeight: FontWeight.bold)),
                     ],
@@ -209,7 +220,7 @@ class _AddToCartWidgetState extends State<AddToCartWidget> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  widget.onTap();
+                  widget.onTap(quantity);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,

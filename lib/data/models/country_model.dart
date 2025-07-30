@@ -4,8 +4,8 @@ class Country {
   final String slug;
   final int sortOrder;
   final String featureImageUrl;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  // final DateTime createdAt;
+  // final DateTime updatedAt;
 
   Country({
     required this.id,
@@ -13,8 +13,8 @@ class Country {
     required this.slug,
     required this.sortOrder,
     required this.featureImageUrl,
-    required this.createdAt,
-    required this.updatedAt,
+    // required this.createdAt,
+    // required this.updatedAt,
   });
 
   static List<Country> fromList(List<dynamic> list) {
@@ -27,9 +27,9 @@ class Country {
       name: json['name'],
       slug: json['slug'],
       sortOrder: json['sort_order'],
-      featureImageUrl: json['feature_image_url'],
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
+      featureImageUrl: json['banner_image_url'],
+      // createdAt: DateTime.parse(json['createdAt']),
+      // updatedAt: DateTime.parse(json['updatedAt']),
     );
   }
 
@@ -40,8 +40,8 @@ class Country {
       'slug': slug,
       'sort_order': sortOrder,
       'feature_image_url': featureImageUrl,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
+      // 'createdAt': createdAt.toIso8601String(),
+      // 'updatedAt': updatedAt.toIso8601String(),
     };
   }
 }

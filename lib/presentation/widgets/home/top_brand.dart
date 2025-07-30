@@ -1,16 +1,18 @@
+import 'package:dentalities/data/models/brand_model.dart';
 import 'package:flutter/material.dart';
 
 class TopBrandSection extends StatelessWidget {
-  const TopBrandSection({super.key});
+  final List<Brand> brands;
+  const TopBrandSection({super.key, required this.brands});
 
-  final List<Map<String, String>> brands = const [
-    {"image": "assets/images/banner.png"},
-    {"image": "assets/images/banner.png"},
-    {"image": "assets/images/banner.png"},
-    {"image": "assets/images/banner.png"},
-    {"image": "assets/images/banner.png"},
-    {"image": "assets/images/banner.png"},
-  ];
+  // final List<Map<String, String>> brands = const [
+  //   {"image": "assets/images/banner.png"},
+  //   {"image": "assets/images/banner.png"},
+  //   {"image": "assets/images/banner.png"},
+  //   {"image": "assets/images/banner.png"},
+  //   {"image": "assets/images/banner.png"},
+  //   {"image": "assets/images/banner.png"},
+  // ];
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +26,8 @@ class TopBrandSection extends StatelessWidget {
             children: [
               const Text("Top brands",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-              TextButton(
-                onPressed: () {},
+              GestureDetector(
+                onTap: () {},
                 child: const Text(
                   "See All",
                   style: TextStyle(
@@ -37,6 +39,9 @@ class TopBrandSection extends StatelessWidget {
             ],
           ),
         ),
+        SizedBox(
+          height: 12,
+        ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Wrap(
@@ -46,14 +51,18 @@ class TopBrandSection extends StatelessWidget {
               return Container(
                 width: MediaQuery.of(context).size.width / 2 - 24,
                 height: 70,
-                padding: const EdgeInsets.all(12),
+                // padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey.shade300),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Image.asset(
-                  brand['image']!,
-                  fit: BoxFit.contain,
+                child: ClipRRect(
+                  borderRadius:
+                      BorderRadius.circular(12), // Sama dengan BoxDecoration
+                  child: Image.network(
+                    brand.featureImageUrl,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               );
             }).toList(),

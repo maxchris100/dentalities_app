@@ -1,3 +1,4 @@
+import 'package:dentalities/core/util/appversion.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -295,6 +296,11 @@ class _LoginPageState extends State<LoginPage> {
                                   style: TextStyle(color: Colors.blue)),
                             ),
                           ],
+                        ),
+
+                        Text(
+                          "Version ${AppVersion.version}+${AppVersion.buildNumber}",
+                          textAlign: TextAlign.center,
                         ),
                       ],
                     ),

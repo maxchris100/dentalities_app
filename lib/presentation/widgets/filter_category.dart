@@ -1,4 +1,7 @@
+import 'package:dentalities/data/models/category_model.dart';
+import 'package:dentalities/presentation/blocs/cubit/home_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FilterCategory extends StatefulWidget {
   const FilterCategory({super.key});
@@ -8,17 +11,18 @@ class FilterCategory extends StatefulWidget {
 }
 
 class _FilterCategoryState extends State<FilterCategory> {
-  final List<String> specializations = [
-    "All",
-    "Accessories",
-    "Endodontics",
-    "General Dentistry",
-    "Imaging",
-    "Implant & Surgery",
-    "Orthodontics",
-    "Periodontics",
-    "Prosthodontics",
-  ];
+  List<Category> specializations = [];
+  //  [
+  //   "All",
+  //   "Accessories",
+  //   "Endodontics",
+  //   "General Dentistry",
+  //   "Imaging",
+  //   "Implant & Surgery",
+  //   "Orthodontics",
+  //   "Periodontics",
+  //   "Prosthodontics",
+  // ];
 
   final List<String> treatments = [
     "Root Canal",
@@ -33,7 +37,19 @@ class _FilterCategoryState extends State<FilterCategory> {
     "Equipment",
   ];
 
-  String selectedSpecialization = "Endodontics";
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final args = ModalRoute.of(context)?.settings.arguments as Map?;
+      HomeCubit homeCubit = context.read<HomeCubit>();
+      specializations = homeCubit.data.categories;
+      setState(() {});
+    });
+  }
+
+  String? selectedSpecialization;
   String? selectedTreatment;
   String? selectedProductType;
 
@@ -42,114 +58,158 @@ class _FilterCategoryState extends State<FilterCategory> {
     required String? selectedValue,
     required Function(String) onSelected,
   }) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: options.map((item) {
-        final isSelected = selectedValue == item;
-        return ChoiceChip(
-          label: Text(item),
-          selected: isSelected,
-          onSelected: (_) => onSelected(item),
-          selectedColor: Colors.blue,
-          labelStyle: TextStyle(
-            color: isSelected ? Colors.white : Colors.black,
-          ),
-          backgroundColor: Colors.grey[200],
-        );
-      }).toList(),
+    return Container(
+      width: double.infinity,
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 0,
+        children: options.map((item) {
+          final isSelected = selectedValue == item;
+          return ChoiceChip(
+            label: Text(
+              item,
+              style: TextStyle(fontSize: 11),
+            ),
+            selected: isSelected,
+            onSelected: (_) => onSelected(item),
+            selectedColor: Colors.blue,
+            labelStyle: TextStyle(
+              color: isSelected ? Colors.white : Colors.black,
+            ),
+            backgroundColor: Colors.grey[200],
+          );
+        }).toList(),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.close),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            const Text(
-              "Category",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-
-            /// SPECIALIZATION
-            ExpansionTile(
-              title: const Text(
-                "Specialization",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              children: [
-                buildChipSelector(
-                  options: specializations,
-                  selectedValue: selectedSpecialization,
-                  onSelected: (val) {
-                    setState(() => selectedSpecialization = val);
-                  },
-                )
-              ],
-            ),
-
-            /// TREATMENT
-            ExpansionTile(
-              title: const Text(
-                "Treatment",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              children: [
-                buildChipSelector(
-                  options: treatments,
-                  selectedValue: selectedTreatment,
-                  onSelected: (val) {
-                    setState(() => selectedTreatment = val);
-                  },
-                )
-              ],
-            ),
-
-            /// PRODUCT TYPE
-            ExpansionTile(
-              title: const Text(
-                "Product Type",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              children: [
-                buildChipSelector(
-                  options: productTypes,
-                  selectedValue: selectedProductType,
-                  onSelected: (val) {
-                    setState(() => selectedProductType = val);
-                  },
-                )
-              ],
-            ),
-
-            const Spacer(),
-
-            /// APPLY BUTTON
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop({
-                    'specialization': selectedSpecialization,
-                    'treatment': selectedTreatment,
-                    'productType': selectedProductType,
-                  });
-                },
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: Colors.blue,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.of(context).pop(),
                 ),
-                child: const Text("Apply", style: TextStyle(fontSize: 16)),
               ),
-            ),
-          ],
+              const SizedBox(height: 8),
+
+              /// Scrollable content
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Category",
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+
+                      /// SPECIALIZATION
+                      ExpansionTile(
+                        tilePadding: EdgeInsets.all(0),
+                        title: const Text(
+                          "Specialization",
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                        dense: true,
+                        shape: const RoundedRectangleBorder(
+                          side: BorderSide.none,
+                        ),
+                        children: [
+                          buildChipSelector(
+                            options:
+                                specializations.map((e) => e.name).toList(),
+                            selectedValue: selectedSpecialization,
+                            onSelected: (val) {
+                              setState(() => selectedSpecialization = val);
+                            },
+                          ),
+                        ],
+                      ),
+
+                      /// TREATMENT
+                      ExpansionTile(
+                        tilePadding: EdgeInsets.all(0),
+                        title: const Text(
+                          "Treatment",
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                        dense: true,
+                        shape: const RoundedRectangleBorder(
+                          side: BorderSide.none,
+                        ),
+                        children: [
+                          buildChipSelector(
+                            options: treatments,
+                            selectedValue: selectedTreatment,
+                            onSelected: (val) {
+                              setState(() => selectedTreatment = val);
+                            },
+                          )
+                        ],
+                      ),
+
+                      /// PRODUCT TYPE
+                      ExpansionTile(
+                        tilePadding: EdgeInsets.all(0),
+                        title: const Text(
+                          "Product Type",
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                        dense: true,
+                        shape: const RoundedRectangleBorder(
+                          side: BorderSide.none,
+                        ),
+                        children: [
+                          buildChipSelector(
+                            options: productTypes,
+                            selectedValue: selectedProductType,
+                            onSelected: (val) {
+                              setState(() => selectedProductType = val);
+                            },
+                          )
+                        ],
+                      ),
+
+                      const SizedBox(
+                          height: 100), // Kasih jarak biar gak ketutupan tombol
+                    ],
+                  ),
+                ),
+              ),
+
+              /// APPLY BUTTON (tetap di bawah)
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop({
+                      'specialization': selectedSpecialization,
+                      'treatment': selectedTreatment,
+                      'productType': selectedProductType,
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    backgroundColor: Colors.blue,
+                  ),
+                  child: const Text("Apply",
+                      style: TextStyle(color: Colors.white)),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

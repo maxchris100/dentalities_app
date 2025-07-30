@@ -61,15 +61,16 @@ class Product {
   }
 
   factory Product.fromJson(Map<String, dynamic> json) {
+    print("@");
     return Product(
       featureImageUrl: json['feature_image_url'] ?? '',
       isDiscounted: json['is_discounted'] ?? false,
       id: json['id'],
       name: json['name'],
       slug: json['slug'],
-      isPublish: json['is_publish'] ?? false,
-      isFeature: json['is_feature'] ?? false,
-      isNew: json['is_new'] ?? false,
+      isPublish: json['is_publish'] == 1 ? true : false,
+      isFeature: json['is_feature'] == 1 ? true : false,
+      isNew: json['is_new'] == 1 ? true : false,
       sku: json['sku'],
       description: json['description'] ?? '',
       variantOne: json['variant_one'],
@@ -80,8 +81,8 @@ class Product {
           double.tryParse(json['price_before_discount'].toString()) ?? 0.0,
       discountPercentage:
           double.tryParse(json['discount_percentage'].toString()) ?? 0.0,
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
+      // createdAt: DateTime.parse(json['createdAt']),
+      // updatedAt: DateTime.parse(json['updatedAt']),
       brandId: json['brand_id'],
       brand: json['brand'] != null ? Brand.fromJson(json['brand']) : null,
       categories: (json['categories'] as List<dynamic>?)

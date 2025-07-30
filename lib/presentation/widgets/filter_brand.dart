@@ -1,4 +1,8 @@
+import 'package:dentalities/data/models/brand_model.dart';
+import 'package:dentalities/data/models/country_model.dart';
+import 'package:dentalities/presentation/blocs/cubit/home_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FilterBrand extends StatefulWidget {
   @override
@@ -6,23 +10,39 @@ class FilterBrand extends StatefulWidget {
 }
 
 class _FilterBrandState extends State<FilterBrand> {
-  final List<String> selectedCountries = [];
-  final List<String> selectedBrands = [];
+  final Map<int, Country> selectedCountries = {};
+  final Map<int, Brand> selectedBrands = {};
+  // final List<Country> selectedCountries = [];
+  // final List<Brand> selectedBrands = [];
 
-  final List<Map<String, String>> countries = [
-    {'name': 'China', 'flag': '🇨🇳'},
-    {'name': 'France', 'flag': '🇫🇷'},
-    {'name': 'Taiwan', 'flag': '🇹🇼'},
-    {'name': 'UK', 'flag': '🇬🇧'},
-    // Tambah jika perlu
-  ];
+  List<Brand> brands = [];
+  List<Country> countries = [];
+  // final List<Country> countries = [
+  //   {'name': 'China', 'flag': '🇨🇳'},
+  //   {'name': 'France', 'flag': '🇫🇷'},
+  //   {'name': 'Taiwan', 'flag': '🇹🇼'},
+  //   {'name': 'UK', 'flag': '🇬🇧'},
+  //   // Tambah jika perlu
+  // ];
 
-  final List<Map<String, String>> brands = [
-    {'name': 'ITENA', 'image': 'assets/images/banner.png'},
-    {'name': 'ACTEON', 'image': 'assets/images/banner.png'},
-    {'name': 'SEMORR', 'image': 'assets/images/banner.png'},
-    {'name': 'SOPRO', 'image': 'assets/images/banner.png'},
-  ];
+  // final List<Map<String, String>> brands = [
+  //   {'name': 'ITENA', 'image': 'assets/images/banner.png'},
+  //   {'name': 'ACTEON', 'image': 'assets/images/banner.png'},
+  //   {'name': 'SEMORR', 'image': 'assets/images/banner.png'},
+  //   {'name': 'SOPRO', 'image': 'assets/images/banner.png'},
+  // ];
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final args = ModalRoute.of(context)?.settings.arguments as Map?;
+      HomeCubit homeCubit = context.read<HomeCubit>();
+      brands = homeCubit.data.brands;
+      countries = homeCubit.data.countries;
+      setState(() {});
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,17 +63,18 @@ class _FilterBrandState extends State<FilterBrand> {
             scrollDirection: Axis.horizontal,
             child: Row(
               children: countries.map((country) {
-                final isSelected = selectedCountries.contains(country['name']);
+                final isSelected = selectedCountries[country.id] != null;
                 return Padding(
                   padding: const EdgeInsets.only(right: 8.0),
                   child: ChoiceChip(
-                    label: Text("${country['flag']} ${country['name']}"),
+                    label: Text("${country.name}"),
                     selected: isSelected,
                     onSelected: (_) {
                       setState(() {
                         isSelected
-                            ? selectedCountries.remove(country['name'])
-                            : selectedCountries.add(country['name']!);
+                            ? selectedCountries.remove(country.id)
+                            : selectedCountries.putIfAbsent(
+                                country.id, () => country);
                       });
                     },
                     selectedColor: Colors.blue.shade100,
@@ -71,42 +92,50 @@ class _FilterBrandState extends State<FilterBrand> {
           const SizedBox(height: 24),
 
           // Brand Grid
-          GridView.count(
-            crossAxisCount: 2,
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
-            childAspectRatio: 1.8,
-            children: brands.map((brand) {
-              final isSelected = selectedBrands.contains(brand['name']);
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    isSelected
-                        ? selectedBrands.remove(brand['name'])
-                        : selectedBrands.add(brand['name']!);
-                  });
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: isSelected ? Colors.blue : Colors.grey.shade300,
-                      width: 2,
+          Expanded(
+            child: SingleChildScrollView(
+              child: GridView.count(
+                crossAxisCount: 2,
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                mainAxisSpacing: 12,
+                crossAxisSpacing: 12,
+                childAspectRatio: 1.8,
+                children: brands.map((brand) {
+                  final isSelected = selectedBrands[brand.id] != null;
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        isSelected
+                            ? selectedBrands.remove(brand.id)
+                            : selectedBrands.putIfAbsent(brand.id, () => brand);
+                      });
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color:
+                              isSelected ? Colors.blue : Colors.grey.shade300,
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      // padding: const EdgeInsets.all(12),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.network(
+                          brand.featureImageUrl,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  padding: const EdgeInsets.all(12),
-                  child: Image.asset(
-                    brand['image']!,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              );
-            }).toList(),
+                  );
+                }).toList(),
+              ),
+            ),
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 10),
 
           // Apply Button
           SizedBox(
@@ -118,7 +147,10 @@ class _FilterBrandState extends State<FilterBrand> {
                   'selectedBrands': selectedBrands,
                 });
               },
-              child: Text("Apply"),
+              child: Text(
+                "Apply",
+                style: TextStyle(color: Colors.white),
+              ),
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(vertical: 16),
                 backgroundColor: Colors.blue,

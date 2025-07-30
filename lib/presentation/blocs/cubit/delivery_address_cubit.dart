@@ -1,11 +1,11 @@
+import 'package:dentalities/core/util/dio_client.dart';
 import 'package:dentalities/domain/repositories/auth_repository.dart';
 import 'package:dentalities/domain/repositories/general_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 
-class SignUpState extends Equatable {
-  final int currentStep;
+class DeliveryAddressState extends Equatable {
   final bool isLoading;
   final bool isSubmit;
   final List<dynamic> provinces;
@@ -19,8 +19,7 @@ class SignUpState extends Equatable {
   final String? error;
   final bool success;
 
-  const SignUpState({
-    this.currentStep = 0,
+  const DeliveryAddressState({
     this.isLoading = false,
     this.isSubmit = false,
     this.provinces = const [],
@@ -35,8 +34,7 @@ class SignUpState extends Equatable {
     this.success = false,
   });
 
-  SignUpState copyWith({
-    int? currentStep,
+  DeliveryAddressState copyWith({
     bool? isLoading,
     bool? isSubmit,
     List<dynamic>? provinces,
@@ -50,8 +48,7 @@ class SignUpState extends Equatable {
     String? error,
     bool success = false,
   }) {
-    return SignUpState(
-        currentStep: currentStep ?? this.currentStep,
+    return DeliveryAddressState(
         isLoading: isLoading ?? this.isLoading,
         isSubmit: isSubmit ?? this.isSubmit,
         provinces: provinces ?? this.provinces,
@@ -69,7 +66,6 @@ class SignUpState extends Equatable {
 
   @override
   List<Object?> get props => [
-        currentStep,
         isLoading,
         isSubmit,
         provinces,
@@ -85,56 +81,8 @@ class SignUpState extends Equatable {
       ];
 }
 
-class SignUpCubit extends Cubit<SignUpState> {
-  SignUpCubit() : super(const SignUpState());
-
-  void changeStep(int step) {
-    emit(state.copyWith(currentStep: step));
-  }
-
-  Future<Response?> register({
-    required String salutation,
-    required String titlePrefix,
-    required String fullName,
-    required String titleSuffix,
-    required String phoneCode,
-    required String phoneNumber,
-    required String email,
-    required String password,
-    required String provinceId,
-    required String cityId,
-    required String districtId,
-    required String subdistrictId,
-    required String postalCode,
-    required String address,
-  }) async {
-    emit(state.copyWith(isSubmit: true, error: null));
-    try {
-      final res = await AuthRepository.register(
-        salutation: salutation,
-        titlePrefix: titlePrefix,
-        fullName: fullName,
-        titleSuffix: titleSuffix,
-        phoneCode: phoneCode,
-        phoneNumber: phoneNumber,
-        email: email,
-        password: password,
-        provinceId: provinceId,
-        cityId: cityId,
-        districtId: districtId,
-        subdistrictId: subdistrictId,
-        postalCode: postalCode,
-        address: address,
-      );
-
-      // Optional: handle data / simpan user, dll
-      emit(state.copyWith(isSubmit: false, success: true));
-      return res;
-    } catch (e) {
-      emit(state.copyWith(isSubmit: false, error: e.toString()));
-      return null;
-    }
-  }
+class DeliveryAddressCubit extends Cubit<DeliveryAddressState> {
+  DeliveryAddressCubit() : super(const DeliveryAddressState());
 
   Future<void> loadProvinces() async {
     emit(state.copyWith(isLoading: true, error: null));
@@ -214,5 +162,49 @@ class SignUpCubit extends Cubit<SignUpState> {
 
   void selectSubdistrict(Map subdistrictId) {
     emit(state.copyWith(selectedSubdistrictId: subdistrictId));
+  }
+
+  Future<void> addAddress({
+    required String provinceId,
+    required String cityId,
+    required String districtId,
+    required String subdistrictId,
+    required String postalCode,
+    required String address,
+  }) async {
+    await DioClient.instance.post(
+      "/api/v2/account/add-address",
+      data: {
+        "province_id": provinceId,
+        "city_id": cityId,
+        "district_id": districtId,
+        "subdistrict_id": subdistrictId,
+        "postal_code": postalCode,
+        "address": address,
+      },
+    );
+  }
+
+  Future<void> updateAddress({
+    required int userAddressId,
+    required String provinceId,
+    required String cityId,
+    required String districtId,
+    required String subdistrictId,
+    required String postalCode,
+    required String address,
+  }) async {
+    await DioClient.instance.post(
+      "/api/v2/account/add-address",
+      data: {
+        "user_address_id": userAddressId,
+        "province_id": provinceId,
+        "city_id": cityId,
+        "district_id": districtId,
+        "subdistrict_id": subdistrictId,
+        "postal_code": postalCode,
+        "address": address,
+      },
+    );
   }
 }

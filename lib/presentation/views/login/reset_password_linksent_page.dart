@@ -51,7 +51,12 @@ class ResetPasswordLinksentPage extends StatelessWidget {
                   width: double.infinity,
                   child: TextButton(
                     onPressed: () {
-                      Navigator.pushReplacementNamed(context, AppRouter.signIn);
+                      // Navigator.pushReplacementNamed(context, AppRouter.signIn);
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        '/',
+                        (route) => false,
+                      );
                     },
                     style: TextButton.styleFrom(
                       backgroundColor: Colors.grey[100],

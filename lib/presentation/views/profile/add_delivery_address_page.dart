@@ -1,0 +1,283 @@
+import 'package:dentalities/core/util/toast_util.dart';
+import 'package:dentalities/data/models/user_address_model.dart';
+import 'package:dentalities/presentation/blocs/cubit/delivery_address_cubit.dart';
+import 'package:dentalities/presentation/blocs/cubit/home_cubit.dart';
+import 'package:dentalities/presentation/widgets/search_bottom_sheet.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+class AddEditDeliveryAddressPage extends StatefulWidget {
+  const AddEditDeliveryAddressPage({super.key});
+
+  @override
+  State<AddEditDeliveryAddressPage> createState() =>
+      _AddEditDeliveryAddressPageState();
+}
+
+class _AddEditDeliveryAddressPageState
+    extends State<AddEditDeliveryAddressPage> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController postalCodeCtrl = TextEditingController();
+  final TextEditingController addressCtrl = TextEditingController();
+
+  bool isLoading = false;
+  bool onSubmit = false;
+
+  DeliveryAddressCubit deliveryAddressCubit = DeliveryAddressCubit();
+  UserAddress? address;
+
+  bool get isEdit => address != null;
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      var args = ModalRoute.of(context)?.settings.arguments as Map?;
+      if (args?["address"] != null) {
+        address = args?["address"];
+
+        loadData(address);
+      } else {
+        deliveryAddressCubit.loadProvinces();
+      }
+    });
+  }
+
+  Future loadData(UserAddress? address) async {
+    try {
+      postalCodeCtrl.text = address?.postcode ?? "";
+      addressCtrl.text = address?.address ?? "";
+
+      await deliveryAddressCubit.loadProvinces();
+      var provinceId = deliveryAddressCubit.state.provinces
+          .where((x) => x["name"] == address?.provinceName)
+          .first["id"];
+      await deliveryAddressCubit
+          .selectProvince({"id": provinceId, "name": address?.provinceName});
+
+      var cityId = deliveryAddressCubit.state.cities
+          .where((x) => x["name"] == address?.cityName)
+          .first["id"];
+      await deliveryAddressCubit
+          .selectCity({"id": cityId, "name": address?.cityName});
+
+      var districtId = deliveryAddressCubit.state.districts
+          .where((x) => x["name"] == address?.districtName)
+          .first["id"];
+      await deliveryAddressCubit
+          .selectDistrict({"id": districtId, "name": address?.districtName});
+
+      var subdistrictId = deliveryAddressCubit.state.subdistricts
+          .where((x) => x["name"] == address?.villageName)
+          .first["id"];
+      deliveryAddressCubit.selectSubdistrict(
+          {"id": subdistrictId, "name": address?.villageName});
+    } catch (e) {
+      print("@Error Load Data");
+    }
+  }
+
+  Future<void> handleSubmit() async {
+    setState(() => onSubmit = true);
+    if (!_formKey.currentState!.validate()) return;
+
+    final selected = deliveryAddressCubit.state;
+    if (selected.selectedProvinceId == null ||
+        selected.selectedCityId == null ||
+        selected.selectedDistrictId == null ||
+        selected.selectedSubdistrictId == null) return;
+
+    setState(() => isLoading = true);
+
+    try {
+      final payload = {
+        "provinceId": selected.selectedProvinceId!["id"].toString(),
+        "cityId": selected.selectedCityId!["id"].toString(),
+        "districtId": selected.selectedDistrictId!["id"].toString(),
+        "subdistrictId": selected.selectedSubdistrictId!["id"].toString(),
+        "postalCode": postalCodeCtrl.text.trim(),
+        "address": addressCtrl.text.trim(),
+      };
+
+      if (isEdit) {
+        await deliveryAddressCubit.updateAddress(
+          userAddressId: address!.id,
+          provinceId: payload["provinceId"]!,
+          cityId: payload["cityId"]!,
+          districtId: payload["districtId"]!,
+          subdistrictId: payload["subdistrictId"]!,
+          postalCode: payload["postalCode"]!,
+          address: payload["address"]!,
+        );
+      } else {
+        await deliveryAddressCubit.addAddress(
+          provinceId: payload["provinceId"]!,
+          cityId: payload["cityId"]!,
+          districtId: payload["districtId"]!,
+          subdistrictId: payload["subdistrictId"]!,
+          postalCode: payload["postalCode"]!,
+          address: payload["address"]!,
+        );
+      }
+
+      HomeCubit homeCubit = context.read<HomeCubit>();
+      await homeCubit.fetchProfile();
+
+      Navigator.pop(context, true);
+    } catch (e) {
+      ToastUtil.showToastError("", "$e");
+    } finally {
+      setState(() => isLoading = false);
+    }
+  }
+
+  @override
+  void dispose() {
+    postalCodeCtrl.dispose();
+    addressCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<DeliveryAddressCubit>(
+          create: (context) => deliveryAddressCubit,
+        ),
+      ],
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(isEdit ? "Edit Address" : "Add Address"),
+          backgroundColor: Colors.white,
+          elevation: 0,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Form(
+            key: _formKey,
+            child: BlocBuilder<DeliveryAddressCubit, DeliveryAddressState>(
+                bloc: deliveryAddressCubit,
+                builder: (context, state) {
+                  return ListView(
+                    children: [
+                      // const Text("Address",
+                      //     style:
+                      //         TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      // const SizedBox(height: 16),
+                      const Text("Province"),
+                      const SizedBox(height: 8),
+                      BottomSheetSelector<Map>(
+                        label: "Province",
+                        selectedValue: state.selectedProvinceId?["name"],
+                        items: state.provinces.map((e) => e as Map).toList(),
+                        itemLabel: (p0) => p0["name"],
+                        onSelected: (value) =>
+                            deliveryAddressCubit.selectProvince(value),
+                      ),
+                      if (onSubmit && state.selectedProvinceId == null)
+                        const Text("Province is required",
+                            style: TextStyle(color: Colors.red)),
+                      const SizedBox(height: 12),
+                      const Text("City/Regency"),
+                      const SizedBox(height: 8),
+                      BottomSheetSelector<Map>(
+                        label: "City/Regency",
+                        selectedValue: state.selectedCityId?["name"],
+                        items: state.cities.map((e) => e as Map).toList(),
+                        itemLabel: (p0) => p0["name"],
+                        onSelected: (value) =>
+                            deliveryAddressCubit.selectCity(value),
+                      ),
+                      if (onSubmit && state.selectedCityId == null)
+                        const Text("City/Regency is required",
+                            style: TextStyle(color: Colors.red)),
+                      const SizedBox(height: 12),
+                      const Text("District"),
+                      const SizedBox(height: 8),
+                      BottomSheetSelector<Map>(
+                        label: "District",
+                        selectedValue: state.selectedDistrictId?["name"],
+                        items: state.districts.map((e) => e as Map).toList(),
+                        itemLabel: (p0) => p0["name"],
+                        onSelected: (value) =>
+                            deliveryAddressCubit.selectDistrict(value),
+                      ),
+                      if (onSubmit && state.selectedDistrictId == null)
+                        const Text("District is required",
+                            style: TextStyle(color: Colors.red)),
+                      const SizedBox(height: 12),
+                      const Text("Sub-district/Village"),
+                      const SizedBox(height: 8),
+                      BottomSheetSelector<Map>(
+                        label: "Sub-district/Village",
+                        selectedValue: state.selectedSubdistrictId?["name"],
+                        items: state.subdistricts.map((e) => e as Map).toList(),
+                        itemLabel: (p0) => p0["name"],
+                        onSelected: (value) =>
+                            deliveryAddressCubit.selectSubdistrict(value),
+                      ),
+                      if (onSubmit && state.selectedSubdistrictId == null)
+                        const Text("Sub-district/Village is required",
+                            style: TextStyle(color: Colors.red)),
+                      const SizedBox(height: 12),
+                      const Text("Postal Code"),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: postalCodeCtrl,
+                        keyboardType: TextInputType.number,
+                        maxLength: 8,
+                        decoration: InputDecoration(
+                            hintText: 'Postal Code',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            counterText: ''),
+                        validator: (value) => value == null || value.isEmpty
+                            ? 'Postal Code is required'
+                            : null,
+                      ),
+                      const SizedBox(height: 12),
+                      const Text("Full Address"),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: addressCtrl,
+                        maxLines: 2,
+                        maxLength: 300,
+                        decoration: InputDecoration(
+                          hintText: 'Address',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        validator: (value) => value == null || value.isEmpty
+                            ? 'Address is required'
+                            : null,
+                      ),
+                      const SizedBox(height: 24),
+                      ElevatedButton(
+                        onPressed: isLoading ? null : handleSubmit,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          minimumSize: const Size.fromHeight(48),
+                        ),
+                        child: Text(
+                          isLoading
+                              ? "Please wait..."
+                              : (isEdit ? "Update Address" : "Add Address"),
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  );
+                }),
+          ),
+        ),
+      ),
+    );
+  }
+}

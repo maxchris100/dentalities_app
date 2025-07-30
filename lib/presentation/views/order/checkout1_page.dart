@@ -1,4 +1,11 @@
+import 'package:dentalities/core/constant/constant.dart';
+import 'package:dentalities/core/router/app_router.dart';
+import 'package:dentalities/core/util/string_util.dart';
+import 'package:dentalities/data/models/cart_model.dart';
+import 'package:dentalities/data/models/user_address_model.dart';
+import 'package:dentalities/presentation/blocs/cubit/cart_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Checkout1Page extends StatefulWidget {
   const Checkout1Page({super.key});
@@ -9,7 +16,7 @@ class Checkout1Page extends StatefulWidget {
 
 class _Checkout1PageState extends State<Checkout1Page> {
   bool isProcessing = false;
-
+  UserAddress? selectedAddress;
   @override
   void initState() {
     super.initState();
@@ -18,13 +25,45 @@ class _Checkout1PageState extends State<Checkout1Page> {
   void submitCheckout() async {
     setState(() => isProcessing = true);
 
-    // await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 1));
 
-    // setState(() => isProcessing = false);
+    // CartCubit cartCubit = context.read<CartCubit>();
+    // await cartCubit.checkoutCart(selectedAddress?.id);
+    setState(() => isProcessing = false);
+    Navigator.pushNamed(context, AppRouter.paymentComplete);
   }
 
+  String getShippingAddress() {
+    try {
+      selectedAddress =
+          Constant.userLocalDataSource.userData?.userAddresses?.first;
+      String address = (selectedAddress?.provinceName ?? "") +
+          ", " +
+          (selectedAddress?.cityName ?? "") +
+          ", " +
+          (selectedAddress?.districtName ?? "") +
+          ", " +
+          (selectedAddress?.villageName ?? "") +
+          ", " +
+          (selectedAddress?.postcode ?? "") +
+          ", " +
+          (selectedAddress?.address ?? "");
+      return address;
+    } catch (e) {
+      return "";
+    }
+  }
+
+  String shipmentPrice = StringUtil.formatMoney(0);
   @override
   Widget build(BuildContext context) {
+    var args = ModalRoute.of(context)?.settings.arguments as Map?;
+    String totalPrice = args?["total"] ?? "";
+    String grandTotalPrice = args?["grand_total"] ?? "";
+    String totalDiscount = args?["discount"] ?? "";
+    int totalItem = args?["total_item"] ?? 0;
+    Map<int, CartItem>? selectedCartItem = args?["selected_cart"];
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Checkout'),
@@ -46,8 +85,8 @@ class _Checkout1PageState extends State<Checkout1Page> {
                           const Text('Shipping Address',
                               style: TextStyle(fontWeight: FontWeight.bold)),
                           const SizedBox(height: 8),
-                          const Text(
-                            'Jl. Margacinta Rt 02 Rw 01, RT.02/RW.No: 424A,\nMargasari, Kec. Buahbatu, Kota Bandung, Jawa Barat 40286',
+                          Text(
+                            getShippingAddress(),
                           ),
                           const SizedBox(height: 16),
                           const Divider(),
@@ -110,36 +149,34 @@ class _Checkout1PageState extends State<Checkout1Page> {
                           const SizedBox(height: 8),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: const [
-                              Text('Product (1.220 items)'),
-                              Text('Rp1.520.000')
+                            children: [
+                              Text(
+                                  'Product ($totalItem ${totalItem > 1 ? "items" : "item"})'),
+                              Text(totalPrice)
                             ],
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: const [
-                              Text('Shipment'),
-                              Text('Rp50.000')
-                            ],
+                            children: [Text('Shipment'), Text(shipmentPrice)],
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: const [
+                            children: [
                               Text('Discount',
                                   style: TextStyle(color: Colors.red)),
-                              Text('-Rp150.000',
+                              Text(totalDiscount,
                                   style: TextStyle(color: Colors.red))
                             ],
                           ),
                           const Divider(),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: const [
+                            children: [
                               Text('Total',
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold)),
-                              Text('Rp1.420.000',
+                              Text(grandTotalPrice,
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold))

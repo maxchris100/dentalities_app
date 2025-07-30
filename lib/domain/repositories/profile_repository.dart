@@ -51,4 +51,65 @@ class ProfileRepository {
       cancelToken: cancelToken,
     );
   }
+
+  static Future<Response> addAddress({
+    required String provinceId,
+    required String cityId,
+    required String districtId,
+    required String subdistrictId,
+    required String postalCode,
+    required String address,
+    CancelToken? cancelToken,
+  }) async {
+    return await DioClient.instance.post(
+      "/api/v2/account/add-address",
+      data: {
+        "province_id": provinceId,
+        "city_id": cityId,
+        "district_id": districtId,
+        "subdistrict_id": subdistrictId,
+        "postal_code": postalCode,
+        "address": address
+      },
+      cancelToken: cancelToken,
+    );
+  }
+
+  static Future<Response> updateAddress({
+    required int userAddressId,
+    required String provinceId,
+    required String cityId,
+    required String districtId,
+    required String subdistrictId,
+    required String postalCode,
+    required String address,
+    CancelToken? cancelToken,
+  }) async {
+    return await DioClient.instance.post(
+      "/api/v2/account/add-address",
+      data: {
+        "user_address_id": userAddressId,
+        "province_id": provinceId,
+        "city_id": cityId,
+        "district_id": districtId,
+        "subdistrict_id": subdistrictId,
+        "postal_code": postalCode,
+        "address": address
+      },
+      cancelToken: cancelToken,
+    );
+  }
+
+  static Future<Response> deleteAddress({
+    required int userAddressId,
+    CancelToken? cancelToken,
+  }) async {
+    return await DioClient.instance.post(
+      "/api/v2/account/delete-address",
+      data: {
+        "user_address_id": userAddressId,
+      },
+      cancelToken: cancelToken,
+    );
+  }
 }

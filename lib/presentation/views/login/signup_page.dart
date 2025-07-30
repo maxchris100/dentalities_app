@@ -2,8 +2,10 @@ import 'dart:developer';
 
 import 'package:dentalities/core/constant/constant.dart';
 import 'package:dentalities/core/router/app_router.dart';
+import 'package:dentalities/core/util/toast_util.dart';
 import 'package:dentalities/presentation/blocs/cubit/signup_cubit.dart';
 import 'package:dentalities/presentation/widgets/search_bottom_sheet.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -68,6 +70,15 @@ class _SignUpPageState extends State<SignUpPage> {
         if (!_formKey2.currentState!.validate()) {
           return;
         }
+        if (selectedSalutation == null) {
+          setState(() {
+            onSubmit = true;
+          });
+          return;
+        }
+        setState(() {
+          onSubmit = false;
+        });
       }
 
       if (_currentStep == 2) {
@@ -87,8 +98,9 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Future _register() async {
-    log("@Register Account");
-    onSubmit = true;
+    setState(() {
+      onSubmit = true;
+    });
     if (selectedSalutation == null) {
       return;
     }
@@ -108,7 +120,8 @@ class _SignUpPageState extends State<SignUpPage> {
       isSubmiting = true;
     });
 
-    var res = await signUpCubit.register(
+    log("@Register Account");
+    Response? res = await signUpCubit.register(
       salutation: selectedSalutation ?? '',
       titlePrefix: prefixController.text.trim(),
       fullName: fullNameController.text.trim(),
@@ -124,13 +137,20 @@ class _SignUpPageState extends State<SignUpPage> {
       postalCode: postalController.text,
       address: addressController.text,
     );
-    if (res != null) {
-      Navigator.pop(context);
-      Navigator.pushNamed(context, AppRouter.accountOnCheck);
-    }
     setState(() {
       isSubmiting = false;
     });
+    if (res != null) {
+      if (res.data["status"] == true) {
+        ToastUtil.showToast("", res.data["message"] ?? "");
+        Navigator.pushNamed(context, AppRouter.accountOnCheck);
+
+        return;
+      } else {
+        ToastUtil.showToast("", res.data["message"] ?? "");
+      }
+    }
+    ToastUtil.showToast("", "Error creating account");
   }
 
   Widget _stepIndicator(String title, int step) {
@@ -324,6 +344,13 @@ class _SignUpPageState extends State<SignUpPage> {
                 onSelected: (value) =>
                     setState(() => selectedSalutation = value),
               ),
+              Visibility(
+                visible: onSubmit && selectedSalutation == null,
+                child: Text(
+                  "Salutation is required",
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
               const SizedBox(height: 12),
               Text("Prefix Title"),
               SizedBox(
@@ -485,11 +512,12 @@ class _SignUpPageState extends State<SignUpPage> {
               TextFormField(
                 controller: postalController,
                 keyboardType: TextInputType.number,
+                maxLength: 8,
                 decoration: InputDecoration(
-                  hintText: 'Postal Code',
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                ),
+                    hintText: 'Postal Code',
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                    counterText: ''),
                 onChanged: (value) {
                   _formKey3.currentState!.validate();
                 },
@@ -508,6 +536,7 @@ class _SignUpPageState extends State<SignUpPage> {
               TextFormField(
                 controller: addressController,
                 maxLines: 2,
+                maxLength: 300,
                 decoration: InputDecoration(
                   hintText: 'Address',
                   border: OutlineInputBorder(
@@ -636,8 +665,11 @@ class _SignUpPageState extends State<SignUpPage> {
                                         ? Colors.blue
                                         : Colors.white,
                                     shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(12)),
+                                        borderRadius: BorderRadius.circular(12),
+                                        side: BorderSide(
+                                            color: _currentStep == 2
+                                                ? Colors.blue
+                                                : Colors.white)),
                                     side: BorderSide(
                                         color: _currentStep == 2
                                             ? Colors.white
@@ -661,7 +693,11 @@ class _SignUpPageState extends State<SignUpPage> {
                           const Text("Already have an account? "),
                           GestureDetector(
                               onTap: () {
-                                Navigator.pop(contextPage);
+                                Navigator.pushNamedAndRemoveUntil(
+                                  context,
+                                  AppRouter.signIn,
+                                  (route) => false,
+                                );
                               },
                               child: Text(
                                 "Login",

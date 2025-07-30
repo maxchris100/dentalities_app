@@ -41,12 +41,18 @@ class BottomSheetSelector<T> extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              selectedValue ?? 'Select $label',
-              style: TextStyle(
-                fontSize: 16,
-                color: selectedValue == null ? Colors.grey : Colors.black,
+            Expanded(
+              child: Text(
+                selectedValue ?? 'Select $label',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: selectedValue == null ? Colors.grey : Colors.black,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
+            ),
+            SizedBox(
+              width: 8,
             ),
             const Icon(Icons.keyboard_arrow_down),
           ],
@@ -127,7 +133,10 @@ class SearchableBottomSheetPicker<T> {
                           itemBuilder: (context, index) {
                             final item = filteredItems[index];
                             return ListTile(
-                              title: Text(itemLabel(item)),
+                              title: Text(
+                                itemLabel(item),
+                                overflow: TextOverflow.ellipsis,
+                              ),
                               onTap: () {
                                 onSelected(item);
                                 Navigator.pop(context);

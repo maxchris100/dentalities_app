@@ -1,7 +1,9 @@
+import 'dart:developer';
+
 import 'package:dentalities/core/util/toast_util.dart';
 import 'package:dentalities/data/models/cart_model.dart';
 import 'package:dentalities/data/models/product_model.dart';
-import 'package:dentalities/domain/repositories/Cart_repository.dart';
+import 'package:dentalities/domain/repositories/cart_repository.dart';
 import 'package:dentalities/domain/repositories/product_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
@@ -56,14 +58,27 @@ class CartCubit extends Cubit<CartState> {
     }
   }
 
-  Future<void> addToCart() async {
+  Future<void> addToCart(Product? p, int quantity) async {
+    log("@CART: ADD TO CART PRODUCT: ${p?.id} $quantity");
     try {
-      // final categories = await CartRepository.getCart();
-      // List<Category> list =
-      //     Category.fromList(categories.data["data"]["categories"]);
-      // data = data.copyWith(cart: list);
-      // emit(CartLoaded(data));
+      final res = await CartRepository.addUpdateCart(
+          productVariantId: p?.productVariants?.first.id, quantity: quantity);
+
+      emit(CartLoaded(data));
       ToastUtil.showToast("", "Added to cart");
+    } catch (e) {
+      emit(CartError('Failed to load carts: $e'));
+    }
+  }
+
+  Future<void> addToCartVariant(int? productVariantId, int quantity) async {
+    log("@CART: ADD TO CART PRODUCT VARIANT: $productVariantId $quantity");
+    try {
+      final res = await CartRepository.addUpdateCart(
+          productVariantId: productVariantId, quantity: quantity);
+
+      emit(CartLoaded(data));
+      // ToastUtil.showToast("", "Cart updated");
     } catch (e) {
       emit(CartError('Failed to load carts: $e'));
     }
@@ -80,5 +95,12 @@ class CartCubit extends Cubit<CartState> {
     } catch (e) {
       emit(CartError('Failed to load product: $e'));
     }
+  }
+
+  Future<void> checkoutCart(int? userAddressId) async {
+    try {
+      final res = await CartRepository.checkOutOrder(
+          userAddressId: userAddressId, serviceCode: "REG");
+    } catch (e) {}
   }
 }

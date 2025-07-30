@@ -7,6 +7,7 @@ import 'package:dentalities/presentation/blocs/cubit/product_cubit.dart';
 import 'package:dentalities/presentation/widgets/add_tocart_widget.dart';
 import 'package:dentalities/presentation/widgets/added_tocart_widget.dart';
 import 'package:dentalities/presentation/widgets/bundling_product.dart';
+import 'package:dentalities/presentation/widgets/custom_toast.dart';
 import 'package:dentalities/presentation/widgets/home/related_product.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,6 +25,12 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // var args = ModalRoute.of(context)?.settings.arguments as Map?;
+      // String slug = args?["slug"] ?? "";
+      // productCubit.getProductDetail(slug);
+    });
   }
 
   ProductCubit productCubit = ProductCubit();
@@ -36,17 +43,22 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (ctx) => AddToCartWidget(
-        onTap: () {
-          Navigator.pop(ctx);
-          showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-            ),
-            builder: (_) => AddedToCartWidget(),
-          );
-          //CustomToast.
+        product: productCubit.data.product,
+        onTap: (int quantity) {
+          // Navigator.pop(ctx);
+          // showModalBottomSheet(
+          //   context: context,
+          //   isScrollControlled: true,
+          //   shape: const RoundedRectangleBorder(
+          //     borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          //   ),
+          //   builder: (_) => AddedToCartWidget(),
+          // );
+          //add to cart
+          try {
+            productCubit.addToCart(productCubit.data.product, quantity);
+            CustomToast.show(context, message: "Successfully added to cart");
+          } catch (e) {}
         },
       ),
     );
@@ -55,7 +67,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   @override
   Widget build(BuildContext context) {
     var args = ModalRoute.of(context)?.settings.arguments as Map?;
-    String slug = args?["slug"] ?? "";
+    String slug = "";
+    Product? p = args?["item"];
+    if (p != null) {
+      slug = p.slug ?? "";
+    }
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => productCubit..getProductDetail(slug)),

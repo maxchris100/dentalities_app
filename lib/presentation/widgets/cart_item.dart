@@ -1,7 +1,7 @@
 import 'package:dentalities/core/router/app_router.dart';
 import 'package:flutter/material.dart';
 
-class CartItem extends StatelessWidget {
+class CartItemWidget extends StatelessWidget {
   final bool isSelected;
   final String imageUrl;
   final String name;
@@ -14,7 +14,7 @@ class CartItem extends StatelessWidget {
   final ValueChanged<bool?> onChecked;
   final bool isGrid;
 
-  const CartItem(
+  const CartItemWidget(
       {super.key,
       required this.isSelected,
       required this.imageUrl,
@@ -39,7 +39,8 @@ class CartItem extends StatelessWidget {
                 Checkbox(
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   value: isSelected,
-                  onChanged: onChecked,
+                  // onChanged: onChecked,
+                  onChanged: null,
                   activeColor: Colors.blue,
                 ),
                 Expanded(

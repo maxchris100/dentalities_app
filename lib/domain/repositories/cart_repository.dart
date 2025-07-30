@@ -18,4 +18,50 @@ class CartRepository {
       },
     );
   }
+
+  static Future<Response> addUpdateCart({
+    int? productVariantId,
+    int? quantity,
+    CancelToken? cancelToken,
+  }) async {
+    return await DioClient.instance.post(
+      "/api/cart/update",
+      data: [
+        {
+          "product_variant_id": productVariantId,
+          "quantity": quantity,
+        }
+      ],
+    );
+  }
+
+  static Future<Response> getDeliveryMethod({
+    int? userAddressId,
+    CancelToken? cancelToken,
+  }) async {
+    return await DioClient.instance.post(
+      "/api/v2/checkout/select-delivery-method",
+      data: [
+        {
+          "user_address_id": userAddressId,
+        }
+      ],
+    );
+  }
+
+  static Future<Response> checkOutOrder({
+    int? userAddressId,
+    String? serviceCode,
+    CancelToken? cancelToken,
+  }) async {
+    return await DioClient.instance.post(
+      "/api/v2/checkout",
+      data: [
+        {
+          "user_address_id": userAddressId,
+          "service_code": serviceCode,
+        }
+      ],
+    );
+  }
 }

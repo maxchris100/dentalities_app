@@ -74,7 +74,11 @@ class AccountOnCheckPage extends StatelessWidget {
                   width: double.infinity,
                   child: TextButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        '/',
+                        (route) => false,
+                      );
                     },
                     style: TextButton.styleFrom(
                       backgroundColor: Colors.grey[100],

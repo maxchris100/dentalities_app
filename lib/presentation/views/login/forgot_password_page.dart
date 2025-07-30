@@ -1,5 +1,12 @@
+import 'dart:developer';
+
 import 'package:dentalities/core/router/app_router.dart';
+import 'package:dentalities/core/util/string_util.dart';
+import 'package:dentalities/core/util/toast_util.dart';
+import 'package:dentalities/domain/repositories/auth_repository.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/svg.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
@@ -13,7 +20,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   final TextEditingController _emailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  void _sendResetEmail() {
+  Future _sendResetEmail() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -24,12 +31,34 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       );
       return;
     }
+    Response res;
+    try {
+      res = await AuthRepository.forgotPassword(email: email);
 
-    // TODO: Call your reset password API here
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Password reset instructions sent to $email")),
-    );
-    Navigator.pushReplacementNamed(context, AppRouter.resetPassSentLink);
+      if (res.data["status"] == true) {
+        ToastUtil.showToast("", StringUtil.castToString(res.data["message"]));
+        // Navigator.pop(context);
+        Navigator.pushNamed(context, AppRouter.resetPassSentLink);
+        // Navigator.pop(context);
+      } else {
+        ToastUtil.showToast("", StringUtil.castToString(res.data["message"]),
+            ToastStatus.error);
+      }
+    } catch (e) {
+      log(e.toString());
+      ToastUtil.showToast("", "Error Sent Forgot Password");
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (dotenv.env["ENV"] != "production") {
+        _emailController.text = "demo@dentalities.shop";
+        setState(() {});
+      }
+    });
   }
 
   @override

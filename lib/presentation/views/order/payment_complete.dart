@@ -28,7 +28,6 @@ class PaymentCompletePage extends StatelessWidget {
             ),
             const SizedBox(height: 40),
             SvgPicture.asset("assets/icons/complete_payment.svg"),
-            Icon(Icons.shopping_bag_outlined, size: 100, color: Colors.black),
             const SizedBox(height: 20),
             const Text(
               "We are checking your registered data and will get back soon once it’s done",
@@ -45,12 +44,15 @@ class PaymentCompletePage extends StatelessWidget {
                   Navigator.popUntil(context, (route) => route.isFirst);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
+                  backgroundColor: Colors.blue,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text("Contact Support"),
+                child: const Text(
+                  "Contact Support",
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ),
           ],

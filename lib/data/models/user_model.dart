@@ -85,6 +85,7 @@ class UserModel extends Equatable {
   }
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
+    print("@");
     return UserModel(
       id: map['id'] != null ? map['id'] as int : null,
       iat: map['iat'] != null ? map['iat'] as int : null,
@@ -108,12 +109,8 @@ class UserModel extends Equatable {
       phone: map['phone'],
       isApproved: map['isApproved'],
       loginToken: map['loginToken'],
-      userAddresses: map['userAddresses'] != null
-          ? List<UserAddress>.from(
-              (map['userAddresses'] as List<int>).map<UserAddress>(
-                (x) => UserAddress.fromJson(x as Map<String, dynamic>),
-              ),
-            )
+      userAddresses: map['user_addresses'] != null
+          ? UserAddress.fromList(map['user_addresses'])
           : [],
     );
   }

@@ -33,6 +33,32 @@ class ProductRepository {
     );
   }
 
+  static Future<Response> searchProducts({
+    int? limit,
+    String? keyword,
+    String? brands,
+    String? categories,
+    CancelToken? cancelToken,
+  }) async {
+    final queryParams = <String, dynamic>{};
+    if (limit != null) queryParams['limit'] = limit;
+    if (brands != null) {
+      queryParams['brands'] = brands;
+    }
+    if (categories != null) {
+      queryParams['categories'] = categories;
+    }
+    if (keyword != null) {
+      queryParams['keyword'] = keyword;
+    }
+
+    return await DioClient.instance.get(
+      "/api/home/search-products",
+      queryParameters: queryParams,
+      cancelToken: cancelToken,
+    );
+  }
+
   //checkout
   static Future<Response> requestCheckout({
     required int userAddressId,

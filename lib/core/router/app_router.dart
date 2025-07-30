@@ -4,6 +4,9 @@ import 'package:dentalities/presentation/views/home/search_page.dart';
 import 'package:dentalities/presentation/views/login/account_oncheck_page.dart';
 import 'package:dentalities/presentation/views/login/reset_password_linksent_page.dart';
 import 'package:dentalities/presentation/views/order/checkout1_page.dart';
+import 'package:dentalities/presentation/views/order/payment_complete.dart';
+import 'package:dentalities/presentation/views/profile/add_delivery_address_page.dart';
+import 'package:dentalities/presentation/views/profile/delivery_address_page.dart';
 import 'package:flutter/material.dart';
 import 'package:dentalities/presentation/views/index/home_page.dart';
 import 'package:dentalities/presentation/views/login/create_new_password_page.dart';
@@ -45,9 +48,12 @@ class AppRouter {
   static const String productVideo = '/product-video';
   static const String order = '/order';
   static const String orderDetail = '/order-detail';
+  static const String paymentComplete = '/payment-complete';
   static const String cart = '/cart';
   static const String rateProduct = '/rate-product';
   static const String settings = '/settings';
+  static const String deliveryAddress = '/delivery-address';
+  static const String deliveryAddressAdd = '/delivery-address-add';
   static const String notification = '/notification';
   static const String about = '/about';
   static const String forgotPassword = '/forgot-password';
@@ -73,10 +79,13 @@ class AppRouter {
       "/track-order": (context) => TrackOrderPage(),
       "/cart": (context) => CartPage(),
       orderCheckout: (context) => Checkout1Page(),
+      paymentComplete: (context) => PaymentCompletePage(),
       // "/order": (context) => OrderPage(),
       "/wishlist": (context) => WishlistPage(),
       "/order-detail": (context) => OrderDetailPage(),
       "/rate-product": (context) => RateProductPage(),
+      deliveryAddress: (context) => DeliveryAddressPage(),
+      deliveryAddressAdd: (context) => AddEditDeliveryAddressPage(),
       "/support": (context) => SupportPage(),
       "/notification": (context) => NotificationPage(),
     };

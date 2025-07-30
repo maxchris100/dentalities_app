@@ -46,6 +46,8 @@ class _HomeTabState extends State<HomeTab> {
     AuthCubit authCubit = context.watch<AuthCubit>();
     HomeCubit homeCubit = context.watch<HomeCubit>();
     CartCubit cartCubit = context.watch<CartCubit>();
+
+    FocusScope.of(context).unfocus();
     return Scaffold(
       body: ListView(
         controller: scrollController,
@@ -156,7 +158,11 @@ class _HomeTabState extends State<HomeTab> {
           SizedBox(
             height: 20,
           ),
-          TopBrandSection(),
+          BlocBuilder(
+              bloc: homeCubit,
+              builder: (context, state) {
+                return TopBrandSection(brands: homeCubit.data.brands);
+              }),
           SizedBox(
             height: 20,
           ),

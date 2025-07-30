@@ -1,3 +1,5 @@
+import 'package:dentalities/core/router/app_router.dart';
+import 'package:dentalities/core/util/appversion.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dentalities/presentation/blocs/cubit/auth_cubit.dart';
@@ -24,12 +26,14 @@ class _ProfileTabState extends State<ProfileTab> {
 
   ProfileCubit profileCubit = ProfileCubit();
   void getData() async {
-    try {} catch (ex) {}
+    try {
+      profileCubit.fetchProfileData();
+    } catch (ex) {}
   }
 
   @override
   Widget build(BuildContext context) {
-    AuthCubit authCubit = context.watch<AuthCubit>();
+    // AuthCubit authCubit = context.watch<AuthCubit>();
     return MultiBlocProvider(
         providers: [
           BlocProvider(create: (context) => profileCubit),
@@ -41,9 +45,17 @@ class _ProfileTabState extends State<ProfileTab> {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
+                  Text(
+                      "Version ${AppVersion.version}+${AppVersion.buildNumber}"),
                   IconButton(
                     onPressed: () {
-                      authCubit.logout();
+                      Navigator.pushNamed(context, AppRouter.deliveryAddress);
+                    },
+                    icon: const Icon(Icons.place),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      // authCubit.logout();
                     },
                     icon: const Icon(Icons.logout),
                   ),

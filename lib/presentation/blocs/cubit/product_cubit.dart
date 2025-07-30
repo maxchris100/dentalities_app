@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dentalities/core/util/toast_util.dart';
 import 'package:dentalities/data/models/product_model.dart';
 import 'package:dentalities/data/models/product_model.dart';
@@ -5,17 +7,25 @@ import 'package:dentalities/domain/repositories/product_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
 
+import '../../../domain/repositories/cart_repository.dart';
+
 class ProductData {
   final Product? product;
+  final List<Product> listProduct;
   final List<Product> relatedProduct;
-  ProductData({this.product, this.relatedProduct = const []});
+  ProductData(
+      {this.product,
+      this.listProduct = const [],
+      this.relatedProduct = const []});
 
   ProductData copyWith({
     Product? product,
+    List<Product>? listProduct,
     List<Product>? relatedProduct,
   }) {
     return ProductData(
         product: product ?? this.product,
+        listProduct: listProduct ?? this.listProduct,
         relatedProduct: relatedProduct ?? this.relatedProduct);
   }
 }
@@ -38,7 +48,8 @@ class ProductError extends ProductState {
 }
 
 class ProductCubit extends Cubit<ProductState> {
-  ProductData data = ProductData(product: null, relatedProduct: []);
+  ProductData data =
+      ProductData(product: null, listProduct: [], relatedProduct: []);
   ProductCubit() : super(ProductInitial());
 
   Future<void> fetchProduct() async {
@@ -52,17 +63,14 @@ class ProductCubit extends Cubit<ProductState> {
     }
   }
 
-  Future<void> addToCart() async {
+  Future<void> addToCart(Product? p, int quantity) async {
+    log("@PRODUCT: ADD TO CART PRODUCT: ${p?.id} $quantity");
     try {
-      // final categories = await ProductRepository.getProduct();
-      // List<Category> list =
-      //     Category.fromList(categories.data["data"]["categories"]);
-      // data = data.copyWith(product: list);
-      // emit(ProductLoaded(data));
-      ToastUtil.showToast("", "Added to cart");
-    } catch (e) {
-      emit(ProductError('Failed to load products: $e'));
-    }
+      final res = await CartRepository.addUpdateCart(
+          productVariantId: p?.productVariants?.first.id, quantity: quantity);
+
+      ToastUtil.showToast("", res.data["message"] ?? "");
+    } catch (e) {}
   }
 
   Future<void> getProductByCategorySlug(String categorySlug) async {
@@ -79,7 +87,7 @@ class ProductCubit extends Cubit<ProductState> {
     }
   }
 
-  Future<void> getProductDetail(String slug) async {
+  Future<Product?> getProductDetail(String slug) async {
     try {
       final product = await ProductRepository.getProductBySlug(slug);
       Product p = Product.fromJson(product.data["data"]["product"]);
@@ -87,8 +95,34 @@ class ProductCubit extends Cubit<ProductState> {
           Product.fromList(product.data["data"]["related_products"]);
       data = data.copyWith(product: p, relatedProduct: relatedProducts);
       emit(ProductLoaded(data));
+      return p;
     } catch (e) {
       emit(ProductError('Failed to load product: $e'));
+      return null;
+    }
+  }
+
+  Future<void> getSearchProduct(String? keyword) async {
+    try {
+      final datas = await ProductRepository.searchProducts(keyword: keyword);
+      List<Product> p = Product.fromList(datas.data["data"]["data"]);
+
+// 1 =
+// "total_items" -> 2
+// 2 =
+// "last_page" -> 1
+// 3 =
+// "current_page" -> 1
+// 4 =
+// "per_page" -> 6
+// 5 =
+// "categories" -> List (24 items)
+// 6 =
+// "brands" -> List (2 items)
+      data = data.copyWith(product: null, listProduct: p, relatedProduct: []);
+      emit(ProductLoaded(data));
+    } catch (e) {
+      emit(ProductError('Failed to load list product: $e'));
     }
   }
 }

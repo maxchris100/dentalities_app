@@ -1,4 +1,6 @@
 import 'package:bloc/bloc.dart';
+import 'package:dentalities/core/constant/constant.dart';
+import 'package:dentalities/data/models/user_model.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:meta/meta.dart';
 import 'package:dentalities/data/data_sources/user_local_data_source.dart';
@@ -28,11 +30,21 @@ class ProfileError extends ProfileState {
 class ProfileCubit extends Cubit<ProfileState> {
   ProfileCubit() : super(ProfileInitial());
 
-  Future<void> fetchProfileData(AuthCubit authCubit) async {
+  Future<void> fetchProfileData() async {
     try {
       emit(ProfileLoading());
-      // String channel = UserLocalDataSource.userData?.channel ?? "";
-      // var response = await ProfileRepository.getProfile(channel);
+      var response = await ProfileRepository.getProfile();
+
+      try {
+        final datas = await ProfileRepository.getProfile();
+        UserModel data = UserModel.fromMap(datas.data["data"]);
+
+        Constant.userLocalDataSource.saveUser(data);
+        // emit(ProfileLoaded(data));
+      } catch (e) {
+        emit(ProfileError('Failed to load profile: $e'));
+      }
+
       // if (response.statusCode == 200) {
       //   var res = ProfileResponseModel.fromJson(response.data);
       //   emit(ProfileLoaded(res));

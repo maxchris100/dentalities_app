@@ -1,5 +1,9 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:dentalities/core/router/app_router.dart';
 import 'package:dentalities/core/util/string_util.dart';
+import 'package:dentalities/data/models/cart_model.dart';
 import 'package:dentalities/presentation/blocs/cubit/cart_cubit.dart';
 import 'package:dentalities/presentation/widgets/cart_item.dart';
 import 'package:flutter/material.dart';
@@ -15,16 +19,43 @@ class CartPage extends StatefulWidget {
 
 class _CartPageState extends State<CartPage> {
   Map<int, bool> selected = {};
+  Map<int, CartItem> selectedCartItem = {};
   Map<int, int> quantity = {};
   bool selectAll = true;
   bool isGrid = true;
+  Map<int, Timer> debounceTimers = {};
 
   CartCubit cartCubit = CartCubit();
 
   @override
   void initState() {
     super.initState();
-    cartCubit.fetchCart();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      var args = ModalRoute.of(context)?.settings.arguments as Map?;
+      await cartCubit.fetchCart();
+
+      // Inisialisasi selected dan quantity jika belum ada
+      final items = cartCubit.data.cart?.cartItems ?? [];
+      for (var item in items) {
+        log("@PRODUCT: ${item.productVariantId}, ${item.quantity}");
+        if (item.productVariantId != null) {
+          selected.putIfAbsent(item.productVariantId!, () => true);
+          quantity.putIfAbsent(
+              item.productVariantId!, () => item.quantity ?? 1);
+        }
+      }
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    for (var timer in debounceTimers.values) {
+      timer.cancel();
+    }
+    debounceTimers.clear();
+    super.dispose();
   }
 
   @override
@@ -46,24 +77,30 @@ class _CartPageState extends State<CartPage> {
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                      "${selected.values.where((e) => e).length} products selected"),
-                  TextButton(
-                    onPressed: _clearAll,
-                    child: const Text(
-                      "Clear",
-                      style: TextStyle(
-                          color: Colors.blue, fontWeight: FontWeight.bold),
-                    ),
-                  )
-                ],
-              ),
+              child: BlocBuilder<CartCubit, CartState>(
+                  bloc: cartCubit,
+                  builder: (context, state) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                            "${selected.values.where((e) => e).length} products selected"),
+                        // TextButton(
+                        //   onPressed: _clearAll,
+                        //   child: const Text(
+                        //     "Clear",
+                        //     style: TextStyle(
+                        //         color: Colors.blue,
+                        //         fontWeight: FontWeight.bold),
+                        //   ),
+                        // )
+                      ],
+                    );
+                  }),
             ),
             Expanded(
               child: BlocBuilder<CartCubit, CartState>(
+                bloc: cartCubit,
                 builder: (context, state) {
                   if (state is CartLoading) {
                     return const Center(child: CircularProgressIndicator());
@@ -71,23 +108,14 @@ class _CartPageState extends State<CartPage> {
                   if (state is CartLoaded) {
                     final items = state.data.cart?.cartItems ?? [];
 
-                    // Inisialisasi selected dan quantity jika belum ada
-                    for (var item in items) {
-                      if (item.id != null) {
-                        selected.putIfAbsent(item.id!, () => true);
-                        quantity.putIfAbsent(
-                            item.id!, () => item.quantity ?? 1);
-                      }
-                    }
-
                     return ListView.builder(
                       itemCount: items.length,
                       itemBuilder: (context, index) {
                         final item = items[index];
-                        final id = item.id;
+                        final id = item.productVariantId;
                         if (id == null) return const SizedBox.shrink();
 
-                        return CartItem(
+                        return CartItemWidget(
                           isSelected: selected[id] ?? false,
                           imageUrl: item.productImage ?? "",
                           name: item.productName ?? "",
@@ -111,7 +139,11 @@ class _CartPageState extends State<CartPage> {
                 },
               ),
             ),
-            _buildBottomBar(),
+            BlocBuilder<CartCubit, CartState>(
+                bloc: cartCubit,
+                builder: (context, state) {
+                  return _buildBottomBar();
+                }),
           ],
         ),
       ),
@@ -129,6 +161,13 @@ class _CartPageState extends State<CartPage> {
     setState(() {
       quantity[id] = (quantity[id]! + delta).clamp(1, 99);
     });
+    // Cancel timer kalau sebelumnya ada
+    debounceTimers[id]?.cancel();
+
+    // Start debounce baru
+    debounceTimers[id] = Timer(const Duration(milliseconds: 500), () {
+      cartCubit.addToCartVariant(id, quantity[id]!);
+    });
   }
 
   void _clearAll() {
@@ -145,16 +184,14 @@ class _CartPageState extends State<CartPage> {
     selected.forEach((id, isSelected) {
       if (isSelected) {
         final qty = quantity[id] ?? 1;
-        total += (cartCubit.state is CartLoaded)
-            ? ((cartCubit.state as CartLoaded)
-                        .data
-                        .cart
-                        ?.cartItems
-                        ?.firstWhere((e) => e.id == id)
-                        .price ??
-                    0) *
-                qty
-            : 0;
+        final price = ((cartCubit.state as CartLoaded)
+                .data
+                .cart
+                ?.cartItems
+                ?.firstWhere((e) => e.productVariantId == id)
+                .price ??
+            0);
+        total += (cartCubit.state is CartLoaded) ? price * qty : 0;
       }
     });
 
@@ -169,14 +206,15 @@ class _CartPageState extends State<CartPage> {
           Checkbox(
             activeColor: Colors.blue,
             value: selectAll,
-            onChanged: (val) {
-              setState(() {
-                selectAll = val ?? false;
-                for (var key in selected.keys) {
-                  selected[key] = selectAll;
-                }
-              });
-            },
+            onChanged: null,
+            // onChanged: (val) {
+            //   setState(() {
+            //     selectAll = val ?? false;
+            //     for (var key in selected.keys) {
+            //       selected[key] = selectAll;
+            //     }
+            //   });
+            // },
           ),
           const Text("All"),
           const Spacer(),
@@ -188,7 +226,23 @@ class _CartPageState extends State<CartPage> {
           ElevatedButton(
             onPressed: total > 0
                 ? () {
-                    Navigator.pushNamed(context, AppRouter.orderCheckout);
+                    final listCart = cartCubit.data.cart?.cartItems ?? [];
+                    selectedCartItem = {
+                      for (var item in listCart)
+                        if (selected[item.productVariantId] == true)
+                          item.productVariantId!: item
+                    };
+                    Navigator.pushNamed(context, AppRouter.orderCheckout,
+                        arguments: {
+                          "total": StringUtil.formatMoney(total),
+                          "grand_total": StringUtil.formatMoney(total),
+                          "discount": StringUtil.formatMoney(0),
+                          "selected": selected,
+                          "selected_cart": selectedCartItem,
+                          "quantity": quantity,
+                          "total_item": quantity.values
+                              .fold(0, (sum, value) => sum + value)
+                        });
                   }
                 : null,
             style: ElevatedButton.styleFrom(

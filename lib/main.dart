@@ -4,7 +4,11 @@ import 'dart:io';
 import 'package:dentalities/core/router/app_router.dart';
 import 'package:dentalities/core/util/appdevice.dart';
 import 'package:dentalities/core/util/appversion.dart';
+import 'package:dentalities/presentation/blocs/cubit/cart_cubit.dart';
+import 'package:dentalities/presentation/blocs/cubit/home_cubit.dart';
 import 'package:dentalities/presentation/views/login/signup_page.dart';
+import 'package:dentalities/presentation/views/profile/add_delivery_address_page.dart';
+import 'package:dentalities/presentation/views/profile/delivery_address_page.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -64,6 +68,12 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => AuthCubit()..checkAuthStatus(),
         ),
+        BlocProvider(
+          create: (context) => HomeCubit(),
+        ),
+        BlocProvider(
+          create: (context) => CartCubit(),
+        ),
       ],
       child: BlocBuilder<LanguageCubit, Locale>(
         builder: (context, locale) {
@@ -96,11 +106,22 @@ class MyApp extends StatelessWidget {
               routes: AppRouter.onGenerateRoute(),
               onGenerateRoute: (settings) {
                 final args = settings.arguments as Map<String, dynamic>?;
-                if (settings.name == AppRouter.signUp) {
-                  return MaterialPageRoute(builder: (_) => SignUpPage());
+                if (settings.name == AppRouter.deliveryAddress) {
+                  return MaterialPageRoute(
+                    builder: (_) => BlocProvider.value(
+                      value: context.read<HomeCubit>(),
+                      child: DeliveryAddressPage(),
+                    ),
+                  );
                 }
-
-                // if (settings.name == '/policy-insurance') {}
+                if (settings.name == AppRouter.deliveryAddressAdd) {
+                  return MaterialPageRoute(
+                    builder: (_) => BlocProvider.value(
+                      value: context.read<HomeCubit>(),
+                      child: AddEditDeliveryAddressPage(),
+                    ),
+                  );
+                }
               },
               theme: ThemeData(
                 useMaterial3: true,
@@ -147,6 +168,11 @@ class MyApp extends StatelessWidget {
                   color: Colors.white,
                   surfaceTintColor: Colors.transparent, // 👈 this is the key
                 ),
+                inputDecorationTheme: InputDecorationTheme(
+                  focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blue, width: 1),
+                      borderRadius: BorderRadius.circular(12)),
+                ),
               ),
             ),
           );
@@ -176,7 +202,7 @@ class AuthWrapper extends StatelessWidget {
         } else if (state is AuthInitialStartup) {
           return LoginPage();
         }
-        return Container();
+        return LoginPage();
       },
     );
   }

@@ -23,6 +23,9 @@ class DioClient {
     _dio.options.baseUrl = StringUtil.castToString(dotenv.env["BASE_API_URL"]);
     _dio.options.connectTimeout = Duration(milliseconds: 30000);
     _dio.options.receiveTimeout = Duration(milliseconds: 30000);
+    _dio.options.validateStatus = (status) {
+      return status! <= 500; // Termasuk 400 tetap dianggap valid
+    };
     _dio.options.headers = {
       HttpHeaders.contentTypeHeader: "application/json",
     };
@@ -161,10 +164,17 @@ class DioClient {
     String message = 'Koneksi terputus';
     if (e is DioError) {
       message = e.message ?? message;
+      return Response(
+        requestOptions:
+            RequestOptions(path: e.response?.requestOptions.path ?? ""),
+        statusCode: e.response?.statusCode,
+        statusMessage: message,
+        data: e.response?.data,
+      );
     }
     return Response(
       requestOptions: RequestOptions(path: ''),
-      statusCode: 999,
+      statusCode: e[""],
       statusMessage: message,
       data: {"status": 999, "message": message},
     );

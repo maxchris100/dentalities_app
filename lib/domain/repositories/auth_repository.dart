@@ -99,4 +99,18 @@ class AuthRepository {
       queryParameters: {},
     );
   }
+
+  static Future<Response> changePassword({
+    String? currentPassword,
+    String? newPassword,
+    String? newPasswordConfirm,
+    CancelToken? cancelToken,
+  }) async {
+    return await DioClient.instance
+        .post("/api/v2/account/change-password", data: {
+      "current_password": currentPassword,
+      "new_password": newPassword,
+      "new_password_confirm": newPasswordConfirm
+    });
+  }
 }

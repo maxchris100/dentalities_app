@@ -36,7 +36,7 @@ class BottomSheetSelector<T> extends StatelessWidget {
           // labelText: label,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           contentPadding:
-              const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+              const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

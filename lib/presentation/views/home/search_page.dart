@@ -1,17 +1,10 @@
 import 'package:dentalities/data/models/product_model.dart';
 import 'package:dentalities/presentation/blocs/cubit/product_cubit.dart';
-import 'package:dentalities/presentation/views/index/wishlist_tab.dart';
 import 'package:dentalities/presentation/widgets/filter_bar.dart';
 import 'package:dentalities/presentation/widgets/product_card.dart';
 import 'package:flutter/material.dart';
 import 'package:dentalities/core/router/app_router.dart';
-import 'package:dentalities/presentation/views/index/cart_tab.dart';
-import 'package:dentalities/presentation/views/index/home_tab.dart';
-import 'package:dentalities/presentation/views/index/profile_tab.dart';
-import 'package:dentalities/presentation/views/index/cs_tab.dart';
-import 'package:dentalities/presentation/widgets/app_drawer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -38,18 +31,18 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
-  final products = [
-    Product(
-      name: "Test",
-      // title: 'PureOffice Professional Intracanal Dental Whiten...',
-      // brand: Brand(name: ""),
-      // image: 'assets/images/banner.png',
-      price: 107000,
-      // oldPrice: 'Rp1.189.000',
-      // badge: 'New arrival 10%',
-    ),
-    Product(name: ""),
-  ];
+  // final products = [
+  //   Product(
+  //     name: "Test",
+  //     // title: 'PureOffice Professional Intracanal Dental Whiten...',
+  //     // brand: Brand(name: ""),
+  //     // image: 'assets/images/banner.png',
+  //     price: 107000,
+  //     // oldPrice: 'Rp1.189.000',
+  //     // badge: 'New arrival 10%',
+  //   ),
+  //   Product(name: ""),
+  // ];
   late ProductCubit productCubit;
 
   @override

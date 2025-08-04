@@ -1,3 +1,4 @@
+import 'package:dentalities/core/constant/constant.dart';
 import 'package:dentalities/core/router/app_router.dart';
 import 'package:dentalities/core/util/appversion.dart';
 import 'package:flutter/material.dart';
@@ -33,115 +34,269 @@ class _ProfileTabState extends State<ProfileTab> {
 
   @override
   Widget build(BuildContext context) {
-    // AuthCubit authCubit = context.watch<AuthCubit>();
     return MultiBlocProvider(
         providers: [
           BlocProvider(create: (context) => profileCubit),
         ],
         child: Scaffold(
           body: SafeArea(
-            // child: Container(),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  Text(
-                      "Version ${AppVersion.version}+${AppVersion.buildNumber}"),
-                  IconButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, AppRouter.deliveryAddress);
-                    },
-                    icon: const Icon(Icons.place),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: 24,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, AppRouter.userProfile);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      children: [
+                        const CircleAvatar(
+                          radius: 28,
+                          backgroundImage:
+                              AssetImage('assets/images/banner.png'),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                Constant.userLocalDataSource.userData
+                                        ?.fullName ??
+                                    "",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue,
+                                ),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                'Orthodontics',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(Icons.chevron_right),
+                      ],
+                    ),
                   ),
-                  IconButton(
-                    onPressed: () {
-                      // authCubit.logout();
-                    },
-                    icon: const Icon(Icons.logout),
-                  ),
-                  // Row(
-                  //   crossAxisAlignment: CrossAxisAlignment.center,
-                  //   children: [
-                  //     const CircleAvatar(
-                  //       radius: 30,
-                  //       backgroundColor: Colors.pinkAccent,
-                  //       child:
-                  //           Icon(Icons.person, color: Colors.white, size: 40),
-                  //     ),
-                  //     const SizedBox(width: 16),
-                  //     Expanded(
-                  //       child: Column(
-                  //         crossAxisAlignment: CrossAxisAlignment.start,
-                  //         children: const [
-                  //           Text(
-                  //             "Sunie Pham",
-                  //             style: TextStyle(
-                  //                 fontSize: 18, fontWeight: FontWeight.bold),
-                  //           ),
-                  //           Text(
-                  //             "sunieux@gmail.com",
-                  //             style: TextStyle(color: Colors.grey),
-                  //           ),
-                  //         ],
-                  //       ),
-                  //     ),
-                  //     IconButton(
-                  //       onPressed: () {},
-                  //       icon: const Icon(Icons.settings),
-                  //     ),
-                  //   ],
-                  // ),
-                  // const SizedBox(height: 32),
+                ),
 
-                  // // Menu Cards
-                  // Container(
-                  //   decoration: BoxDecoration(
-                  //     color: Colors.white,
-                  //     borderRadius: BorderRadius.circular(16),
-                  //     boxShadow: [
-                  //       BoxShadow(
-                  //         color: Colors.black12.withOpacity(0.05),
-                  //         blurRadius: 8,
-                  //         offset: const Offset(0, 4),
-                  //       ),
-                  //     ],
-                  //   ),
-                  //   child: Column(
-                  //     children: [
-                  //       _buildMenuItem(
-                  //         icon: Icons.location_on_outlined,
-                  //         title: "Address",
-                  //         onTap: () {},
-                  //       ),
-                  //       _buildDivider(),
-                  //       _buildMenuItem(
-                  //         icon: Icons.account_balance_wallet_outlined,
-                  //         title: "Payment method",
-                  //         onTap: () {},
-                  //       ),
-                  //       _buildDivider(),
-                  //       _buildMenuItem(
-                  //         icon: Icons.favorite_border,
-                  //         title: "My Wishlist",
-                  //         onTap: () {},
-                  //       ),
-                  //       _buildDivider(),
-                  //       _buildMenuItem(
-                  //         icon: Icons.star_border,
-                  //         title: "Rate this app",
-                  //         onTap: () {},
-                  //       ),
-                  //       _buildDivider(),
-                  //       _buildMenuItem(
-                  //         icon: Icons.logout,
-                  //         title: "Log out",
-                  //         onTap: () {},
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
-                ],
-              ),
+                const SizedBox(height: 12),
+                Divider(),
+                const SizedBox(height: 12),
+
+                // Account Section
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(
+                        context, AppRouter.userProfileNewPassword);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'Account',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                            const Icon(Icons.chevron_right),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(Constant.userLocalDataSource.userData?.email ??
+                                ""),
+                            Text(Constant.userLocalDataSource.userData?.phone ??
+                                ""),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: const [
+                            Text(
+                              'Password:',
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                            SizedBox(width: 6),
+                            Text(
+                              '••••••••',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Divider(),
+                const SizedBox(height: 12),
+
+                // Address Section
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, AppRouter.deliveryAddress);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Address',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                            const Icon(Icons.chevron_right),
+                          ],
+                        ),
+                        SizedBox(height: 12),
+                        (Constant.userLocalDataSource.userData?.userAddresses ??
+                                    [])
+                                .isNotEmpty
+                            ? Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    Constant.userLocalDataSource.userData
+                                            ?.userAddresses!.first.cityName ??
+                                        "",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.w500),
+                                  ),
+                                  SizedBox(height: 4),
+                                  Text(
+                                    Constant.userLocalDataSource.userData
+                                            ?.userAddresses!.first
+                                            .getShippingAddress() ??
+                                        "",
+                                    style: TextStyle(color: Colors.black87),
+                                  ),
+                                ],
+                              )
+                            : Text("")
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 16,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                      "Version ${AppVersion.version}+${AppVersion.buildNumber}"),
+                ),
+                IconButton(
+                  onPressed: () {
+                    AuthCubit authCubit = context.read<AuthCubit>();
+                    authCubit.logout();
+                  },
+                  icon: Row(
+                    children: [const Icon(Icons.logout), Text("Logout")],
+                  ),
+                ),
+                // Row(
+                //   crossAxisAlignment: CrossAxisAlignment.center,
+                //   children: [
+                //     const CircleAvatar(
+                //       radius: 30,
+                //       backgroundColor: Colors.pinkAccent,
+                //       child:
+                //           Icon(Icons.person, color: Colors.white, size: 40),
+                //     ),
+                //     const SizedBox(width: 16),
+                //     Expanded(
+                //       child: Column(
+                //         crossAxisAlignment: CrossAxisAlignment.start,
+                //         children: const [
+                //           Text(
+                //             "Sunie Pham",
+                //             style: TextStyle(
+                //                 fontSize: 18, fontWeight: FontWeight.bold),
+                //           ),
+                //           Text(
+                //             "sunieux@gmail.com",
+                //             style: TextStyle(color: Colors.grey),
+                //           ),
+                //         ],
+                //       ),
+                //     ),
+                //     IconButton(
+                //       onPressed: () {},
+                //       icon: const Icon(Icons.settings),
+                //     ),
+                //   ],
+                // ),
+                // const SizedBox(height: 32),
+
+                // // Menu Cards
+                // Container(
+                //   decoration: BoxDecoration(
+                //     color: Colors.white,
+                //     borderRadius: BorderRadius.circular(16),
+                //     boxShadow: [
+                //       BoxShadow(
+                //         color: Colors.black12.withOpacity(0.05),
+                //         blurRadius: 8,
+                //         offset: const Offset(0, 4),
+                //       ),
+                //     ],
+                //   ),
+                //   child: Column(
+                //     children: [
+                //       _buildMenuItem(
+                //         icon: Icons.location_on_outlined,
+                //         title: "Address",
+                //         onTap: () {},
+                //       ),
+                //       _buildDivider(),
+                //       _buildMenuItem(
+                //         icon: Icons.account_balance_wallet_outlined,
+                //         title: "Payment method",
+                //         onTap: () {},
+                //       ),
+                //       _buildDivider(),
+                //       _buildMenuItem(
+                //         icon: Icons.favorite_border,
+                //         title: "My Wishlist",
+                //         onTap: () {},
+                //       ),
+                //       _buildDivider(),
+                //       _buildMenuItem(
+                //         icon: Icons.star_border,
+                //         title: "Rate this app",
+                //         onTap: () {},
+                //       ),
+                //       _buildDivider(),
+                //       _buildMenuItem(
+                //         icon: Icons.logout,
+                //         title: "Log out",
+                //         onTap: () {},
+                //       ),
+                //     ],
+                //   ),
+                // ),
+              ],
             ),
           ),
         ));

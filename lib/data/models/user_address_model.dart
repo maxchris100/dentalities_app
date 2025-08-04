@@ -20,30 +20,31 @@ class UserAddress {
   final String lng;
   final DateTime createdAt;
   final DateTime updatedAt;
+  int? transactionId;
 
-  UserAddress({
-    required this.id,
-    required this.provinceName,
-    required this.cityName,
-    required this.districtName,
-    required this.villageName,
-    required this.address,
-    required this.villageCode,
-    this.jneProvinceId,
-    this.jneCityId,
-    this.jneDistrictId,
-    this.jneSubdistrictId,
-    this.jneTariffCode,
-    required this.postcode,
-    required this.userId,
-    this.firstName,
-    this.lastName,
-    this.fullName,
-    required this.lat,
-    required this.lng,
-    required this.createdAt,
-    required this.updatedAt,
-  });
+  UserAddress(
+      {required this.id,
+      required this.provinceName,
+      required this.cityName,
+      required this.districtName,
+      required this.villageName,
+      required this.address,
+      required this.villageCode,
+      this.jneProvinceId,
+      this.jneCityId,
+      this.jneDistrictId,
+      this.jneSubdistrictId,
+      this.jneTariffCode,
+      required this.postcode,
+      required this.userId,
+      this.firstName,
+      this.lastName,
+      this.fullName,
+      required this.lat,
+      required this.lng,
+      required this.createdAt,
+      required this.updatedAt,
+      this.transactionId});
 
   static List<UserAddress> fromList(List<dynamic> list) {
     return list.map((item) => UserAddress.fromJson(item)).toList();
@@ -73,6 +74,8 @@ class UserAddress {
       lng: json['lng'],
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
+      transactionId:
+          json["transaction_id"] != null ? json["transaction_id"] : null,
     );
   }
 
@@ -100,5 +103,24 @@ class UserAddress {
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
     };
+  }
+
+  String getShippingAddress() {
+    try {
+      String address = (this.address ?? "") +
+          ", " +
+          (this.provinceName ?? "") +
+          ", " +
+          (this.cityName ?? "") +
+          ", " +
+          (this.districtName ?? "") +
+          ", " +
+          (this.villageName ?? "") +
+          ", " +
+          (this.postcode ?? "");
+      return address;
+    } catch (e) {
+      return "";
+    }
   }
 }

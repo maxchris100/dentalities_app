@@ -12,15 +12,22 @@ class FeatureProductSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final products = [
       Product(
-        name: "Test",
+        name: "TotalC-Ram Permanen Adhesive Resin Cement) 8g Syringe)",
         // title: 'PureOffice Professional Intracanal Dental Whiten...',
-        // brand: Brand(name: ""),
-        // image: 'assets/images/banner.png',
-        price: 107000,
+        brand: Brand(name: "Itena"),
+        featureImage:
+            "https://mydentalshop.s3.ap-southeast-3.amazonaws.com/product/4FmL6ScFo1nn1zOfPfSe2NQH9e7mDpkciQFurRlo.jpeg",
+        price: 985000,
         // oldPrice: 'Rp1.189.000',
         // badge: 'New arrival 10%',
       ),
-      Product(name: ""),
+      // Product(
+      //   name: "Silan-IT Silane Bottle(5ml)",
+      //   brand: Brand(name: "Itena"),
+      //   price: 200000,
+      //   featureImage:
+      //       "https://mydentalshop.s3.ap-southeast-3.amazonaws.com/product/ctSjY75opxY3EHVLEpzdsdEh8RmSpgO17zYIztBP.jpeg",
+      // ),
     ];
 
     return Padding(

@@ -39,14 +39,10 @@ class CartRepository {
     int? userAddressId,
     CancelToken? cancelToken,
   }) async {
-    return await DioClient.instance.post(
-      "/api/v2/checkout/select-delivery-method",
-      data: [
-        {
-          "user_address_id": userAddressId,
-        }
-      ],
-    );
+    return await DioClient.instance
+        .post("/api/checkout/select-delivery-method", data: {
+      "user_address_id": userAddressId,
+    });
   }
 
   static Future<Response> checkOutOrder({
@@ -54,14 +50,26 @@ class CartRepository {
     String? serviceCode,
     CancelToken? cancelToken,
   }) async {
+    return await DioClient.instance.post("/api/v2/checkout", data: {
+      "user_address_id": userAddressId,
+      "service_code": serviceCode,
+    });
+  }
+
+  static Future<Response> getOrderList({
+    int? page = 1,
+    CancelToken? cancelToken,
+  }) async {
+    return await DioClient.instance
+        .get("/api/v2/transaction", queryParameters: {"page": page});
+  }
+
+  static Future<Response> getOrderDetail({
+    String? uid,
+    CancelToken? cancelToken,
+  }) async {
     return await DioClient.instance.post(
-      "/api/v2/checkout",
-      data: [
-        {
-          "user_address_id": userAddressId,
-          "service_code": serviceCode,
-        }
-      ],
+      "/api/v2/transaction/$uid",
     );
   }
 }

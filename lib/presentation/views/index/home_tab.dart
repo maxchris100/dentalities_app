@@ -54,6 +54,7 @@ class _HomeTabState extends State<HomeTab> {
         children: [
           const SizedBox(height: 12),
           HomeBannerSection(),
+          const SizedBox(height: 24),
           BlocBuilder(
               bloc: homeCubit,
               builder: (context, state) {
@@ -68,14 +69,17 @@ class _HomeTabState extends State<HomeTab> {
                         mainAxisSpacing: 12,
                         crossAxisSpacing: 12,
                         childAspectRatio: 1,
-                        children: homeCubit.data.featureCategories.map((e) {
+                        children: homeCubit.data.featureCategories
+                            .where((e) => e.name != "Testing Category")
+                            .toList()
+                            .map((e) {
                           return GestureDetector(
                             onTap: () {
                               Navigator.pushNamed(context, AppRouter.search,
                                   arguments: {"categoryslug": e.slug});
                             },
                             child: _CategoryItem(
-                                e.featureImageUrl ??
+                                e.featureImageThumbUrl ??
                                     'assets/icons/home_icon.svg',
                                 e.name),
                           );
@@ -208,7 +212,18 @@ class _CategoryItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Image.network(image, width: 48, height: 48),
+        Image.network(
+          image,
+          width: 48,
+          height: 48,
+          errorBuilder: (context, error, stackTrace) {
+            return Image.asset(
+              "assets/images/banner.png",
+              width: 48,
+              height: 48,
+            );
+          },
+        ),
         const SizedBox(height: 6),
         Text(
           title,

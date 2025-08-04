@@ -74,7 +74,6 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   Future<void> getProductByCategorySlug(String categorySlug) async {
-    print("categoryslug");
     try {
       final res =
           await ProductRepository.getCategoryProducts(slug: categorySlug);

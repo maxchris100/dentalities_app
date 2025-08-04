@@ -85,7 +85,7 @@ class UserModel extends Equatable {
   }
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
-    print("@");
+    // print("@");
     return UserModel(
       id: map['id'] != null ? map['id'] as int : null,
       iat: map['iat'] != null ? map['iat'] as int : null,

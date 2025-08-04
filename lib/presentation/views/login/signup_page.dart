@@ -642,7 +642,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 onPressed: _currentStep > 0 ? _prevStep : null,
                                 style: ElevatedButton.styleFrom(
                                   padding:
-                                      const EdgeInsets.symmetric(vertical: 16),
+                                      const EdgeInsets.symmetric(vertical: 12),
                                   backgroundColor: Colors.white,
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12)),
@@ -660,7 +660,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                     _currentStep == 2 ? _register : _nextStep,
                                 style: ElevatedButton.styleFrom(
                                     padding: const EdgeInsets.symmetric(
-                                        vertical: 16),
+                                        vertical: 12),
                                     backgroundColor: _currentStep == 2
                                         ? Colors.blue
                                         : Colors.white,

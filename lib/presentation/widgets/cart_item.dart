@@ -129,7 +129,8 @@ class CartItemWidget extends StatelessWidget {
                 Checkbox(
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   value: isSelected,
-                  onChanged: onChecked,
+                  // onChanged: onChecked,
+                  onChanged: null,
                   activeColor: Colors.blue,
                 ),
                 Expanded(

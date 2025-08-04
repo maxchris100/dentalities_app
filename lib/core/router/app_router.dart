@@ -7,6 +7,8 @@ import 'package:dentalities/presentation/views/order/checkout1_page.dart';
 import 'package:dentalities/presentation/views/order/payment_complete.dart';
 import 'package:dentalities/presentation/views/profile/add_delivery_address_page.dart';
 import 'package:dentalities/presentation/views/profile/delivery_address_page.dart';
+import 'package:dentalities/presentation/views/profile/profile_change_password_page.dart';
+import 'package:dentalities/presentation/views/profile/profile_change_profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:dentalities/presentation/views/index/home_page.dart';
 import 'package:dentalities/presentation/views/login/create_new_password_page.dart';
@@ -17,7 +19,7 @@ import 'package:dentalities/presentation/views/login/signup_page.dart';
 import 'package:dentalities/presentation/views/notification/notification_page.dart';
 import 'package:dentalities/presentation/views/order/cart_page.dart';
 import 'package:dentalities/presentation/views/order/order_detail_page.dart';
-import 'package:dentalities/presentation/views/order/order_page.dart';
+import 'package:dentalities/presentation/views/order/order_payment_page.dart';
 import 'package:dentalities/presentation/views/order/product_detail_page.dart';
 import 'package:dentalities/presentation/views/order/rate_product_page.dart';
 import 'package:dentalities/presentation/views/order/track_order_page.dart';
@@ -42,11 +44,13 @@ class AppRouter {
   static const String productDetail = '/product-detail';
   //other
   static const String userProfile = '/user-profile';
+  static const String userProfileNewPassword = '/change-password';
   static const String orderCheckout = '/order-checkout';
   static const String trackOrder = '/track-order';
   static const String doctorTestimonial = '/doctor-testimonial';
   static const String productVideo = '/product-video';
   static const String order = '/order';
+  static const String orderPayment = '/order-payment';
   static const String orderDetail = '/order-detail';
   static const String paymentComplete = '/payment-complete';
   static const String cart = '/cart';
@@ -72,6 +76,8 @@ class AppRouter {
       "/welcome": (context) => WelcomePage(),
       "/startup": (context) => StartupPage(),
       "/home": (context) => HomePage(),
+      userProfile: (context) => ProfileChangeProfilePage(),
+      userProfileNewPassword: (context) => ProfileChangePasswordPage(),
       search: (context) => SearchPage(),
       doctorTestimonial: (context) => DoctorTestimonialPage(),
       productVideo: (context) => ProductVideoPage(),
@@ -82,6 +88,7 @@ class AppRouter {
       paymentComplete: (context) => PaymentCompletePage(),
       // "/order": (context) => OrderPage(),
       "/wishlist": (context) => WishlistPage(),
+      "/order-payment": (context) => OrderPaymentPage(),
       "/order-detail": (context) => OrderDetailPage(),
       "/rate-product": (context) => RateProductPage(),
       deliveryAddress: (context) => DeliveryAddressPage(),

@@ -3,6 +3,7 @@ import 'package:dentalities/presentation/widgets/product_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dentalities/presentation/blocs/cubit/auth_cubit.dart';
+import 'package:dentalities/presentation/blocs/cubit/product_cubit.dart';
 import 'package:dentalities/presentation/blocs/cubit/profile_cubit.dart';
 import 'package:dentalities/presentation/widgets/home/feature_product.dart';
 import 'package:dentalities/presentation/widgets/recommended_product.dart';
@@ -19,12 +20,14 @@ class _WishlistTabState extends State<WishlistTab> {
   @override
   void initState() {
     super.initState();
+    productCubit = ProductCubit();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      getData();
+      productCubit.getSearchProduct(null);
+      // getData();
     });
   }
 
-  ProfileCubit profileCubit = ProfileCubit();
+  late ProductCubit productCubit;
   void getData() async {
     try {} catch (ex) {}
   }
@@ -46,29 +49,35 @@ class _WishlistTabState extends State<WishlistTab> {
     AuthCubit authCubit = context.watch<AuthCubit>();
     return MultiBlocProvider(
         providers: [
-          BlocProvider(create: (context) => profileCubit),
+          BlocProvider<ProductCubit>(
+            create: (context) => productCubit,
+          ),
         ],
-        child: Scaffold(
-          body: SafeArea(
-              child: Column(
-            children: [
-              Expanded(
-                  child: GridView.count(
-                crossAxisCount: 2,
-                padding: const EdgeInsets.all(12),
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 16,
-                childAspectRatio: 0.6, // sesuaikan tinggi/lebarnya
-                shrinkWrap: true,
-                physics:
-                    NeverScrollableScrollPhysics(), // kalau sudah dalam scroll view
-                children: products.map((product) {
-                  return ProductCard(product: product);
-                }).toList(),
-              )),
-            ],
-          )),
-        ));
+        child: BlocBuilder<ProductCubit, ProductState>(
+            bloc: productCubit,
+            builder: (context, state) {
+              return Scaffold(
+                body: SafeArea(
+                    child: Column(
+                  children: [
+                    Expanded(
+                        child: GridView.count(
+                      crossAxisCount: 2,
+                      padding: const EdgeInsets.all(12),
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 16,
+                      childAspectRatio: 0.6, // sesuaikan tinggi/lebarnya
+                      shrinkWrap: true,
+                      physics:
+                          NeverScrollableScrollPhysics(), // kalau sudah dalam scroll view
+                      children: productCubit.data.listProduct.map((product) {
+                        return ProductCard(product: product);
+                      }).toList(),
+                    )),
+                  ],
+                )),
+              );
+            }));
   }
 
   Widget _buildMenuItem(

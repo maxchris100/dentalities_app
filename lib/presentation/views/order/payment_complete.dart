@@ -8,7 +8,7 @@ class PaymentCompletePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Check out", style: TextStyle(color: Colors.black)),
+        title: const Text("", style: TextStyle(color: Colors.black)),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
@@ -20,21 +20,29 @@ class PaymentCompletePage extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 40),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              "Complete Your Payment",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Complete Your Payment",
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 40),
+                  SvgPicture.asset("assets/icons/complete_payment.svg"),
+                  const SizedBox(height: 20),
+                  const Text(
+                    "We are checking your registered data and will get back soon once it’s done",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.grey, fontSize: 16),
+                  ),
+                  SizedBox(
+                    height: 24,
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 40),
-            SvgPicture.asset("assets/icons/complete_payment.svg"),
-            const SizedBox(height: 20),
-            const Text(
-              "We are checking your registered data and will get back soon once it’s done",
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey, fontSize: 16),
-            ),
-            const Spacer(),
             SizedBox(
               width: double.infinity,
               height: 50,

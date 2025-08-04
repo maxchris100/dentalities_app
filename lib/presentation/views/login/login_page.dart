@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:dentalities/core/router/app_router.dart';
 import 'package:dentalities/data/data_sources/user_local_data_source.dart';
@@ -18,7 +19,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   bool isDev = false;
   bool _isLoading = false;
-  bool obscureText = false;
+  bool obscureText = true;
   late String selectedLocal;
   final _formKey = GlobalKey<FormState>();
 
@@ -85,7 +86,7 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 children: [
                   Container(
-                    height: 90,
+                    height: 60,
                     decoration: const BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
@@ -144,14 +145,14 @@ class _LoginPageState extends State<LoginPage> {
                             // ),
                           ],
                         ),
-                        const SizedBox(height: 40),
+                        const SizedBox(height: 12),
 
                         Text(
                           "Sign in to your account",
                           style: TextStyle(
                               fontSize: 24, fontWeight: FontWeight.bold),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 2),
                         Text(
                           "Enter your email and password to log in",
                           style: TextStyle(color: Colors.grey[600]),
@@ -210,18 +211,21 @@ class _LoginPageState extends State<LoginPage> {
                         ),
 
                         // Forgot Password
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton(
-                            onPressed: () {
-                              Navigator.pushNamed(
-                                  context, AppRouter.forgotPassword);
-                            },
-                            child: const Text(
-                              'Forgot Password?',
-                              style: TextStyle(
-                                color: Colors.blue,
-                                fontWeight: FontWeight.bold,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, AppRouter.forgotPassword);
+                              },
+                              child: const Text(
+                                'Forgot Password?',
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),
@@ -236,7 +240,7 @@ class _LoginPageState extends State<LoginPage> {
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12)),
                             ),
@@ -248,39 +252,39 @@ class _LoginPageState extends State<LoginPage> {
                         const SizedBox(height: 20),
 
                         // OR separator
-                        Row(
-                          children: [
-                            const Expanded(child: Divider()),
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Text("Or"),
-                            ),
-                            const Expanded(child: Divider()),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
+                        // Row(
+                        //   children: [
+                        //     const Expanded(child: Divider()),
+                        //     const Padding(
+                        //       padding: EdgeInsets.symmetric(horizontal: 8.0),
+                        //       child: Text("Or"),
+                        //     ),
+                        //     const Expanded(child: Divider()),
+                        //   ],
+                        // ),
+                        // const SizedBox(height: 20),
 
                         // Google Sign In
-                        SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton.icon(
-                            onPressed: () {},
-                            icon: SvgPicture.asset("assets/icons/google.svg"),
-                            label: const Text(
-                              'Continue with Google',
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              side: BorderSide(color: Colors.grey[300]!),
-                            ),
-                          ),
-                        ),
+                        // SizedBox(
+                        //   width: double.infinity,
+                        //   child: OutlinedButton.icon(
+                        //     onPressed: () {},
+                        //     icon: SvgPicture.asset("assets/icons/google.svg"),
+                        //     label: const Text(
+                        //       'Continue with Google',
+                        //       style: TextStyle(
+                        //           color: Colors.black,
+                        //           fontWeight: FontWeight.bold),
+                        //     ),
+                        //     style: OutlinedButton.styleFrom(
+                        //       padding: const EdgeInsets.symmetric(vertical: 14),
+                        //       shape: RoundedRectangleBorder(
+                        //         borderRadius: BorderRadius.circular(12),
+                        //       ),
+                        //       side: BorderSide(color: Colors.grey[300]!),
+                        //     ),
+                        //   ),
+                        // ),
                         const SizedBox(height: 30),
 
                         // Register
@@ -298,10 +302,12 @@ class _LoginPageState extends State<LoginPage> {
                           ],
                         ),
 
-                        Text(
-                          "Version ${AppVersion.version}+${AppVersion.buildNumber}",
-                          textAlign: TextAlign.center,
-                        ),
+                        // Center(
+                        //   child: Text(
+                        //     "Version ${AppVersion.version}+${AppVersion.buildNumber}",
+                        //     textAlign: TextAlign.center,
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),

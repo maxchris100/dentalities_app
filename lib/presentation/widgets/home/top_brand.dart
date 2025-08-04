@@ -60,7 +60,7 @@ class TopBrandSection extends StatelessWidget {
                   borderRadius:
                       BorderRadius.circular(12), // Sama dengan BoxDecoration
                   child: Image.network(
-                    brand.featureImageUrl,
+                    brand.featureImageUrl ?? "",
                     fit: BoxFit.cover,
                   ),
                 ),

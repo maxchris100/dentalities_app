@@ -1,5 +1,6 @@
 import 'package:dentalities/core/constant/constant.dart';
 import 'package:dentalities/core/router/app_router.dart';
+import 'package:dentalities/domain/repositories/profile_repository.dart';
 import 'package:dentalities/presentation/blocs/cubit/home_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,10 +20,19 @@ class _DeliveryAddressPageState extends State<DeliveryAddressPage> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // HomeCubit hc = context.read<HomeCubit>();
-      // hc.fetchProfile();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      HomeCubit hc = context.read<HomeCubit>();
+      await hc.fetchProfile();
+      setState(() {});
     });
+  }
+
+  Future onDelete(id) async {
+    var res = await ProfileRepository.deleteAddress(userAddressId: id);
+
+    HomeCubit homeCubit = context.read<HomeCubit>();
+    await homeCubit.fetchProfile();
+    setState(() {});
   }
 
   @override
@@ -53,6 +63,7 @@ class _DeliveryAddressPageState extends State<DeliveryAddressPage> {
                         .entries
                         .map((e) {
               return _AddressCard(
+                id: e.value.id,
                 isSelected: e.key == 0,
                 icon: "assets/icons/address_office.svg",
                 title: e.value.firstName ?? "",
@@ -67,6 +78,9 @@ class _DeliveryAddressPageState extends State<DeliveryAddressPage> {
                 onEdit: () {
                   Navigator.pushNamed(context, AppRouter.deliveryAddressAdd,
                       arguments: {"address": e.value});
+                },
+                onDelete: (id) {
+                  onDelete(id);
                 },
               );
             }).toList()),
@@ -101,20 +115,24 @@ class _DeliveryAddressPageState extends State<DeliveryAddressPage> {
 }
 
 class _AddressCard extends StatelessWidget {
+  final int id;
   final bool isSelected;
   final String icon;
   final String title;
   final String address;
   final String addressDetail;
   final VoidCallback onEdit;
+  final Function(int id) onDelete;
 
   const _AddressCard({
+    required this.id,
     required this.isSelected,
     required this.icon,
     required this.title,
     required this.address,
     required this.addressDetail,
     required this.onEdit,
+    required this.onDelete,
   });
 
   @override
@@ -164,12 +182,29 @@ class _AddressCard extends StatelessWidget {
                 ],
               ),
             ),
-            TextButton(
-              onPressed: onEdit,
-              child: const Text(
-                "Edit",
-                style: TextStyle(color: Colors.red),
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                GestureDetector(
+                  onTap: onEdit,
+                  child: const Text(
+                    "Edit",
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
+                SizedBox(
+                  height: 8,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    onDelete(id);
+                  },
+                  child: const Text(
+                    "Delete",
+                    style: TextStyle(color: Colors.red),
+                  ),
+                )
+              ],
             )
           ],
         ),

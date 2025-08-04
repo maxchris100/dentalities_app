@@ -61,7 +61,7 @@ class Product {
   }
 
   factory Product.fromJson(Map<String, dynamic> json) {
-    print("@");
+    print("@Product Model");
     return Product(
       featureImageUrl: json['feature_image_url'] ?? '',
       isDiscounted: json['is_discounted'] ?? false,

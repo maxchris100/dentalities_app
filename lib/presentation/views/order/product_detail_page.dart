@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dentalities/core/router/app_router.dart';
 import 'package:dentalities/core/util/string_util.dart';
 import 'package:dentalities/data/models/product_model.dart';
@@ -80,8 +83,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         Product? product;
         if (state is ProductLoaded) {
           product = state.data.product;
-          print(product);
         }
+        log("@PRODUCT MEDIA: ${product?.productMedia?.length}");
         return Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
@@ -131,14 +134,32 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     Center(
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(12),
-                        child: Image.network(
-                          product?.featureImageUrl ?? "",
-                          height: 250,
-                          width: 250,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Image.asset("assets/images/banner.png");
-                          },
+                        child: CarouselSlider(
+                          options: CarouselOptions(
+                            height: 250,
+                            enlargeCenterPage: true,
+                            enableInfiniteScroll: false,
+                            autoPlay: true,
+                            viewportFraction: 1, // biar full width
+                          ),
+                          items: (product?.productMedia ?? []).map((media) {
+                            return Builder(
+                              builder: (BuildContext context) {
+                                return Image.network(
+                                  media.imageUrl,
+                                  width: 250,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Image.asset(
+                                      "assets/images/banner.png",
+                                      width: 250,
+                                      fit: BoxFit.cover,
+                                    );
+                                  },
+                                );
+                              },
+                            );
+                          }).toList(),
                         ),
                       ),
                     ),

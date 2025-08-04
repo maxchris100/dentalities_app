@@ -234,9 +234,9 @@ class _CartPageState extends State<CartPage> {
                     };
                     Navigator.pushNamed(context, AppRouter.orderCheckout,
                         arguments: {
-                          "total": StringUtil.formatMoney(total),
-                          "grand_total": StringUtil.formatMoney(total),
-                          "discount": StringUtil.formatMoney(0),
+                          "total": StringUtil.castToString(total),
+                          "grand_total": StringUtil.castToString(total),
+                          "discount": StringUtil.castToString(0),
                           "selected": selected,
                           "selected_cart": selectedCartItem,
                           "quantity": quantity,
@@ -269,29 +269,33 @@ class _CartPageState extends State<CartPage> {
         borderRadius: BorderRadius.circular(50),
       ),
       child: Stack(
+        alignment: Alignment.center,
         children: [
+          // Circle yang bergerak
           AnimatedAlign(
             duration: const Duration(milliseconds: 250),
             alignment: isGrid ? Alignment.centerLeft : Alignment.centerRight,
-            child: Container(
-              width: 38,
-              height: 38,
-              margin: const EdgeInsets.all(2),
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white,
+            child: Padding(
+              padding: const EdgeInsets.all(2), // biar tidak nempel ke edge
+              child: Container(
+                width: 36,
+                height: 36,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white,
+                ),
               ),
             ),
           ),
+          // Icon Grid dan List
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               buildIcon(
                 icon: "assets/icons/view_grid.svg",
                 selected: isGrid,
                 onTap: () => setState(() => isGrid = true),
               ),
-              const SizedBox(width: 8),
               buildIcon(
                 icon: "assets/icons/view_list.svg",
                 selected: !isGrid,

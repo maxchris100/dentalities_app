@@ -86,14 +86,16 @@ class _HomePageState extends State<HomePage> {
                   Positioned(
                       top: 0,
                       right: 0,
-                      child: Container(
-                        height: 5,
-                        width: 5,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.red,
-                        ),
-                      ))
+                      child: Visibility(
+                          visible: false,
+                          child: Container(
+                            height: 5,
+                            width: 5,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.red,
+                            ),
+                          )))
                 ],
               )),
           Padding(
@@ -108,12 +110,15 @@ class _HomePageState extends State<HomePage> {
                   Positioned(
                       top: 5,
                       right: 5,
-                      child: Container(
-                        height: 5,
-                        width: 5,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.red,
+                      child: Visibility(
+                        visible: false,
+                        child: Container(
+                          height: 5,
+                          width: 5,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.red,
+                          ),
                         ),
                       ))
                 ],

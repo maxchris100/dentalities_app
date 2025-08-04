@@ -1,3 +1,5 @@
+import 'package:dentalities/data/models/transaction_response_model.dart';
+import 'package:dentalities/presentation/blocs/cubit/cart_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dentalities/core/router/app_router.dart';
@@ -13,83 +15,85 @@ class CartTab extends StatefulWidget {
 }
 
 class _CartTabState extends State<CartTab> with TickerProviderStateMixin {
-  String selectedFilter = 'DELIVERED'; // default filter
+  String selectedFilter = 'unpaid'; // default filter
 
-  final List<Map<String, dynamic>> _orders = [
-    {
-      'orderId': '#1514',
-      'date': '13/05/2021',
-      'trackingNumber': 'IK987362341',
-      'quantity': 2,
-      'subtotal': 110,
-      'status': 'DELIVERED',
-    },
-    {
-      'orderId': '#1679',
-      'date': '12/05/2021',
-      'trackingNumber': 'IK3873218890',
-      'quantity': 3,
-      'subtotal': 450,
-      'status': 'DELIVERED',
-    },
-  ];
+  // final List<Map<String, dynamic>> _orders = [
+  //   {
+  //     'orderId': '#1514',
+  //     'date': '13/05/2021',
+  //     'trackingNumber': 'IK987362341',
+  //     'quantity': 2,
+  //     'subtotal': 110,
+  //     'status': 'DELIVERED',
+  //   },
+  //   {
+  //     'orderId': '#1679',
+  //     'date': '12/05/2021',
+  //     'trackingNumber': 'IK3873218890',
+  //     'quantity': 3,
+  //     'subtotal': 450,
+  //     'status': 'DELIVERED',
+  //   },
+  // ];
 
+  late CartCubit cartCubit;
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      cartCubit = context.read<CartCubit>();
       getData();
     });
   }
 
-  ProfileCubit profileCubit = ProfileCubit();
+  List<Transaction> filteredOrders = [];
   void getData() async {
-    try {} catch (ex) {}
+    try {
+      await cartCubit.getOrderList();
+      filteredOrders = (cartCubit.data.transaction?.transactions ?? [])
+          .where((order) => order.status == selectedFilter)
+          .toList();
+      setState(() {});
+    } catch (ex) {}
   }
 
   @override
   Widget build(BuildContext context) {
-    AuthCubit authCubit = context.watch<AuthCubit>();
-    final filteredOrders =
-        _orders.where((order) => order['status'] == selectedFilter).toList();
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (context) => profileCubit),
-      ],
-      child: Scaffold(
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              // const SizedBox(height: 16),
-              // _buildFilterButtons(),
-              // const SizedBox(height: 16),
-              // Expanded(
-              //   child: filteredOrders.isEmpty
-              //       ? const Center(child: Text('No orders found'))
-              //       : ListView.builder(
-              //           padding: const EdgeInsets.symmetric(horizontal: 16),
-              //           itemCount: filteredOrders.length,
-              //           itemBuilder: (context, index) {
-              //             final order = filteredOrders[index];
-              //             return GestureDetector(
-              //                 onTap: () {
-              //                   Navigator.pushNamed(
-              //                       context, AppRouter.orderDetail);
-              //                 },
-              //                 child: OrderItem());
-              //           },
-              //         ),
-              // ),
-            ],
-          ),
+    // AuthCubit authCubit = context.watch<AuthCubit>();
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            const SizedBox(height: 16),
+            _buildFilterButtons(),
+            const SizedBox(height: 16),
+            Expanded(
+              child: filteredOrders.isEmpty
+                  ? const Center(child: Text('No orders found'))
+                  : ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: filteredOrders.length,
+                      itemBuilder: (context, index) {
+                        final order = filteredOrders[index];
+                        return GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(
+                                  context, AppRouter.orderDetail,
+                                  arguments: {"item": order});
+                            },
+                            child: OrderItem(item: order));
+                      },
+                    ),
+            ),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildFilterButtons() {
-    final filters = ['Pending', 'DELIVERED', 'Cancelled'];
+    final filters = ['unpaid', 'paid'];
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -101,6 +105,11 @@ class _CartTabState extends State<CartTab> with TickerProviderStateMixin {
             onPressed: () {
               setState(() {
                 selectedFilter = filter;
+
+                filteredOrders =
+                    (cartCubit.data.transaction?.transactions ?? [])
+                        .where((order) => order.status == selectedFilter)
+                        .toList();
               });
             },
             style: TextButton.styleFrom(

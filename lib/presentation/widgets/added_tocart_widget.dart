@@ -80,7 +80,7 @@ class _AddedToCartWidgetState extends State<AddedToCartWidget> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                       side: BorderSide(color: Colors.blue)),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
                 child: const Text('Explore More',
                     style: TextStyle(fontSize: 16, color: Colors.blue)),
@@ -97,7 +97,7 @@ class _AddedToCartWidgetState extends State<AddedToCartWidget> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
                 child: const Text('Open Cart',
                     style: TextStyle(fontSize: 16, color: Colors.white)),

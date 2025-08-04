@@ -46,7 +46,7 @@ class _ToastWidget extends StatefulWidget {
 }
 
 class _ToastWidgetState extends State<_ToastWidget>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Offset> _offsetAnimation;
   late AnimationController _progressController;
@@ -109,7 +109,7 @@ class _ToastWidgetState extends State<_ToastWidget>
             builder: (context, child) {
               return Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(50),
                   gradient: LinearGradient(
                     begin: Alignment.centerLeft,
                     end: Alignment.centerRight,
@@ -124,7 +124,7 @@ class _ToastWidgetState extends State<_ToastWidget>
               );
             },
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
               child: Row(
                 children: [
                   const Icon(Icons.check_circle, color: Colors.green),
@@ -146,14 +146,15 @@ class _ToastWidgetState extends State<_ToastWidget>
                     style: TextButton.styleFrom(
                       side: const BorderSide(color: Colors.green),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(50),
                       ),
                       backgroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 4),
                     ),
                     child: const Text(
                       'View Cart',
-                      style: TextStyle(color: Colors.green),
+                      style: TextStyle(color: Colors.green, fontSize: 11),
                     ),
                   ),
                 ],

@@ -1,26 +1,26 @@
 class Brand {
-  final int id;
-  final String name;
-  final String slug;
-  final bool isPublish;
-  final int sortOrder;
-  final int countryId;
-  final String featureImageUrl;
-  final String featureImage;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final int? id;
+  final String? name;
+  final String? slug;
+  final bool? isPublish;
+  final int? sortOrder;
+  final int? countryId;
+  final String? featureImageUrl;
+  final String? featureImage;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
 
   Brand({
-    required this.id,
-    required this.name,
-    required this.slug,
-    required this.isPublish,
-    required this.sortOrder,
-    required this.countryId,
-    required this.featureImageUrl,
-    required this.featureImage,
-    required this.createdAt,
-    required this.updatedAt,
+    this.id,
+    this.name,
+    this.slug,
+    this.isPublish,
+    this.sortOrder,
+    this.countryId,
+    this.featureImageUrl,
+    this.featureImage,
+    this.createdAt,
+    this.updatedAt,
   });
 
   static List<Brand> fromList(List<dynamic> list) {
@@ -37,8 +37,12 @@ class Brand {
       countryId: json['country_id'],
       featureImageUrl: json['feature_image_url'],
       featureImage: json['feature_image'],
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
+      createdAt: json['createdAt'] != null
+          ? DateTime.tryParse(json['createdAt'])
+          : null,
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.tryParse(json['updatedAt'])
+          : null,
     );
   }
 
@@ -52,8 +56,8 @@ class Brand {
       'country_id': countryId,
       'feature_image_url': featureImageUrl,
       'feature_image': featureImage,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
+      'createdAt': createdAt?.toIso8601String(),
+      'updatedAt': updatedAt?.toIso8601String(),
     };
   }
 }

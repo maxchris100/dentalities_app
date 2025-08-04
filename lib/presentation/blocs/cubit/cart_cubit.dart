@@ -2,7 +2,9 @@ import 'dart:developer';
 
 import 'package:dentalities/core/util/toast_util.dart';
 import 'package:dentalities/data/models/cart_model.dart';
+import 'package:dentalities/data/models/delivery_method_model.dart';
 import 'package:dentalities/data/models/product_model.dart';
+import 'package:dentalities/data/models/transaction_response_model.dart';
 import 'package:dentalities/domain/repositories/cart_repository.dart';
 import 'package:dentalities/domain/repositories/product_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,17 +14,31 @@ class CartData {
   final CartResponse? cart;
   final Product? product;
   final List<Product> relatedProduct;
-  CartData({this.cart, this.product, this.relatedProduct = const []});
+  final List<DeliveryMethod> deliveryMethod;
+  final TransactionResponse? transaction;
+  final Transaction? transactionDetail;
+  CartData(
+      {this.cart,
+      this.product,
+      this.transaction,
+      this.transactionDetail,
+      this.relatedProduct = const [],
+      this.deliveryMethod = const []});
 
-  CartData copyWith({
-    CartResponse? cart,
-    Product? product,
-    List<Product>? relatedProduct,
-  }) {
+  CartData copyWith(
+      {CartResponse? cart,
+      Product? product,
+      List<Product>? relatedProduct,
+      List<DeliveryMethod>? deliveryMethod,
+      TransactionResponse? transaction,
+      Transaction? transactionDetail}) {
     return CartData(
         cart: cart ?? this.cart,
         product: product ?? this.product,
-        relatedProduct: relatedProduct ?? this.relatedProduct);
+        relatedProduct: relatedProduct ?? this.relatedProduct,
+        deliveryMethod: deliveryMethod ?? this.deliveryMethod,
+        transaction: transaction ?? this.transaction,
+        transactionDetail: transactionDetail ?? this.transactionDetail);
   }
 }
 
@@ -97,10 +113,49 @@ class CartCubit extends Cubit<CartState> {
     }
   }
 
-  Future<void> checkoutCart(int? userAddressId) async {
+  Future<void> getDeliveryMethod(int? userAddressId) async {
+    try {
+      final res =
+          await CartRepository.getDeliveryMethod(userAddressId: userAddressId);
+      List<DeliveryMethod> datas =
+          DeliveryMethod.fromList(res.data["data"]["price"]);
+
+      data = data.copyWith(deliveryMethod: datas);
+      emit(CartLoaded(data));
+    } catch (e) {
+      emit(CartError('Failed to load delivery method: $e'));
+    }
+  }
+
+  Future<dynamic> checkoutCart(int? userAddressId, String? serviceCode) async {
     try {
       final res = await CartRepository.checkOutOrder(
-          userAddressId: userAddressId, serviceCode: "REG");
-    } catch (e) {}
+          userAddressId: userAddressId, serviceCode: serviceCode);
+      return res.data;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<void> getOrderList({int? page = 1}) async {
+    try {
+      final datas = await CartRepository.getOrderList(page: page);
+      TransactionResponse p = TransactionResponse.fromJson(datas.data["data"]);
+      data = data.copyWith(transaction: p);
+      emit(CartLoaded(data));
+    } catch (e) {
+      emit(CartError('Failed to load order: $e'));
+    }
+  }
+
+  Future<void> getOrderDetail(String? id) async {
+    try {
+      final datas = await CartRepository.getOrderDetail(uid: id);
+      Transaction p = Transaction.fromJson(datas.data["data"]);
+      data = data.copyWith(transactionDetail: p);
+      emit(CartLoaded(data));
+    } catch (e) {
+      emit(CartError('Failed to load order detail: $e'));
+    }
   }
 }

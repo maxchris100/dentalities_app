@@ -108,7 +108,8 @@ class _FilterBrandState extends State<FilterBrand> {
                       setState(() {
                         isSelected
                             ? selectedBrands.remove(brand.id)
-                            : selectedBrands.putIfAbsent(brand.id, () => brand);
+                            : selectedBrands.putIfAbsent(
+                                brand.id!, () => brand);
                       });
                     },
                     child: Container(
@@ -124,7 +125,7 @@ class _FilterBrandState extends State<FilterBrand> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: Image.network(
-                          brand.featureImageUrl,
+                          brand.featureImageUrl ?? "",
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -152,7 +153,7 @@ class _FilterBrandState extends State<FilterBrand> {
                 style: TextStyle(color: Colors.white),
               ),
               style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: 16),
+                padding: EdgeInsets.symmetric(vertical: 12),
                 backgroundColor: Colors.blue,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),

@@ -168,7 +168,15 @@ class MyApp extends StatelessWidget {
                   color: Colors.white,
                   surfaceTintColor: Colors.transparent, // 👈 this is the key
                 ),
+                textSelectionTheme: TextSelectionThemeData(
+                  cursorColor: Colors.blue,
+                  selectionHandleColor: Colors.blue,
+                ),
                 inputDecorationTheme: InputDecorationTheme(
+                  enabledBorder: OutlineInputBorder(
+                      borderSide:
+                          BorderSide(color: Colors.grey[300]!, width: 1),
+                      borderRadius: BorderRadius.circular(12)),
                   focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.blue, width: 1),
                       borderRadius: BorderRadius.circular(12)),

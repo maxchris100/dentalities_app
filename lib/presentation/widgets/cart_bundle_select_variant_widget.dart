@@ -214,7 +214,7 @@ class _CartSelectVariantWidgetState extends State<CartSelectVariantWidget> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
                 child: const Text('Add to Cart',
                     style: TextStyle(fontSize: 16, color: Colors.white)),

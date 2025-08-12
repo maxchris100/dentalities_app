@@ -146,10 +146,9 @@ class _FilterBarState extends State<FilterBar> {
         child: Row(
           children: [
             Visibility(
-              visible: selectedSort != null &&
-                  onPromo &&
-                  readyStock &&
-                  selectedBrands.isNotEmpty &&
+              visible: selectedSort != null && onPromo ||
+                  readyStock ||
+                  selectedBrands.isNotEmpty ||
                   selectedCategories.isNotEmpty,
               child: OutlinedButton.icon(
                 onPressed: _clearFilters,
@@ -169,6 +168,7 @@ class _FilterBarState extends State<FilterBar> {
                   style: TextStyle(
                       color: selectedSort != null ? Colors.blue : Colors.grey)),
               style: OutlinedButton.styleFrom(
+                minimumSize: Size(0, 36),
                 backgroundColor: Colors.white,
                 side: BorderSide(
                     color: selectedSort != null ? Colors.blue : Colors.grey),
@@ -184,6 +184,7 @@ class _FilterBarState extends State<FilterBar> {
                 style: TextStyle(color: onPromo ? Colors.blue : Colors.grey),
               ),
               style: OutlinedButton.styleFrom(
+                minimumSize: Size(0, 36),
                 side: BorderSide(color: onPromo ? Colors.blue : Colors.grey),
                 foregroundColor: onPromo ? Colors.blue : Colors.grey,
               ),
@@ -192,6 +193,7 @@ class _FilterBarState extends State<FilterBar> {
             OutlinedButton(
               onPressed: _showCategoryOptions,
               style: OutlinedButton.styleFrom(
+                minimumSize: Size(0, 36),
                 side: BorderSide(
                   color:
                       selectedCategories.isNotEmpty ? Colors.blue : Colors.grey,
@@ -224,6 +226,7 @@ class _FilterBarState extends State<FilterBar> {
             OutlinedButton(
               onPressed: _showBrandsOptions,
               style: OutlinedButton.styleFrom(
+                minimumSize: Size(0, 36),
                 side: BorderSide(
                   color: selectedBrands.isNotEmpty ? Colors.blue : Colors.grey,
                 ),
@@ -260,6 +263,7 @@ class _FilterBarState extends State<FilterBar> {
                 style: TextStyle(color: readyStock ? Colors.blue : Colors.grey),
               ),
               style: OutlinedButton.styleFrom(
+                minimumSize: Size(0, 36),
                 side: BorderSide(color: readyStock ? Colors.blue : Colors.grey),
                 foregroundColor: readyStock ? Colors.blue : Colors.grey,
               ),

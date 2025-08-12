@@ -21,6 +21,26 @@ class FeatureProductSection extends StatelessWidget {
         // oldPrice: 'Rp1.189.000',
         // badge: 'New arrival 10%',
       ),
+      Product(
+        name: "TotalC-Ram Permanen Adhesive Resin Cement) 8g Syringe)",
+        // title: 'PureOffice Professional Intracanal Dental Whiten...',
+        brand: Brand(name: "Itena"),
+        featureImage:
+            "https://mydentalshop.s3.ap-southeast-3.amazonaws.com/product/4FmL6ScFo1nn1zOfPfSe2NQH9e7mDpkciQFurRlo.jpeg",
+        price: 985000,
+        // oldPrice: 'Rp1.189.000',
+        // badge: 'New arrival 10%',
+      ),
+      Product(
+        name: "TotalC-Ram Permanen Adhesive Resin Cement) 8g Syringe)",
+        // title: 'PureOffice Professional Intracanal Dental Whiten...',
+        brand: Brand(name: "Itena"),
+        featureImage:
+            "https://mydentalshop.s3.ap-southeast-3.amazonaws.com/product/4FmL6ScFo1nn1zOfPfSe2NQH9e7mDpkciQFurRlo.jpeg",
+        price: 985000,
+        // oldPrice: 'Rp1.189.000',
+        // badge: 'New arrival 10%',
+      ),
       // Product(
       //   name: "Silan-IT Silane Bottle(5ml)",
       //   brand: Brand(name: "Itena"),
@@ -36,21 +56,22 @@ class FeatureProductSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildHeader(context, "Special for your speciality"),
-          SizedBox(
-              height: 500,
-              child: GridView.count(
-                crossAxisCount: 2,
-                padding: const EdgeInsets.all(12),
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 16,
-                childAspectRatio: 0.6, // sesuaikan tinggi/lebarnya
-                shrinkWrap: true,
-                physics:
-                    NeverScrollableScrollPhysics(), // kalau sudah dalam scroll view
-                children: products.map((product) {
-                  return ProductCard(product: product);
-                }).toList(),
-              )),
+          const SizedBox(height: 12),
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: products.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2, // 2 kolom
+              mainAxisSpacing: 16, // jarak vertikal
+              crossAxisSpacing: 12, // jarak horizontal
+              mainAxisExtent: 270, // tinggi fix sesuai card-mu
+            ),
+            itemBuilder: (context, index) {
+              final product = products[index];
+              return ProductCard(product: product);
+            },
+          ),
         ],
       ),
     );

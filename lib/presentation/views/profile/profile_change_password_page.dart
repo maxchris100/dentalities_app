@@ -1,4 +1,6 @@
 import 'package:dentalities/core/constant/constant.dart';
+import 'package:dentalities/core/util/toast_util.dart';
+import 'package:dentalities/presentation/blocs/cubit/profile_cubit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -20,6 +22,9 @@ class _ProfileChangePasswordPageState extends State<ProfileChangePasswordPage> {
   TextEditingController passController = TextEditingController();
   TextEditingController newPassController = TextEditingController();
   TextEditingController confirmPassController = TextEditingController();
+  bool obscureTextOld = true;
+  bool obscureText = true;
+  bool obscureTextConfirm = true;
 
   bool onSubmit = false;
 
@@ -28,6 +33,10 @@ class _ProfileChangePasswordPageState extends State<ProfileChangePasswordPage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      var args = ModalRoute.of(context)?.settings.arguments as Map?;
+      if (args != null) {
+        profileCubit = args["profileCubit"];
+      }
       emailController.text = Constant.userLocalDataSource.userData?.email ?? "";
       phoneController.text = Constant.userLocalDataSource.userData?.phone ?? "";
       setState(() {});
@@ -39,10 +48,28 @@ class _ProfileChangePasswordPageState extends State<ProfileChangePasswordPage> {
     super.dispose();
   }
 
+  Future onSave() async {
+    setState(() => onSubmit = true);
+    if (_formKey.currentState!.validate()) {
+      var res = await profileCubit?.updatePassword(
+        oldPass: passController.text,
+        newPass: newPassController.text,
+      );
+      setState(() => onSubmit = false);
+      if (res["status"]) {
+        ToastUtil.showToast("", res["message"]);
+      } else {
+        ToastUtil.showToastError("", res["message"]);
+      }
+      return;
+    }
+
+    setState(() => onSubmit = true);
+  }
+
+  ProfileCubit? profileCubit;
   @override
   Widget build(BuildContext context) {
-    var args = ModalRoute.of(context)?.settings.arguments as Map?;
-
     return Scaffold(
       appBar: AppBar(
         title: Text("Account"),
@@ -107,10 +134,21 @@ class _ProfileChangePasswordPageState extends State<ProfileChangePasswordPage> {
               const SizedBox(height: 8),
               TextFormField(
                 controller: passController,
+                obscureText: obscureTextOld,
                 decoration: InputDecoration(
                   hintText: 'Old Password',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
+                  ),
+                  suffixIcon: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        obscureTextOld = !obscureTextOld;
+                      });
+                    },
+                    child: Icon(obscureTextOld
+                        ? Icons.visibility
+                        : Icons.visibility_off),
                   ),
                 ),
                 validator: (value) {
@@ -127,10 +165,20 @@ class _ProfileChangePasswordPageState extends State<ProfileChangePasswordPage> {
               const SizedBox(height: 8),
               TextFormField(
                 controller: newPassController,
+                obscureText: obscureText,
                 decoration: InputDecoration(
                   hintText: 'New Password',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
+                  ),
+                  suffixIcon: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        obscureText = !obscureText;
+                      });
+                    },
+                    child: Icon(
+                        obscureText ? Icons.visibility : Icons.visibility_off),
                   ),
                 ),
                 validator: (value) {
@@ -147,15 +195,29 @@ class _ProfileChangePasswordPageState extends State<ProfileChangePasswordPage> {
               const SizedBox(height: 8),
               TextFormField(
                 controller: confirmPassController,
+                obscureText: obscureTextConfirm,
                 decoration: InputDecoration(
                   hintText: 'Confirm New Password',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
+                  suffixIcon: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        obscureTextConfirm = !obscureTextConfirm;
+                      });
+                    },
+                    child: Icon(obscureTextConfirm
+                        ? Icons.visibility
+                        : Icons.visibility_off),
+                  ),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Confirm New Password is required';
+                    return 'Confirm Password is required';
+                  }
+                  if (value != newPassController.text) {
+                    return 'Confirm Password does not match with New Password';
                   }
                   return null;
                 },
@@ -174,8 +236,7 @@ class _ProfileChangePasswordPageState extends State<ProfileChangePasswordPage> {
                     backgroundColor: Colors.blue,
                   ),
                   onPressed: () {
-                    setState(() => onSubmit = true);
-                    if (_formKey.currentState!.validate()) {}
+                    onSave();
                   },
                   child: const Text(
                     "Save",

@@ -22,6 +22,7 @@ class _ProfileTabState extends State<ProfileTab> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getData();
+      FocusScope.of(context).unfocus();
     });
   }
 
@@ -34,6 +35,7 @@ class _ProfileTabState extends State<ProfileTab> {
 
   @override
   Widget build(BuildContext context) {
+    FocusScope.of(context).unfocus();
     return MultiBlocProvider(
         providers: [
           BlocProvider(create: (context) => profileCubit),
@@ -48,7 +50,8 @@ class _ProfileTabState extends State<ProfileTab> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    Navigator.pushNamed(context, AppRouter.userProfile);
+                    Navigator.pushNamed(context, AppRouter.userProfile,
+                        arguments: {"profileCubit": profileCubit});
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -98,7 +101,8 @@ class _ProfileTabState extends State<ProfileTab> {
                 GestureDetector(
                   onTap: () {
                     Navigator.pushNamed(
-                        context, AppRouter.userProfileNewPassword);
+                        context, AppRouter.userProfileNewPassword,
+                        arguments: {"profileCubit": profileCubit});
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16),

@@ -68,7 +68,7 @@ class CartRepository {
     String? uid,
     CancelToken? cancelToken,
   }) async {
-    return await DioClient.instance.post(
+    return await DioClient.instance.get(
       "/api/v2/transaction/$uid",
     );
   }

@@ -1,36 +1,89 @@
+import 'dart:developer';
+
 import 'package:dentalities/core/util/string_util.dart';
 import 'package:dentalities/data/models/product_model.dart';
+import 'package:dentalities/data/models/product_variant_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class AddToCartWidget extends StatefulWidget {
-  final Function(int quantity) onTap;
+  final Function(int? variantId, int quantity) onTap;
   final Product? product;
-  const AddToCartWidget({super.key, required this.onTap, this.product});
+  final ProductVariant? selectedVariant;
+  const AddToCartWidget(
+      {super.key, required this.onTap, this.product, this.selectedVariant});
 
   @override
   State<AddToCartWidget> createState() => _AddToCartWidgetState();
 }
 
 class _AddToCartWidgetState extends State<AddToCartWidget> {
-  final List<String> sizes = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'];
-  final List<String> colors = [
-    'Black',
-    'Blue',
-    'Dark Purple',
-    'Golden',
-    'Orange',
-    'Red',
-    'White',
-    'Yellow'
-  ];
-
-  String? selectedSize = 'S';
-  String? selectedColor = 'Dark Purple';
   int quantity = 1;
+  Map<String, Map<String, Map<String, ProductVariant>>> variantMap = {};
+  List<String> variant1list = [];
+  List<String> variant2list = [];
+  List<String> variant3list = [];
+
+  String? selectedVariant1;
+  String? selectedVariant2;
+  String? selectedVariant3;
+
+  ProductVariant? selectedVariant;
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.selectedVariant != null) {
+        selectedVariant = widget.selectedVariant;
+        selectedVariant1 = widget.selectedVariant?.variantOneName ?? "_";
+        selectedVariant2 = widget.selectedVariant?.variantTwoName ?? "_";
+        selectedVariant3 = widget.selectedVariant?.variantThreeName ?? "_";
+      }
+      setState(() {});
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    try {
+      for (ProductVariant item in widget.product?.productVariants ?? []) {
+        var v1 = item.variantOneName ?? "";
+        var v2 = item.variantTwoName ?? "";
+        var v3 = item.variantThreeName ?? "";
+
+        // Level 1
+        variantMap.putIfAbsent(v1, () => {});
+
+        // Jika hanya ada varian 1
+        if (v2.isEmpty && v3.isEmpty) {
+          variantMap[v1]!["_"] = {"_": item};
+          continue;
+        }
+
+        // Level 2
+        variantMap[v1]!.putIfAbsent(v2.isEmpty ? "_" : v2, () => {});
+
+        // Level 3
+        variantMap[v1]![v2.isEmpty ? "_" : v2]![v3.isEmpty ? "_" : v3] = item;
+      }
+
+      // Ambil semua list level 1
+      variant1list = variantMap.keys.toList();
+
+      // Ambil list level 2 dari varian pertama
+      if (variant1list.isNotEmpty) {
+        variant2list = variantMap[variant1list.first]!.keys.toList();
+      }
+
+      // Ambil list level 3 dari varian pertama + level2 pertama
+      if (variant2list.isNotEmpty) {
+        variant3list =
+            variantMap[variant1list.first]![variant2list.first]!.keys.toList();
+      }
+    } catch (e) {}
+
     return SafeArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -94,64 +147,158 @@ class _AddToCartWidgetState extends State<AddToCartWidget> {
               ],
             ),
             const SizedBox(height: 20),
-
-            // Size
-            const Text('Size', style: TextStyle(fontWeight: FontWeight.w600)),
-            const SizedBox(height: 8),
+            // --- VARIANT 1 ---
+            Text(
+              widget.product?.variantOne ?? "",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             Wrap(
               spacing: 8,
-              runSpacing: 8,
-              children: sizes.map((size) {
-                final isSelected = selectedSize == size;
+              children: variant1list.map((v1) {
+                final isSelected = selectedVariant1 == v1;
                 return ChoiceChip(
-                  label: Text(size),
-                  selected: isSelected,
-                  showCheckmark: false,
-                  onSelected: (_) => setState(() => selectedSize = size),
-                  selectedColor: Colors.blue.shade100,
-                  backgroundColor: Colors.white,
-                  labelStyle: TextStyle(
-                    color: isSelected ? Colors.blue : Colors.grey,
-                    fontWeight: FontWeight.w500,
+                  label: Text(
+                    v1,
+                    style: TextStyle(
+                        color: isSelected ? Colors.white : Colors.black),
                   ),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                      side: BorderSide(
-                          color: isSelected ? Colors.blue : Colors.grey)),
+                  showCheckmark: false,
+                  selected: isSelected,
+                  onSelected: (_) {
+                    setState(() {
+                      selectedVariant1 = v1;
+                      selectedVariant2 = null;
+                      selectedVariant3 = null;
+                    });
+                  },
+                  selectedColor: Colors.blue,
                 );
               }).toList(),
             ),
 
-            const SizedBox(height: 20),
-
-            // Color
-            const Text('Color', style: TextStyle(fontWeight: FontWeight.w600)),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: colors.map((color) {
-                final isSelected = selectedColor == color;
-                return ChoiceChip(
-                  label: Text(color),
-                  selected: isSelected,
-                  showCheckmark: false,
-                  onSelected: (_) => setState(() => selectedColor = color),
-                  selectedColor: Colors.blue.shade100,
-                  backgroundColor: Colors.white,
-                  labelStyle: TextStyle(
-                    color: isSelected ? Colors.blue : Colors.grey,
-                    fontWeight: FontWeight.w500,
+// --- VARIANT 2 ---
+            if (variant2list.isNotEmpty && variant2list.first != "_")
+              Column(
+                children: [
+                  Text(
+                    widget.product?.variantTwo ?? "",
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                      side: BorderSide(
-                          color: isSelected ? Colors.blue : Colors.grey)),
-                );
-              }).toList(),
-            ),
+                  Wrap(
+                    spacing: 8,
+                    children: variant2list.map((v2) {
+                      final isSelected = selectedVariant2 == v2;
+                      return ChoiceChip(
+                        label: Text(
+                          v2,
+                          style: TextStyle(
+                              color: isSelected ? Colors.white : Colors.black),
+                        ),
+                        showCheckmark: false,
+                        selected: isSelected,
+                        onSelected: (_) {
+                          setState(() {
+                            selectedVariant2 = v2;
+                            selectedVariant3 = null;
+                          });
+                        },
+                        selectedColor: Colors.blue,
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
 
-            const SizedBox(height: 20),
+            // Variant 3
+            if (variant3list.isNotEmpty && variant3list.first != "_")
+              Column(
+                children: [
+                  // Text(
+                  //   widget.product?.variantOne ?? "",
+                  //   style: TextStyle(fontWeight: FontWeight.bold),
+                  // ),
+                  Wrap(
+                    spacing: 8,
+                    children: variant3list.map((v3) {
+                      final isSelected = selectedVariant3 == v3;
+                      return ChoiceChip(
+                        label: Text(
+                          v3,
+                          style: TextStyle(
+                              color: isSelected ? Colors.white : Colors.black),
+                        ),
+                        showCheckmark: false,
+                        selected: isSelected,
+                        onSelected: (_) {
+                          setState(() {
+                            selectedVariant3 = v3;
+                          });
+                        },
+                        selectedColor: Colors.blue,
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
+
+            const SizedBox(height: 12),
+            // // Size
+            // const Text('Size', style: TextStyle(fontWeight: FontWeight.w600)),
+            // const SizedBox(height: 8),
+            // Wrap(
+            //   spacing: 8,
+            //   runSpacing: 8,
+            //   children: sizes.map((size) {
+            //     final isSelected = selectedSize == size;
+            //     return ChoiceChip(
+            //       label: Text(size),
+            //       selected: isSelected,
+            //       showCheckmark: false,
+            //       onSelected: (_) => setState(() => selectedSize = size),
+            //       selectedColor: Colors.blue.shade100,
+            //       backgroundColor: Colors.white,
+            //       labelStyle: TextStyle(
+            //         color: isSelected ? Colors.blue : Colors.grey,
+            //         fontWeight: FontWeight.w500,
+            //       ),
+            //       shape: RoundedRectangleBorder(
+            //           borderRadius: BorderRadius.circular(30),
+            //           side: BorderSide(
+            //               color: isSelected ? Colors.blue : Colors.grey)),
+            //     );
+            //   }).toList(),
+            // ),
+
+            // const SizedBox(height: 20),
+
+            // // Color
+            // const Text('Color', style: TextStyle(fontWeight: FontWeight.w600)),
+            // const SizedBox(height: 8),
+            // Wrap(
+            //   spacing: 8,
+            //   runSpacing: 8,
+            //   children: colors.map((color) {
+            //     final isSelected = selectedColor == color;
+            //     return ChoiceChip(
+            //       label: Text(color),
+            //       selected: isSelected,
+            //       showCheckmark: false,
+            //       onSelected: (_) => setState(() => selectedColor = color),
+            //       selectedColor: Colors.blue.shade100,
+            //       backgroundColor: Colors.white,
+            //       labelStyle: TextStyle(
+            //         color: isSelected ? Colors.blue : Colors.grey,
+            //         fontWeight: FontWeight.w500,
+            //       ),
+            //       shape: RoundedRectangleBorder(
+            //           borderRadius: BorderRadius.circular(30),
+            //           side: BorderSide(
+            //               color: isSelected ? Colors.blue : Colors.grey)),
+            //     );
+            //   }).toList(),
+            // ),
+
+            // const SizedBox(height: 20),
 
             // Quantity
             const Text('Quantity',
@@ -219,9 +366,21 @@ class _AddToCartWidgetState extends State<AddToCartWidget> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
-                  widget.onTap(quantity);
-                },
+                onPressed: selectedVariant1 == null &&
+                        selectedVariant2 == null &&
+                        selectedVariant3 == null
+                    ? null
+                    : () {
+                        if (selectedVariant2 != null) {
+                          selectedVariant = variantMap[selectedVariant1]
+                              ?[selectedVariant2]?["_"]!;
+                        } else {
+                          selectedVariant =
+                              variantMap[selectedVariant1]?["_"]?["_"];
+                        }
+                        log("Selected Variant ID: ${selectedVariant?.id}");
+                        widget.onTap(selectedVariant?.id, quantity);
+                      },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
                   padding: const EdgeInsets.symmetric(vertical: 12),

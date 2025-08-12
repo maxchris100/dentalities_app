@@ -1,3 +1,5 @@
+import 'package:dentalities/core/util/string_util.dart';
+
 class UserAddress {
   final int id;
   final String provinceName;
@@ -18,8 +20,8 @@ class UserAddress {
   final String? fullName;
   final String lat;
   final String lng;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  DateTime? createdAt;
+  DateTime? updatedAt;
   int? transactionId;
 
   UserAddress(
@@ -42,8 +44,6 @@ class UserAddress {
       this.fullName,
       required this.lat,
       required this.lng,
-      required this.createdAt,
-      required this.updatedAt,
       this.transactionId});
 
   static List<UserAddress> fromList(List<dynamic> list) {
@@ -59,7 +59,7 @@ class UserAddress {
       districtName: json['district_name'],
       villageName: json['village_name'],
       address: json['address'],
-      villageCode: json['village_code'],
+      villageCode: StringUtil.castToString(json['village_code']),
       jneProvinceId: json['jne_province_id'],
       jneCityId: json['jne_city_id'],
       jneDistrictId: json['jne_district_id'],
@@ -70,10 +70,10 @@ class UserAddress {
       firstName: json['first_name'],
       lastName: json['last_name'],
       fullName: json['full_name'],
-      lat: json['lat'],
-      lng: json['lng'],
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
+      lat: StringUtil.castToString(json['lat']),
+      lng: StringUtil.castToString(json['lng']),
+      // createdAt: DateTime.parse(json['createdAt']),
+      // updatedAt: DateTime.parse(json['updatedAt']),
       transactionId:
           json["transaction_id"] != null ? json["transaction_id"] : null,
     );
@@ -100,8 +100,8 @@ class UserAddress {
       'full_name': fullName,
       'lat': lat,
       'lng': lng,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
+      // 'createdAt': createdAt.toIso8601String(),
+      // 'updatedAt': updatedAt.toIso8601String(),
     };
   }
 

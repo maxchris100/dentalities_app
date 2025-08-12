@@ -1,10 +1,13 @@
+import 'package:dentalities/core/constant/constant.dart';
 import 'package:dentalities/data/models/product_model.dart';
+import 'package:dentalities/data/models/recent_search.dart';
 import 'package:dentalities/presentation/blocs/cubit/product_cubit.dart';
 import 'package:dentalities/presentation/widgets/filter_bar.dart';
 import 'package:dentalities/presentation/widgets/product_card.dart';
 import 'package:flutter/material.dart';
 import 'package:dentalities/core/router/app_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -15,6 +18,9 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
   FocusNode searchFocus = FocusNode();
+  TextEditingController searchController = TextEditingController();
+
+  bool isSearched = false;
 
   @override
   void initState() {
@@ -22,12 +28,20 @@ class _SearchPageState extends State<SearchPage> {
     super.initState();
     productCubit = ProductCubit();
     // Tunggu sampai context ready
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final args = ModalRoute.of(context)?.settings.arguments as Map?;
       String slug = args?['categoryslug'] ?? "";
       productCubit.getProductByCategorySlug(slug);
       productCubit.getSearchProduct(null);
-      searchFocus.requestFocus();
+
+      if (args != null) {
+        if (args["search_focus"] == 1) {
+          searchFocus.requestFocus();
+        }
+      }
+
+      getRecentSearch();
     });
   }
 
@@ -43,6 +57,22 @@ class _SearchPageState extends State<SearchPage> {
   //   ),
   //   Product(name: ""),
   // ];
+
+  List<RecentSearch> recentSearch = [];
+  List<String> recentSearchProducts = [];
+  void getRecentSearch() {
+    Constant.getRecentSearch().then((value) {
+      recentSearch = value;
+
+      var list = recentSearch
+          .where((e) => e.type == RecentSearchType.product.toString())
+          .map((e) => e.name)
+          .toList();
+      recentSearchProducts.addAll(list);
+      setState(() {});
+    });
+  }
+
   late ProductCubit productCubit;
 
   @override
@@ -70,6 +100,7 @@ class _SearchPageState extends State<SearchPage> {
                       child: TextField(
                         focusNode: searchFocus,
                         textInputAction: TextInputAction.search,
+                        controller: searchController,
                         decoration: InputDecoration(
                           suffixIcon: const Icon(Icons.search),
                           hintText: 'Search product',
@@ -81,12 +112,37 @@ class _SearchPageState extends State<SearchPage> {
                             borderRadius: BorderRadius.circular(50),
                             borderSide: BorderSide(color: Colors.blue),
                           ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50),
+                            borderSide: BorderSide(color: Colors.grey),
+                          ),
                           contentPadding: const EdgeInsets.symmetric(
                               vertical: 0, horizontal: 12),
                         ),
-                        onSubmitted: (value) {
+                        onChanged: (value) {
+                          if (value.isNotEmpty) {
+                            setState(() {
+                              isSearched = false;
+                            });
+                          } else {
+                            setState(() {
+                              isSearched = true;
+                            });
+                          }
+                        },
+                        onSubmitted: (value) async {
                           print("@value");
+                          setState(() {
+                            isSearched = true;
+                          });
+                          RecentSearch p = RecentSearch(
+                              name: value,
+                              type: RecentSearchType.product.toString());
+                          await Constant.saveRecentSearch(p);
+                          recentSearchProducts.add(p.name);
+                          recentSearch.add(p);
                           productCubit.getSearchProduct(value.trim());
+                          setState(() {});
                           //search
                         },
                       ),
@@ -112,12 +168,21 @@ class _SearchPageState extends State<SearchPage> {
                 ],
               ),
               body: SafeArea(
-                  child: state is ProductLoading
+                  child: Stack(
+                children: [
+                  state is ProductLoading
                       ? Center(
                           child: CircularProgressIndicator(),
                         )
                       : Column(
                           children: [
+                            Visibility(
+                                visible: searchFocus.hasFocus &&
+                                    !isSearched &&
+                                    searchController.text.isNotEmpty,
+                                child: SizedBox(
+                                  height: 200,
+                                )),
                             FilterBar(),
                             SizedBox(
                               height: 8,
@@ -139,7 +204,68 @@ class _SearchPageState extends State<SearchPage> {
                               }).toList(),
                             )),
                           ],
-                        )),
+                        ),
+                  Visibility(
+                    visible: searchFocus.hasFocus &&
+                        !isSearched &&
+                        searchController.text.isNotEmpty,
+                    child: Container(
+                      height: 200,
+                      color: Colors.white,
+                      child: ListView.separated(
+                        itemCount: recentSearchProducts.length,
+                        separatorBuilder: (_, __) => const Divider(),
+                        itemBuilder: (context, index) {
+                          final productSearched = recentSearchProducts[index];
+                          final isHistory = index >= 4;
+
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 5),
+                            child: GestureDetector(
+                              onTap: () {
+                                searchController.text = productSearched;
+                                productCubit.getSearchProduct(null);
+                                searchFocus.unfocus();
+                                setState(() {});
+                              },
+                              child: Row(
+                                children: [
+                                  // SvgPicture.asset(
+                                  //   isHistory
+                                  //       ? 'assets/icons/search.svg'
+                                  //       : 'assets/icons/search.svg',
+                                  // ),
+                                  Icon(Icons.search, color: Colors.grey),
+                                  const SizedBox(width: 20),
+                                  Expanded(
+                                      child: Text(productSearched,
+                                          style:
+                                              const TextStyle(fontSize: 15))),
+                                  // if (isHistory)
+                                  GestureDetector(
+                                    onTap: () async {
+                                      final recent = RecentSearch(
+                                        name: productSearched,
+                                        type:
+                                            RecentSearchType.product.toString(),
+                                      );
+                                      await Constant.removeRecentSearch(recent);
+                                      recentSearchProducts.removeAt(index);
+                                    },
+                                    child: const Icon(Icons.close,
+                                        color: Colors.grey),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  )
+                ],
+              )),
             );
           }),
     );

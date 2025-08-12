@@ -1,4 +1,6 @@
 import 'package:dentalities/core/constant/constant.dart';
+import 'package:dentalities/core/util/toast_util.dart';
+import 'package:dentalities/presentation/blocs/cubit/profile_cubit.dart';
 import 'package:dentalities/presentation/widgets/search_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 
@@ -20,11 +22,17 @@ class _ProfileChangeProfilePageState extends State<ProfileChangeProfilePage> {
   String? selectedSalutation;
   bool onSubmit = false;
 
+  ProfileCubit? profileCubit;
   @override
   void initState() {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      var args = ModalRoute.of(context)?.settings.arguments as Map?;
+      if (args != null) {
+        profileCubit = args["profileCubit"];
+      }
+
       fullNameController.text =
           Constant.userLocalDataSource.userData?.fullName ?? "";
       prefixController.text =
@@ -36,6 +44,27 @@ class _ProfileChangeProfilePageState extends State<ProfileChangeProfilePage> {
 
       setState(() {});
     });
+  }
+
+  Future onSave() async {
+    setState(() => onSubmit = true);
+    if (_formKey.currentState!.validate()) {
+      String name = fullNameController.text.trim();
+      var res = await profileCubit?.updateProfileData(
+          email: Constant.userLocalDataSource.userData!.email!,
+          name: name,
+          phoneCode: '62',
+          phoneNumber: Constant.userLocalDataSource.userData!.phone ?? "");
+      setState(() => onSubmit = false);
+      if (res["status"]) {
+        ToastUtil.showToast("", res["message"]);
+      } else {
+        ToastUtil.showToastError("", res["message"]);
+      }
+      return;
+    }
+
+    setState(() => onSubmit = true);
   }
 
   @override
@@ -151,8 +180,7 @@ class _ProfileChangeProfilePageState extends State<ProfileChangeProfilePage> {
                     backgroundColor: Colors.blue,
                   ),
                   onPressed: () {
-                    setState(() => onSubmit = true);
-                    if (_formKey.currentState!.validate()) {}
+                    onSave();
                   },
                   child: const Text(
                     "Save",

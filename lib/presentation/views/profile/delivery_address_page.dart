@@ -54,7 +54,35 @@ class _DeliveryAddressPageState extends State<DeliveryAddressPage> {
       ),
       body: Column(
         children: [
-          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(color: Colors.blue)),
+                minimumSize: const Size.fromHeight(48),
+              ),
+              onPressed: () {
+                Navigator.pushNamed(context, AppRouter.deliveryAddressAdd,
+                    arguments: {});
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.add, color: Colors.blue),
+                  SizedBox(width: 12),
+                  const Text(
+                    "New Address",
+                    style: TextStyle(
+                        color: Colors.blue, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
           Expanded(
             child: ListView(
                 children:
@@ -68,13 +96,14 @@ class _DeliveryAddressPageState extends State<DeliveryAddressPage> {
                 icon: "assets/icons/address_office.svg",
                 title: e.value.firstName ?? "",
                 address: e.value.address,
-                addressDetail: e.value.provinceName +
-                    ', ' +
-                    e.value.cityName +
-                    ', ' +
-                    e.value.districtName +
-                    ', ' +
-                    e.value.postcode,
+                addressDetail: e.value.getShippingAddress(),
+                // e.value.provinceName +
+                //     ', ' +
+                //     e.value.cityName +
+                //     ', ' +
+                //     e.value.districtName +
+                //     ', ' +
+                //     e.value.postcode,
                 onEdit: () {
                   Navigator.pushNamed(context, AppRouter.deliveryAddressAdd,
                       arguments: {"address": e.value});
@@ -88,26 +117,6 @@ class _DeliveryAddressPageState extends State<DeliveryAddressPage> {
           SizedBox(
             height: 20,
           ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                minimumSize: const Size.fromHeight(48),
-              ),
-              onPressed: () {
-                Navigator.pushNamed(context, AppRouter.deliveryAddressAdd,
-                    arguments: {});
-              },
-              child: const Text(
-                "Add new address",
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          )
         ],
       ),
     );
@@ -143,26 +152,22 @@ class _AddressCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          color: Colors.white,
+          color: isSelected ? Color(0xffE3F1FB) : Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.8),
+              color: Colors.grey[300]!,
               blurRadius: 6,
               offset: const Offset(0, 2),
             ),
           ],
           border: Border.all(
-            color: isSelected ? Colors.blue : Colors.transparent,
+            color: isSelected ? Colors.blue : Colors.grey[300]!,
             width: 1.2,
           ),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(
-              isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
-              color: Colors.blue,
-            ),
             // const SizedBox(width: 12),
             // SvgPicture.asset(icon, height: 36),
             const SizedBox(width: 12),
@@ -171,41 +176,65 @@ class _AddressCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text("Address",
-                      style: TextStyle(fontSize: 10, color: Colors.grey)),
+                      style: TextStyle(fontSize: 10, color: Colors.black)),
                   Text(title,
                       style: const TextStyle(
                           fontSize: 16, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 4),
                   Text(addressDetail,
-                      style: const TextStyle(color: Colors.grey)),
-                  Text(address, style: const TextStyle(color: Colors.grey)),
+                      style: const TextStyle(color: Colors.black)),
+                  Text(address, style: const TextStyle(color: Colors.black)),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  Row(
+                    children: [
+                      GestureDetector(
+                        onTap: onEdit,
+                        child: const Text(
+                          "Edit Address",
+                          style: TextStyle(
+                              color: Colors.blue, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 12,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          onDelete(id);
+                        },
+                        child: const Text(
+                          "Delete Address",
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      )
+                    ],
+                  ),
                 ],
               ),
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                GestureDetector(
-                  onTap: onEdit,
-                  child: const Text(
-                    "Edit",
-                    style: TextStyle(color: Colors.red),
-                  ),
-                ),
-                SizedBox(
-                  height: 8,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    onDelete(id);
-                  },
-                  child: const Text(
-                    "Delete",
-                    style: TextStyle(color: Colors.red),
-                  ),
-                )
-              ],
-            )
+            Icon(
+              isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
+              color: Colors.blue,
+            ),
+            // Column(
+            //   crossAxisAlignment: CrossAxisAlignment.end,
+            //   children: [
+            //     SizedBox(
+            //       height: 8,
+            //     ),
+            //     GestureDetector(
+            //       onTap: () {
+            //         onDelete(id);
+            //       },
+            //       child: const Text(
+            //         "Delete",
+            //         style: TextStyle(color: Colors.red),
+            //       ),
+            //     )
+            //   ],
+            // )
           ],
         ),
       ),

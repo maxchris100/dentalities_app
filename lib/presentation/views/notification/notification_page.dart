@@ -31,6 +31,40 @@ class _NotificationPageState extends State<NotificationPage> {
     try {} catch (ex) {}
   }
 
+  final List<Map<String, dynamic>> notificationItem = [
+    {
+      "title": "Product is ready stock!",
+      "subtitle":
+          "DentoCrown HD Self-Curing Resin Automix Cartridge are available. Check out before it's sold out again.",
+      "date": "25 July 2025, 14:37",
+      "isNew": true,
+    },
+    {
+      "title": "Orders are on shipment",
+      "subtitle": "2 items are on the way to Klinik John!",
+      "date": "25 July 2025, 14:37",
+      "isNew": true,
+    },
+    {
+      "title": "Orders are on shipment",
+      "subtitle": "2 items are on the way to Klinik John!",
+      "date": "25 July 2025, 14:37",
+      "isNew": false,
+    },
+    {
+      "title": "Orders are on shipment",
+      "subtitle": "2 items are on the way to Klinik John!",
+      "date": "25 July 2025, 14:37",
+      "isNew": false,
+    },
+    {
+      "title": "Orders are on shipment",
+      "subtitle": "2 items are on the way to Klinik John!",
+      "date": "25 July 2025, 14:37",
+      "isNew": false,
+    },
+  ];
+
   @override
   Widget build(BuildContext context) {
     var args = ModalRoute.of(context)?.settings.arguments as Map?;
@@ -49,7 +83,68 @@ class _NotificationPageState extends State<NotificationPage> {
             },
           ),
         ),
-        body: ListView(children: []),
+        body: SafeArea(
+          child: ListView.separated(
+            itemCount: notificationItem.length,
+            separatorBuilder: (context, index) => const Divider(height: 1),
+            itemBuilder: (context, index) {
+              final notif = notificationItem[index];
+              return ListTile(
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                title: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  notif["title"],
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              if (notif["isNew"])
+                                Container(
+                                  margin: const EdgeInsets.only(left: 8),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 6, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: Colors.red,
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: const Text(
+                                    'New',
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 12),
+                                  ),
+                                ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            notif["subtitle"],
+                            style: const TextStyle(color: Colors.black87),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            notif["date"],
+                            style: const TextStyle(
+                                color: Colors.grey, fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
       ),
     );
   }

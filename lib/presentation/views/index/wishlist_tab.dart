@@ -24,6 +24,7 @@ class _WishlistTabState extends State<WishlistTab> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       productCubit.getSearchProduct(null);
       // getData();
+      FocusScope.of(context).unfocus();
     });
   }
 
@@ -46,6 +47,7 @@ class _WishlistTabState extends State<WishlistTab> {
   ];
   @override
   Widget build(BuildContext context) {
+    FocusScope.of(context).unfocus();
     AuthCubit authCubit = context.watch<AuthCubit>();
     return MultiBlocProvider(
         providers: [
@@ -60,6 +62,28 @@ class _WishlistTabState extends State<WishlistTab> {
                 body: SafeArea(
                     child: Column(
                   children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 4),
+                      child: Container(
+                          child: Stack(children: [
+                        Image.asset("assets/images/save_more_bundling.png"),
+                        Positioned(
+                            left: 12,
+                            top: 8,
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text("Acteon",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                          color: Colors.white)),
+                                  Text("France",
+                                      style: TextStyle(color: Colors.white))
+                                ]))
+                      ])),
+                    ),
                     Expanded(
                         child: GridView.count(
                       crossAxisCount: 2,

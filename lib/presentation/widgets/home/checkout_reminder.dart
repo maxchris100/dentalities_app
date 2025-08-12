@@ -1,85 +1,90 @@
 import 'package:dentalities/core/constant/colors.dart';
+import 'package:dentalities/core/router/app_router.dart';
+import 'package:dentalities/core/util/string_util.dart';
+import 'package:dentalities/data/models/cart_model.dart';
+import 'package:dentalities/presentation/blocs/cubit/cart_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CheckoutReminderSection extends StatelessWidget {
-  const CheckoutReminderSection({super.key});
+  final List<CartItem> carts;
+  const CheckoutReminderSection({super.key, required this.carts});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            "Don't forget to checkout",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+    return Visibility(
+      visible: carts.isNotEmpty,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              "Don't forget to checkout",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
           ),
-        ),
-        const SizedBox(height: 10),
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.shade300,
-                blurRadius: 6,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Column(
-            children: [
-              Container(
-                padding: EdgeInsets.all(12),
-                child: Column(
-                  children: [
-                    _buildCartItem(
-                      title:
-                          "PureOffice Professional Intracanal Dental Whitening Kit 35% HP (5g Syrin...",
-                      price: "Rp1.070.000",
-                      brand: "Semorr",
+          const SizedBox(height: 10),
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.shade300,
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(12),
+                  child: Column(
+                      children: carts.asMap().entries.map((e) {
+                    return _buildCartItem(
+                      title: e.value.productName ?? "",
+                      price: StringUtil.formatMoney(e.value.price),
+                      brand: e.value.sku ?? "",
                       image: "assets/images/banner.png",
-                    ),
-                    const SizedBox(height: 12),
-                    _buildCartItem(
-                      title: "Silan-IT Silane Bottle (5ml)",
-                      price: "Rp0",
-                      brand: "Semorr",
-                      image: "assets/images/banner.png",
-                    ),
-                    const SizedBox(height: 12),
-                  ],
+                    );
+                  }).toList()),
                 ),
-              ),
-              Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.blue.shade100,
-                  borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(12),
-                      bottomRight: Radius.circular(12)),
-                ),
-                padding: const EdgeInsets.all(12),
-                child: Row(
-                  children: [
-                    Icon(Icons.shopping_cart_outlined, color: primaryColor),
-                    SizedBox(width: 8),
-                    Expanded(
-                      child: Text("View all item in cart",
-                          style: TextStyle(
-                              color: Colors.blue, fontWeight: FontWeight.bold)),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, AppRouter.cart);
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade100,
+                      borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(12),
+                          bottomRight: Radius.circular(12)),
                     ),
-                    Icon(Icons.chevron_right, color: Colors.blue),
-                  ],
-                ),
-              )
-            ],
+                    padding: const EdgeInsets.all(12),
+                    child: Row(
+                      children: [
+                        Icon(Icons.shopping_cart_outlined, color: primaryColor),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text("View all item in cart",
+                              style: TextStyle(
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.bold)),
+                        ),
+                        Icon(Icons.chevron_right, color: Colors.blue),
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

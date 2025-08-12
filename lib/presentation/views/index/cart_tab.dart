@@ -3,8 +3,6 @@ import 'package:dentalities/presentation/blocs/cubit/cart_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dentalities/core/router/app_router.dart';
-import 'package:dentalities/presentation/blocs/cubit/auth_cubit.dart';
-import 'package:dentalities/presentation/blocs/cubit/profile_cubit.dart';
 import 'package:dentalities/presentation/widgets/order_item.dart';
 
 class CartTab extends StatefulWidget {
@@ -17,77 +15,119 @@ class CartTab extends StatefulWidget {
 class _CartTabState extends State<CartTab> with TickerProviderStateMixin {
   String selectedFilter = 'unpaid'; // default filter
 
-  // final List<Map<String, dynamic>> _orders = [
-  //   {
-  //     'orderId': '#1514',
-  //     'date': '13/05/2021',
-  //     'trackingNumber': 'IK987362341',
-  //     'quantity': 2,
-  //     'subtotal': 110,
-  //     'status': 'DELIVERED',
-  //   },
-  //   {
-  //     'orderId': '#1679',
-  //     'date': '12/05/2021',
-  //     'trackingNumber': 'IK3873218890',
-  //     'quantity': 3,
-  //     'subtotal': 450,
-  //     'status': 'DELIVERED',
-  //   },
-  // ];
-
   late CartCubit cartCubit;
+  List<Transaction> filteredOrders = [];
+  int page = 1;
+  bool isLoadingMore = false;
+  bool hasMore = true;
+  final ScrollController scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       cartCubit = context.read<CartCubit>();
       getData();
+      FocusScope.of(context).unfocus();
+
+      scrollController.addListener(() {
+        if (scrollController.position.pixels >=
+                scrollController.position.maxScrollExtent - 100 &&
+            !isLoadingMore &&
+            hasMore) {
+          loadMore();
+        }
+      });
     });
   }
 
-  List<Transaction> filteredOrders = [];
-  void getData() async {
+  Future<void> getData({bool reset = false}) async {
     try {
-      await cartCubit.getOrderList();
-      filteredOrders = (cartCubit.data.transaction?.transactions ?? [])
-          .where((order) => order.status == selectedFilter)
-          .toList();
+      if (reset) {
+        page = 1;
+        hasMore = true;
+        filteredOrders.clear();
+      }
+
+      await cartCubit.getOrderList(page: page);
+
+      final newOrders = cartCubit.data.transaction?.transactions ?? [];
+      // filteredOrders = (cartCubit.data.transaction?.transactions ?? [])
+      //     .where((order) => order.status == selectedFilter)
+      //     .toList();
+      if (newOrders.isEmpty) {
+        hasMore = false;
+      } else {
+        filteredOrders.addAll(newOrders);
+      }
+
       setState(() {});
-    } catch (ex) {}
+    } catch (ex) {
+      // handle error
+    }
+  }
+
+  Future<void> loadMore() async {
+    if (!hasMore) return;
+    setState(() => isLoadingMore = true);
+
+    page++;
+    await getData();
+    setState(() => isLoadingMore = false);
   }
 
   @override
   Widget build(BuildContext context) {
     // AuthCubit authCubit = context.watch<AuthCubit>();
+    FocusScope.of(context).unfocus();
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            const SizedBox(height: 16),
-            _buildFilterButtons(),
-            const SizedBox(height: 16),
-            Expanded(
+      body: Column(
+        children: [
+          // const SizedBox(height: 16),
+          // _buildFilterButtons(),
+          const SizedBox(height: 12),
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: () async {
+                getData(reset: true);
+              },
               child: filteredOrders.isEmpty
-                  ? const Center(child: Text('No orders found'))
+                  ? ListView(
+                      children: const [
+                        SizedBox(
+                          height: 400,
+                          child: Center(child: Text('No orders found')),
+                        ),
+                      ],
+                    )
                   : ListView.builder(
+                      controller: scrollController,
                       padding: const EdgeInsets.symmetric(horizontal: 16),
-                      itemCount: filteredOrders.length,
+                      itemCount: filteredOrders.length + 1,
                       itemBuilder: (context, index) {
-                        final order = filteredOrders[index];
-                        return GestureDetector(
-                            onTap: () {
-                              Navigator.pushNamed(
-                                  context, AppRouter.orderDetail,
-                                  arguments: {"item": order});
-                            },
-                            child: OrderItem(item: order));
+                        if (index < filteredOrders.length) {
+                          final order = filteredOrders[index];
+                          return GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, AppRouter.orderDetail,
+                                    arguments: {"item": order});
+                              },
+                              child: OrderItem(item: order));
+                        } else {
+                          return hasMore
+                              ? const Padding(
+                                  padding: EdgeInsets.all(16),
+                                  child: Center(
+                                      child: CircularProgressIndicator()),
+                                )
+                              : const SizedBox.shrink();
+                        }
                       },
                     ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

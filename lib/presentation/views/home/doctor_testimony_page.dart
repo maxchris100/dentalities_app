@@ -24,12 +24,24 @@ class _DoctorTestimonialPageState extends State<DoctorTestimonialPage> {
                   suffixIcon: const Icon(Icons.search),
                   hintText: 'Search product',
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
+                    borderRadius: BorderRadius.circular(50),
+                    borderSide: BorderSide(color: Colors.grey),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(50),
+                    borderSide: BorderSide(color: Colors.blue),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(50),
                     borderSide: BorderSide(color: Colors.grey),
                   ),
                   contentPadding:
                       const EdgeInsets.symmetric(vertical: 0, horizontal: 12),
                 ),
+                onTap: () {
+                  Navigator.pushNamed(context, AppRouter.search,
+                      arguments: {"search_focus": 0});
+                },
               ),
             ),
           ),

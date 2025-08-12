@@ -23,6 +23,7 @@ class _CSTabState extends State<CSTab> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getData();
+      FocusScope.of(context).unfocus();
     });
   }
 
@@ -34,6 +35,7 @@ class _CSTabState extends State<CSTab> {
   @override
   Widget build(BuildContext context) {
     AuthCubit authCubit = context.watch<AuthCubit>();
+    FocusScope.of(context).unfocus();
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => profileCubit),

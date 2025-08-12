@@ -172,6 +172,9 @@ class MyApp extends StatelessWidget {
                   cursorColor: Colors.blue,
                   selectionHandleColor: Colors.blue,
                 ),
+                progressIndicatorTheme: const ProgressIndicatorThemeData(
+                  color: Colors.blue,
+                ),
                 inputDecorationTheme: InputDecorationTheme(
                   enabledBorder: OutlineInputBorder(
                       borderSide:

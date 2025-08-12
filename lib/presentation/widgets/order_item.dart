@@ -121,7 +121,7 @@ class OrderItem extends StatelessWidget {
                         : Color(0xffFFF3E0),
                     borderRadius: BorderRadius.circular(12)),
                 child: Text(
-                  item.status ?? "",
+                  item.getStatusText(),
                   style: TextStyle(
                       color: item.status == "done"
                           ? Colors.green
@@ -129,37 +129,60 @@ class OrderItem extends StatelessWidget {
                       fontWeight: FontWeight.bold),
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(context, AppRouter.orderDetail,
-                          arguments: {"item": item});
-                    },
-                    child: const Text(
-                      'Detail',
-                      style: TextStyle(
-                        color: Colors.blue,
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, AppRouter.orderDetail,
+                            arguments: {"item": item});
+                      },
+                      child: const Text(
+                        'Detail',
+                        style: TextStyle(
+                          color: Colors.blue,
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    width: 12,
-                  ),
-                  ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 8, horizontal: 8),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20)),
+                    SizedBox(
+                      width: 12,
                     ),
-                    child: const Text('Pay',
-                        style: TextStyle(color: Colors.white)),
-                  ),
-                ],
+                    Container(
+                      height: 30,
+                      width: 100,
+                      child: item.status == "unpaid"
+                          ? ElevatedButton(
+                              onPressed: () {},
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue,
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20)),
+                              ),
+                              child: const Text('Pay',
+                                  style: TextStyle(color: Colors.white)),
+                            )
+                          : item.status == "done"
+                              ? OutlinedButton(
+                                  onPressed: () {},
+                                  style: OutlinedButton.styleFrom(
+                                    backgroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16),
+                                    shape: RoundedRectangleBorder(
+                                        side: BorderSide(color: Colors.blue),
+                                        borderRadius:
+                                            BorderRadius.circular(20)),
+                                  ),
+                                  child: const Text('Buy Again',
+                                      style: TextStyle(color: Colors.blue)),
+                                )
+                              : Text(""),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

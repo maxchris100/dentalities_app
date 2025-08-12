@@ -1,10 +1,14 @@
+import 'dart:developer';
+
 import 'package:dentalities/core/router/app_router.dart';
 import 'package:dentalities/core/util/string_util.dart';
+import 'package:dentalities/core/util/toast_util.dart';
 import 'package:dentalities/data/models/transaction_response_model.dart';
 import 'package:dentalities/presentation/blocs/cubit/cart_cubit.dart';
 import 'package:dentalities/presentation/views/order/webview_payment_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class OrderDetailPage extends StatefulWidget {
   const OrderDetailPage({super.key});
@@ -13,7 +17,8 @@ class OrderDetailPage extends StatefulWidget {
   State<OrderDetailPage> createState() => _OrderDetailPageState();
 }
 
-class _OrderDetailPageState extends State<OrderDetailPage> {
+class _OrderDetailPageState extends State<OrderDetailPage>
+    with WidgetsBindingObserver {
   Transaction? item;
   String totalPrice = '0';
   String shipmentPrice = '0';
@@ -26,6 +31,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   void initState() {
     super.initState();
 
+    WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       var args = ModalRoute.of(context)?.settings.arguments as Map?;
       if (args != null) {
@@ -47,14 +53,33 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   Future refreshStatus() async {
     try {
+      log("@REFRESH STATUS");
       String id = item?.uuid ?? "";
       // "8b8f7377-9a21-4dc4-ac32-8128d775bcc2";
       await cartCubit.getOrderDetail(id);
+      item = cartCubit.data.transactionDetail;
+      log("@REFRESH STATUS ITEM: ${item?.status.toString()}");
       // if (cartCubit.data.transactionDetail?.status == "paid") {
       //   Navigator.pushNamed(context, AppRouter.paymentComplete);
       // }
       setState(() {});
     } catch (e) {}
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    if (state == AppLifecycleState.paused) {
+    } else if (state == AppLifecycleState.resumed) {
+      refreshStatus();
+    }
   }
 
   @override
@@ -88,12 +113,15 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                       Expanded(
                           child: Text("Order Date",
                               style: const TextStyle(color: Colors.grey))),
-                      Text(item?.createdAt ?? "",
+                      Text(
+                          StringUtil.dateFormat(item?.createdAt ?? "",
+                              format: "dd MMMM yyyy, HH:mm WIB"),
                           style: const TextStyle(fontWeight: FontWeight.w500)),
                     ],
                   ),
                   SizedBox(height: 8),
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
                           width: 150,
@@ -126,8 +154,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                       width: double.infinity,
                       child: Column(
                         children: [
-                          ...(item?.transactionItems ?? []).map(
-                            (p) => Padding(
+                          ...(item?.transactionItems ?? []).map((p) {
+                            return Padding(
                               padding: const EdgeInsets.only(bottom: 12),
                               child: Row(
                                 mainAxisAlignment:
@@ -139,36 +167,64 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                                         "",
                                     height: 40,
                                     width: 40,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Image.asset(
+                                        "assets/images/banner.png",
+                                        height: 40,
+                                        width: 40,
+                                      );
+                                    },
                                   ),
                                   SizedBox(
                                     width: 12,
                                   ),
                                   Expanded(
-                                    child: Text(
-                                      p.productName ?? "",
-                                      style: const TextStyle(fontSize: 16),
-                                      overflow: TextOverflow.ellipsis,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          p.productName ?? "",
+                                          style: const TextStyle(fontSize: 16),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              (p.variantOneName ?? "") +
+                                                  (p.variantTwoName != null
+                                                      ? ", ${p.variantOneName} "
+                                                      : ""),
+                                              style:
+                                                  TextStyle(color: Colors.grey),
+                                            ),
+                                            SizedBox(
+                                              width: 8,
+                                            ),
+                                            Text(
+                                              "(x ${p.quantity ?? 0})",
+                                              style: const TextStyle(
+                                                  color: Colors.grey),
+                                            ),
+                                            const SizedBox(width: 8),
+                                          ],
+                                        )
+                                      ],
                                     ),
                                   ),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        "x${p.quantity ?? 0}",
-                                        style:
-                                            const TextStyle(color: Colors.grey),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        StringUtil.formatMoney(p.price),
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ],
-                                  ),
+                                  // Row(
+                                  //   children: [
+                                  //     Text(
+                                  //       StringUtil.formatMoney(p.price),
+                                  //       style: const TextStyle(
+                                  //           fontWeight: FontWeight.bold),
+                                  //     ),
+                                  //   ],
+                                  // ),
                                 ],
                               ),
-                            ),
-                          ),
+                            );
+                          }),
                         ],
                       )),
                 ],
@@ -199,7 +255,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                                 : Color(0xffFFF3E0),
                             borderRadius: BorderRadius.circular(12)),
                         child: Text(
-                          item?.status ?? "",
+                          item?.getStatusText() ?? "",
                           style: TextStyle(
                               color: item?.status == "done"
                                   ? Colors.green
@@ -213,35 +269,36 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                     height: 12,
                   ),
                   _buildStep(
-                    icon: "assets/icons/status_waiting_payment.svg",
-                    title: "Waiting for payment",
-                    subtitle: "Paid at ${item?.createdAt}",
-                    isActive: item?.status == "unpaid",
-                  ),
+                      icon: "assets/icons/status_waiting_payment.svg",
+                      title: "Waiting for payment",
+                      subtitle:
+                          "${item?.status == "unpaid" ? "Paid before" : "Paid at"} ${StringUtil.dateFormat(item?.expiredAt, format: "dd MMM yyyy HH:mm:ss")}",
+                      isActive: item?.status == "unpaid",
+                      status: item?.status),
                   _buildStep(
-                    icon: "assets/icons/status_processing_payment.svg",
-                    title: "Processing payment",
-                    subtitle: "Start validating at 15 July 2025, 20:49",
-                    isActive: item?.status == "paid",
-                  ),
+                      icon: "assets/icons/status_processing_payment.svg",
+                      title: "Processing payment",
+                      subtitle: "Start validating at 15 July 2025, 20:49",
+                      isActive: item?.status == "paid",
+                      status: item?.status),
                   _buildStep(
-                    icon: "assets/icons/status_preparing_order.svg",
-                    title: "Preparing order",
-                    subtitle: "",
-                    isActive: false,
-                  ),
+                      icon: "assets/icons/status_preparing_order.svg",
+                      title: "Preparing order",
+                      subtitle: "",
+                      isActive: false,
+                      status: item?.status),
                   _buildStep(
-                    icon: "assets/icons/status_shipping.svg",
-                    title: "Shipping",
-                    subtitle: "",
-                    isActive: false,
-                  ),
+                      icon: "assets/icons/status_shipping.svg",
+                      title: "Shipping",
+                      subtitle: "",
+                      isActive: false,
+                      status: item?.status),
                   _buildStep(
-                    icon: "assets/icons/status_done.svg",
-                    title: "Done",
-                    subtitle: "",
-                    isActive: false,
-                  ),
+                      icon: "assets/icons/status_done.svg",
+                      title: "Done",
+                      subtitle: "",
+                      isActive: false,
+                      status: item?.status),
                 ],
               ),
             ),
@@ -309,17 +366,21 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                 child: SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => WebViewPaymentPage(
-                            data: item!.toJson(),
-                          ),
-                        ),
-                      ).then((x) {
-                        refreshStatus();
-                      });
+                    onPressed: () async {
+                      String url = item?.paymentResponse?.redirectURL ?? "";
+                      if (!await launchUrl(Uri.parse(url))) {
+                        ToastUtil.showToastError("", 'Could not launch $url');
+                      }
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (_) => WebViewPaymentPage(
+                      //       data: item!.toJson(),
+                      //     ),
+                      //   ),
+                      // ).then((x) {
+                      //   refreshStatus();
+                      // });
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
@@ -339,12 +400,12 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     );
   }
 
-  Widget _buildStep({
-    required String icon,
-    required String title,
-    required String subtitle,
-    required bool isActive,
-  }) {
+  Widget _buildStep(
+      {required String icon,
+      required String title,
+      required String subtitle,
+      required bool isActive,
+      String? status}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: Row(
@@ -369,7 +430,13 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                 if (subtitle.isNotEmpty)
                   Text(
                     subtitle,
-                    style: const TextStyle(color: Colors.grey, fontSize: 12),
+                    style: TextStyle(
+                        color: isActive
+                            ? status == "unpaid"
+                                ? Colors.orange
+                                : Colors.grey
+                            : Colors.grey,
+                        fontSize: 12),
                   ),
               ],
             ),

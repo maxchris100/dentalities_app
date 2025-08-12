@@ -61,4 +61,34 @@ class ProfileCubit extends Cubit<ProfileState> {
       emit(ProfileError("Failed to load profile: $e"));
     }
   }
+
+  Future<dynamic> updateProfileData(
+      {required String email,
+      required String name,
+      required String phoneCode,
+      required String phoneNumber}) async {
+    try {
+      final res = await ProfileRepository.updateProfile(
+          email: email,
+          fullName: name,
+          phoneCode: '62',
+          phoneNumber: phoneNumber);
+      return res.data;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<dynamic> updatePassword(
+      {required String oldPass, required String newPass}) async {
+    try {
+      final res = await ProfileRepository.changePassword(
+          currentPassword: oldPass,
+          newPassword: newPass,
+          newPasswordConfirm: newPass);
+      return res.data;
+    } catch (e) {
+      return null;
+    }
+  }
 }

@@ -3,6 +3,7 @@ import 'package:dentalities/data/models/banner_model.dart';
 import 'package:dentalities/data/models/brand_model.dart';
 import 'package:dentalities/data/models/category_model.dart';
 import 'package:dentalities/data/models/country_model.dart';
+import 'package:dentalities/data/models/testimony_model.dart';
 import 'package:dentalities/data/models/user_model.dart';
 import 'package:dentalities/domain/repositories/home_repository.dart';
 import 'package:dentalities/domain/repositories/profile_repository.dart';
@@ -16,6 +17,7 @@ class HomeData {
   final List<Category> featureCategories;
   final List<dynamic> topDoctors;
   final List<Banner> banners;
+  final List<Testimony> testimonies;
   final List<Product> recommendedProducts;
   final List<Country> countries;
   final List<Brand> brands;
@@ -25,6 +27,7 @@ class HomeData {
       {required this.featureCategories,
       required this.topDoctors,
       required this.banners,
+      required this.testimonies,
       required this.recommendedProducts,
       required this.countries,
       required this.brands,
@@ -33,6 +36,7 @@ class HomeData {
   HomeData copyWith({
     List<Category>? featureCategories,
     List<Banner>? banners,
+    List<Testimony>? testimonies,
     List<dynamic>? topDoctors,
     List<Product>? recommendedProducts,
     List<Brand>? brands,
@@ -42,6 +46,7 @@ class HomeData {
     return HomeData(
         featureCategories: featureCategories ?? this.featureCategories,
         banners: banners ?? this.banners,
+        testimonies: testimonies ?? this.testimonies,
         topDoctors: topDoctors ?? this.topDoctors,
         recommendedProducts: recommendedProducts ?? this.recommendedProducts,
         brands: brands ?? this.brands,
@@ -71,6 +76,7 @@ class HomeCubit extends Cubit<HomeState> {
   HomeData data = HomeData(
       featureCategories: [],
       banners: [],
+      testimonies: [],
       recommendedProducts: [],
       topDoctors: [],
       categories: [],
@@ -119,8 +125,8 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> fetchTestimonial() async {
     try {
       final datas = await HomeRepository.getTestimonial();
-      // List<Banner> list = Banner.fromList(banners.data["data"]);
-      // data = data.copyWith(banners: list);
+      List<Testimony> list = Testimony.fromList(datas.data["data"]);
+      data = data.copyWith(testimonies: list);
       emit(HomeLoaded(data));
     } catch (e) {
       emit(HomeError('Failed to load banners: $e'));

@@ -34,6 +34,7 @@ class _HomeTabState extends State<HomeTab> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getData();
+      FocusScope.of(context).unfocus();
     });
   }
 
@@ -168,15 +169,21 @@ class _HomeTabState extends State<HomeTab> {
                 return TopBrandSection(brands: homeCubit.data.brands);
               }),
           SizedBox(
-            height: 20,
+            height: 4,
           ),
-          CheckoutReminderSection(),
+          BlocBuilder(
+              bloc: cartCubit,
+              builder: (context, state) {
+                return CheckoutReminderSection(
+                  carts: cartCubit.data.cart?.cartItems ?? [],
+                );
+              }),
           SizedBox(
-            height: 20,
+            height: 10,
           ),
           HomeTestimonialSection(),
           SizedBox(
-            height: 20,
+            height: 14,
           ),
           Center(
             child: SizedBox(
@@ -185,7 +192,7 @@ class _HomeTabState extends State<HomeTab> {
                 onPressed: () {
                   scrollController.animateTo(0,
                       duration: Duration(milliseconds: 500),
-                      curve: Curves.easeInBack);
+                      curve: Curves.easeIn);
                 },
                 child: const Text(
                   'Back to Top',

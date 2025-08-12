@@ -1,3 +1,4 @@
+import 'package:dentalities/core/util/string_util.dart';
 import 'package:dentalities/data/models/product_variant_model.dart';
 import 'package:dentalities/data/models/user_address_model.dart';
 
@@ -83,6 +84,7 @@ class Transaction {
   });
 
   factory Transaction.fromJson(Map<String, dynamic> json) {
+    print("@");
     return Transaction(
       paymentResponse: json['payment_response'] != null
           ? PaymentResponse.fromJson(json['payment_response'])
@@ -94,12 +96,12 @@ class Transaction {
       updatedAt: json['updated_at'],
       uuid: json['uuid'],
       invoiceNumber: json['invoice_number'],
-      productCost: json['product_cost'],
-      shippingCost: json['shipping_cost'],
-      totalCost: json['total_cost'],
-      totalAfterDiscount: json['total_after_discount'],
-      tax: json['tax'],
-      grandTotal: json['grand_total'],
+      productCost: StringUtil.castToString(json['product_cost']),
+      shippingCost: StringUtil.castToString(json['shipping_cost']),
+      totalCost: StringUtil.castToString(json['total_cost']),
+      totalAfterDiscount: StringUtil.castToString(json['total_after_discount']),
+      tax: StringUtil.castToString(json['tax']),
+      grandTotal: StringUtil.castToString(json['grand_total']),
       weight: json['weight'],
       shippingCourierCode: json['shipping_courier_code'],
       shippingCourierName: json['shipping_courier_name'],
@@ -116,6 +118,23 @@ class Transaction {
           ?.map((e) => TransactionItem.fromJson(e))
           .toList(),
     );
+  }
+
+  String getStatusText() {
+    String text = '';
+    if (status == "unpaid") {
+      text = "Waiting Payment";
+    }
+    // else if (status == "paid") {
+    //   text = "Processing";
+    // }
+    // else if (status == "paid") {
+    //   text = "Processing";
+    // }
+    // else if (status == "paid") {
+    //   text = "Processing";
+    // }
+    return text;
   }
 
   Map<String, dynamic> toJson() {
@@ -167,6 +186,7 @@ class PaymentResponse {
   });
 
   factory PaymentResponse.fromJson(Map<String, dynamic> json) {
+    print("@");
     return PaymentResponse(
       merchantID: json['merchantID'],
       transactionNo: json['transactionNo'],
@@ -233,6 +253,7 @@ class TransactionItem {
   });
 
   factory TransactionItem.fromJson(Map<String, dynamic> json) {
+    print("@");
     return TransactionItem(
       isDiscounted: json['is_discounted'],
       id: json['id'],

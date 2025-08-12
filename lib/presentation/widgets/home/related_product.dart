@@ -20,21 +20,21 @@ class RelatedProductSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildHeader(context, "Related Products"),
-          SizedBox(
-              height: 550,
-              child: GridView.count(
-                crossAxisCount: 2,
-                padding: const EdgeInsets.all(12),
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 16,
-                childAspectRatio: 0.6, // sesuaikan tinggi/lebarnya
-                shrinkWrap: true,
-                physics:
-                    NeverScrollableScrollPhysics(), // kalau sudah dalam scroll view
-                children: products.map((product) {
-                  return ProductCard(product: product);
-                }).toList(),
-              )),
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: products.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2, // 2 kolom
+              mainAxisSpacing: 16, // jarak vertikal
+              crossAxisSpacing: 12, // jarak horizontal
+              mainAxisExtent: 270, // tinggi fix sesuai card-mu
+            ),
+            itemBuilder: (context, index) {
+              final product = products[index];
+              return ProductCard(product: product);
+            },
+          ),
         ],
       ),
     );

@@ -18,11 +18,13 @@ class Product {
   final String? variantTwo;
   final String? featureImage;
   final double? price;
+  final double? productPrice;
   final double? priceBeforeDiscount;
   final double? discountPercentage;
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final int? brandId;
+  final String? brandName;
 
   // ✅ Tambahan
   final Brand? brand;
@@ -45,11 +47,13 @@ class Product {
     this.variantTwo,
     this.featureImage,
     this.price,
+    this.productPrice,
     this.priceBeforeDiscount,
     this.discountPercentage,
     this.createdAt,
     this.updatedAt,
     this.brandId,
+    this.brandName,
     this.brand,
     this.categories,
     this.productMedia,
@@ -77,6 +81,9 @@ class Product {
       variantTwo: json['variant_two'],
       featureImage: json['feature_image'] ?? '',
       price: double.tryParse(json['price'].toString()) ?? 0.0,
+      productPrice: json['product_price'] != null
+          ? double.tryParse(json['product_price'].toString()) ?? 0.0
+          : null,
       priceBeforeDiscount:
           double.tryParse(json['price_before_discount'].toString()) ?? 0.0,
       discountPercentage:
@@ -84,6 +91,7 @@ class Product {
       // createdAt: DateTime.parse(json['createdAt']),
       // updatedAt: DateTime.parse(json['updatedAt']),
       brandId: json['brand_id'],
+      brandName: json['brand_name'],
       brand: json['brand'] != null ? Brand.fromJson(json['brand']) : null,
       categories: (json['categories'] as List<dynamic>?)
               ?.map((e) => Category.fromJson(e))

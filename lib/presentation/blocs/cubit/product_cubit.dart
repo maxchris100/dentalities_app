@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:dentalities/core/util/toast_util.dart';
 import 'package:dentalities/data/models/product_model.dart';
 import 'package:dentalities/data/models/product_model.dart';
+import 'package:dentalities/data/models/product_variant_model.dart';
 import 'package:dentalities/domain/repositories/product_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
@@ -68,6 +69,16 @@ class ProductCubit extends Cubit<ProductState> {
     try {
       final res = await CartRepository.addUpdateCart(
           productVariantId: p?.productVariants?.first.id, quantity: quantity);
+
+      ToastUtil.showToast("", res.data["message"] ?? "");
+    } catch (e) {}
+  }
+
+  Future<void> addToCartVariant(ProductVariant? p, int quantity) async {
+    log("@PRODUCT: ADD TO CART PRODUCT VARIANT: ${p?.id} $quantity");
+    try {
+      final res = await CartRepository.addUpdateCart(
+          productVariantId: p?.id, quantity: quantity);
 
       ToastUtil.showToast("", res.data["message"] ?? "");
     } catch (e) {}

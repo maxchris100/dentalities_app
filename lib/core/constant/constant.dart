@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:developer';
+
+import 'package:dentalities/data/models/recent_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_alice/alice.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -42,5 +46,65 @@ class Constant {
       secureStorage: secureStorage,
     );
     await userLocalDataSource.init();
+  }
+
+  static Future<List<RecentSearch>> getRecentSearch() async {
+    log("@MAP getRecentSearch");
+    List<RecentSearch> list = [];
+    try {
+      String? recentSearch =
+          userLocalDataSource.sharedPreferences.getString('recent_search');
+      if (recentSearch != null) {
+        List res = json.decode(recentSearch);
+        list = RecentSearch.fromList(res);
+        list = list.where((element) => element.name != '').toList();
+      }
+    } catch (ex) {
+      log("@MAP getRecentSearch Error: $ex");
+    }
+    return list;
+  }
+
+  static Future<void> saveRecentSearch(RecentSearch text) async {
+    log("@MAP saveRecentSearch");
+    List<RecentSearch> list = await getRecentSearch();
+    try {
+      if (list.where((e) => e.name == text.name).isNotEmpty) {
+        list.removeWhere((e) => e.name == text.name);
+      }
+      if (list.length >= 10) {
+        list.removeLast();
+      }
+      list.insert(0, text);
+    } catch (ex) {
+      log("@MAP saveRecentSearch Error $text: $ex");
+    }
+    String listjson = json.encode(list);
+    userLocalDataSource.sharedPreferences.setString('recent_search', listjson);
+  }
+
+  static Future<List<RecentSearch>> removeRecentSearch(
+      RecentSearch text) async {
+    String? recentSearch =
+        userLocalDataSource.sharedPreferences.getString('recent_search');
+    List<RecentSearch> list = [];
+    if (recentSearch != null) {
+      try {
+        List res = json.decode(recentSearch);
+        list = RecentSearch.fromList(res);
+        list.removeWhere((element) => element.name == text.name);
+      } catch (ex) {
+        log("@MAP removeRecentSearch Error $text: $ex");
+      }
+      String listjson = json.encode(list);
+      userLocalDataSource.sharedPreferences
+          .setString('recent_search', listjson);
+      log("@MAP removeRecentSearch: $listjson");
+    }
+    return list;
+  }
+
+  static Future<void> resetRecentSearch() async {
+    await userLocalDataSource.sharedPreferences.remove('recent_search');
   }
 }

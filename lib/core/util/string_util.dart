@@ -23,4 +23,26 @@ class StringUtil {
       return '';
     }
   }
+
+  static String dateFormat(dynamic val, {String format = "yyyy-MM-dd"}) {
+    if (val == null) return "";
+
+    try {
+      DateTime date;
+
+      if (val is DateTime) {
+        date = val;
+      } else if (val is int) {
+        date = DateTime.fromMillisecondsSinceEpoch(val);
+      } else if (val is String) {
+        date = DateTime.parse(val);
+      } else {
+        return "";
+      }
+
+      return DateFormat(format).format(date);
+    } catch (e) {
+      return "";
+    }
+  }
 }

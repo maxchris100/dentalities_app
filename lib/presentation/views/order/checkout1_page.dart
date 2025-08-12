@@ -4,8 +4,10 @@ import 'package:dentalities/core/util/string_util.dart';
 import 'package:dentalities/core/util/toast_util.dart';
 import 'package:dentalities/data/models/cart_model.dart';
 import 'package:dentalities/data/models/delivery_method_model.dart';
+import 'package:dentalities/data/models/transaction_response_model.dart';
 import 'package:dentalities/data/models/user_address_model.dart';
 import 'package:dentalities/presentation/blocs/cubit/cart_cubit.dart';
+import 'package:dentalities/presentation/blocs/cubit/profile_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:overlay_support/overlay_support.dart';
@@ -23,17 +25,19 @@ class _Checkout1PageState extends State<Checkout1Page> {
   DeliveryMethod? selectedDeliveryMethod;
   dynamic selectedPaymentMethod;
 
-  late CartCubit cartCubit;
+  CartCubit cartCubit = CartCubit();
+  ProfileCubit profileCubit = ProfileCubit();
+
   @override
   void initState() {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       var args = ModalRoute.of(context)?.settings.arguments as Map?;
+      await profileCubit.fetchProfileData();
 
       selectedAddress =
           Constant.userLocalDataSource.userData?.userAddresses?.first;
-      cartCubit = context.read<CartCubit>();
       await cartCubit.getDeliveryMethod(selectedAddress?.id);
 
       setState(() {});
@@ -50,14 +54,27 @@ class _Checkout1PageState extends State<Checkout1Page> {
         selectedAddress?.id, selectedDeliveryMethod?.serviceCode);
     setState(() => isProcessing = false);
     if (res["status"]) {
-      Navigator.pushNamed(context, AppRouter.orderPayment,
-          arguments: {"item": res["data"]});
+      ToastUtil.showToast("", res["message"]);
+      Transaction item = Transaction.fromJson(res["data"]);
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        AppRouter.home,
+        (route) => false,
+      );
+
+      Future.delayed(Duration(milliseconds: 50), () {
+        Navigator.of(context).pushNamed(
+          AppRouter.orderDetail,
+          arguments: {"item": item},
+        );
+      });
+      // Navigator.pushNamed(context, AppRouter.orderDetail,
+      //     arguments: {"item": item});
+      // Navigator.pushNamed(context, AppRouter.orderPayment,
+      //     arguments: {"item": res["data"]});
     } else {
       ToastUtil.showToastError("", res["message"]);
     }
   }
-
-  String shipmentPrice = "0";
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +85,8 @@ class _Checkout1PageState extends State<Checkout1Page> {
     int totalItem = args?["total_item"] ?? 0;
 
     String grandGrandTotalPrice = StringUtil.formatMoney(
-        int.parse(grandTotalPrice) + int.parse(shipmentPrice));
+        int.parse(grandTotalPrice) +
+            int.parse(selectedDeliveryMethod?.price ?? "0"));
     Map<int, CartItem>? selectedCartItem = args?["selected_cart"];
 
     return Scaffold(
@@ -123,63 +141,106 @@ class _Checkout1PageState extends State<Checkout1Page> {
                                           borderRadius: BorderRadius.vertical(
                                               top: Radius.circular(20))),
                                       builder: (_) {
-                                        return Padding(
-                                          padding: const EdgeInsets.all(16),
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                "Select Shipment Address",
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                              SizedBox(
-                                                height: 12,
-                                              ),
-                                              Flexible(
-                                                child: ListView.separated(
-                                                  itemCount: (Constant
-                                                              .userLocalDataSource
-                                                              .userData
-                                                              ?.userAddresses ??
-                                                          [])
-                                                      .length,
-                                                  itemBuilder:
-                                                      (context, index) {
-                                                    var e = Constant
-                                                        .userLocalDataSource
-                                                        .userData
-                                                        ?.userAddresses?[index];
-                                                    return GestureDetector(
-                                                      onTap: () {
-                                                        setState(() {
-                                                          selectedAddress = e;
-                                                        });
-                                                        Navigator.pop(context);
+                                        UserAddress? tmpSelectedAddressMethod =
+                                            selectedAddress;
+                                        return StatefulBuilder(
+                                          builder: (context, setState) {
+                                            final addresses = Constant
+                                                    .userLocalDataSource
+                                                    .userData
+                                                    ?.userAddresses ??
+                                                [];
+
+                                            return Padding(
+                                              padding: const EdgeInsets.all(16),
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  const Text(
+                                                    "Select Shipment Address",
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  const SizedBox(height: 12),
+                                                  Flexible(
+                                                    child: ListView.separated(
+                                                      itemCount:
+                                                          addresses.length,
+                                                      itemBuilder:
+                                                          (context, index) {
+                                                        final e =
+                                                            addresses[index];
+                                                        return RadioListTile<
+                                                            UserAddress>(
+                                                          value: e,
+                                                          groupValue:
+                                                              tmpSelectedAddressMethod,
+                                                          onChanged: (value) {
+                                                            setState(() {
+                                                              tmpSelectedAddressMethod =
+                                                                  value;
+                                                            });
+                                                          },
+                                                          title: Text(e
+                                                              .getShippingAddress()),
+                                                          controlAffinity:
+                                                              ListTileControlAffinity
+                                                                  .trailing, // 🔹 radio di kanan
+                                                        );
                                                       },
-                                                      child: Row(
-                                                        children: [
-                                                          Expanded(
-                                                            child: Container(
-                                                              child: Text(e!
-                                                                  .getShippingAddress()),
-                                                            ),
-                                                          ),
-                                                        ],
+                                                      separatorBuilder:
+                                                          (context, index) =>
+                                                              const Divider(),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 12),
+                                                  SizedBox(
+                                                    width: double.infinity,
+                                                    child: ElevatedButton(
+                                                      onPressed:
+                                                          tmpSelectedAddressMethod ==
+                                                                  null
+                                                              ? null
+                                                              : () {
+                                                                  //apply
+                                                                  setState(() {
+                                                                    selectedAddress =
+                                                                        tmpSelectedAddressMethod;
+                                                                  });
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                },
+                                                      style: ElevatedButton
+                                                          .styleFrom(
+                                                        backgroundColor:
+                                                            Colors.blue,
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                vertical: 8),
+                                                        shape:
+                                                            RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(30),
+                                                        ),
                                                       ),
-                                                    );
-                                                  },
-                                                  separatorBuilder:
-                                                      (context, index) {
-                                                    return Divider();
-                                                  },
-                                                ),
+                                                      child: const Text(
+                                                        'Apply',
+                                                        style: TextStyle(
+                                                            fontSize: 18,
+                                                            color:
+                                                                Colors.white),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
-                                            ],
-                                          ),
+                                            );
+                                          },
                                         );
                                       },
                                     );
@@ -198,89 +259,148 @@ class _Checkout1PageState extends State<Checkout1Page> {
                           Text('Shipment',
                               style: TextStyle(fontWeight: FontWeight.bold)),
                           ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            title: Text(selectedDeliveryMethod != null
-                                ? '${selectedDeliveryMethod?.serviceDisplay}'
-                                : "Select Delivery Method"),
-                            subtitle: selectedDeliveryMethod != null
-                                ? Text(selectedDeliveryMethod != null
-                                    ? '${StringUtil.formatMoney(selectedDeliveryMethod?.price)}'
-                                    : "")
-                                : null,
-                            leading: Image.asset(
-                              'assets/images/banner.png',
-                              height: 40,
-                              width: 50,
-                              fit: BoxFit.cover,
-                            ),
-                            trailing: const Icon(Icons.chevron_right),
-                            onTap: () => showModalBottomSheet(
-                              context: context,
-                              shape: const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.vertical(
-                                      top: Radius.circular(20))),
-                              builder: (_) {
-                                return Padding(
-                                  padding: const EdgeInsets.all(16),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Select Delivery Method",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      SizedBox(
-                                        height: 12,
-                                      ),
-                                      Flexible(
-                                        child: ListView.separated(
-                                          itemCount:
-                                              (cartCubit.data.deliveryMethod)
-                                                  .length,
-                                          itemBuilder: (context, index) {
-                                            var e = cartCubit
-                                                .data.deliveryMethod[index];
-                                            return GestureDetector(
-                                              onTap: () {
-                                                setState(() {
-                                                  selectedDeliveryMethod = e;
-                                                  shipmentPrice =
-                                                      e.price ?? "0";
-                                                });
-                                                Navigator.pop(context);
-                                              },
-                                              child: Row(
-                                                children: [
-                                                  Expanded(
-                                                    child: Container(
-                                                      child: Text(
-                                                          e.serviceDisplay ??
-                                                              ""),
+                              contentPadding: EdgeInsets.zero,
+                              title: Text(selectedDeliveryMethod != null
+                                  ? '${selectedDeliveryMethod?.serviceDisplay}'
+                                  : "Select Delivery Method"),
+                              subtitle: selectedDeliveryMethod != null
+                                  ? Text(selectedDeliveryMethod != null
+                                      ? '${StringUtil.formatMoney(selectedDeliveryMethod?.price)}'
+                                      : "")
+                                  : null,
+                              leading: Image.asset(
+                                'assets/images/banner.png',
+                                height: 40,
+                                width: 50,
+                                fit: BoxFit.cover,
+                              ),
+                              trailing: const Icon(Icons.chevron_right),
+                              onTap: () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.vertical(
+                                        top: Radius.circular(20)),
+                                  ),
+                                  builder: (_) {
+                                    DeliveryMethod? tmpSelectedDeliveryMethod =
+                                        selectedDeliveryMethod;
+
+                                    return StatefulBuilder(
+                                      builder: (context, setState) {
+                                        final deliveryMethods =
+                                            cartCubit.data.deliveryMethod;
+
+                                        return Padding(
+                                          padding: const EdgeInsets.all(16),
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              const Text(
+                                                "Select Delivery Method",
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              const SizedBox(height: 12),
+                                              Flexible(
+                                                child: ListView.separated(
+                                                  itemCount:
+                                                      deliveryMethods.length,
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    final e =
+                                                        deliveryMethods[index];
+                                                    return RadioListTile<
+                                                        DeliveryMethod>(
+                                                      value: e,
+                                                      groupValue:
+                                                          tmpSelectedDeliveryMethod,
+                                                      onChanged: (value) {
+                                                        setState(() {
+                                                          tmpSelectedDeliveryMethod =
+                                                              value;
+                                                        });
+                                                      },
+                                                      title: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          Expanded(
+                                                            child: Text(
+                                                              e.serviceDisplay ??
+                                                                  "",
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                              width: 12),
+                                                          Text(StringUtil
+                                                              .formatMoney(
+                                                                  e.price)),
+                                                        ],
+                                                      ),
+                                                      controlAffinity:
+                                                          ListTileControlAffinity
+                                                              .trailing, // 🔹 radio di kanan
+                                                    );
+                                                  },
+                                                  separatorBuilder:
+                                                      (context, index) =>
+                                                          const Divider(),
+                                                ),
+                                              ),
+                                              const SizedBox(height: 12),
+                                              SizedBox(
+                                                width: double.infinity,
+                                                child: ElevatedButton(
+                                                  onPressed:
+                                                      tmpSelectedDeliveryMethod ==
+                                                              null
+                                                          ? null
+                                                          : () {
+                                                              // Apply
+                                                              setState(() {
+                                                                selectedDeliveryMethod =
+                                                                    tmpSelectedDeliveryMethod;
+                                                              });
+                                                              Navigator.pop(
+                                                                  context);
+                                                            },
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                    backgroundColor:
+                                                        Colors.blue,
+                                                    padding: const EdgeInsets
+                                                        .symmetric(vertical: 8),
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              30),
                                                     ),
                                                   ),
-                                                  SizedBox(
-                                                    width: 12,
+                                                  child: const Text(
+                                                    'Apply',
+                                                    style: TextStyle(
+                                                        fontSize: 18,
+                                                        color: Colors.white),
                                                   ),
-                                                  Text(StringUtil.formatMoney(
-                                                      e.price))
-                                                ],
+                                                ),
                                               ),
-                                            );
-                                          },
-                                          separatorBuilder: (context, index) {
-                                            return Divider();
-                                          },
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
                                 );
-                              },
-                            ),
-                          ),
+                              }),
 
                           const Divider(),
 
@@ -289,23 +409,134 @@ class _Checkout1PageState extends State<Checkout1Page> {
                           // Text('Payment Method',
                           //     style: TextStyle(fontWeight: FontWeight.bold)),
                           // ListTile(
-                          //   contentPadding: EdgeInsets.zero,
-                          //   title: Text(selectedPaymentMethod != null
-                          //       ? "Transfer BCA"
-                          //       : "Select Payment Method"),
-                          //   leading: Image.asset('assets/images/banner.png',
-                          //       height: 40, width: 50, fit: BoxFit.cover),
-                          //   trailing: const Icon(Icons.chevron_right),
-                          //   onTap: () => showModalBottomSheet(
-                          //     context: context,
-                          //     shape: const RoundedRectangleBorder(
-                          //         borderRadius: BorderRadius.vertical(
-                          //             top: Radius.circular(20))),
-                          //     builder: (_) {
-                          //       return Container();
-                          //     },
-                          //   ),
-                          // ),
+                          //     contentPadding: EdgeInsets.zero,
+                          //     title: Text(selectedPaymentMethod != null
+                          //         ? "Transfer BCA"
+                          //         : "Select Payment Method"),
+                          //     leading: Image.asset('assets/images/banner.png',
+                          //         height: 40, width: 50, fit: BoxFit.cover),
+                          //     trailing: const Icon(Icons.chevron_right),
+                          //     onTap: () {
+                          //       PaymentMethod? tmpSelectedPaymentMethod =
+                          //           selectedPaymentMethod;
+
+                          //       showModalBottomSheet(
+                          //         context: context,
+                          //         shape: const RoundedRectangleBorder(
+                          //           borderRadius: BorderRadius.vertical(
+                          //               top: Radius.circular(20)),
+                          //         ),
+                          //         builder: (_) {
+                          //           return StatefulBuilder(
+                          //             builder: (context, setState) {
+                          //               return Padding(
+                          //                 padding: const EdgeInsets.all(16),
+                          //                 child: Column(
+                          //                   mainAxisSize: MainAxisSize.min,
+                          //                   crossAxisAlignment:
+                          //                       CrossAxisAlignment.start,
+                          //                   children: [
+                          //                     const Text(
+                          //                       "Select Payment Method",
+                          //                       style: TextStyle(
+                          //                           fontWeight:
+                          //                               FontWeight.bold),
+                          //                     ),
+                          //                     const SizedBox(height: 12),
+                          //                     Flexible(
+                          //                       child: ListView.separated(
+                          //                         itemCount:
+                          //                             paymentMethods.length,
+                          //                         itemBuilder:
+                          //                             (context, index) {
+                          //                           final e =
+                          //                               paymentMethods[index];
+                          //                           return RadioListTile<
+                          //                               PaymentMethod>(
+                          //                             value: e,
+                          //                             groupValue:
+                          //                                 tmpSelectedPaymentMethod,
+                          //                             onChanged: (value) {
+                          //                               setState(() {
+                          //                                 tmpSelectedPaymentMethod =
+                          //                                     value;
+                          //                               });
+                          //                             },
+                          //                             title: Row(
+                          //                               children: [
+                          //                                 Image.asset(
+                          //                                   e.iconPath,
+                          //                                   height: 40,
+                          //                                   width: 50,
+                          //                                   fit: BoxFit.cover,
+                          //                                 ),
+                          //                                 const SizedBox(
+                          //                                     width: 12),
+                          //                                 Expanded(
+                          //                                   child: Text(
+                          //                                     e.name,
+                          //                                     overflow:
+                          //                                         TextOverflow
+                          //                                             .ellipsis,
+                          //                                   ),
+                          //                                 ),
+                          //                               ],
+                          //                             ),
+                          //                             controlAffinity:
+                          //                                 ListTileControlAffinity
+                          //                                     .trailing,
+                          //                           );
+                          //                         },
+                          //                         separatorBuilder:
+                          //                             (context, index) =>
+                          //                                 const Divider(),
+                          //                       ),
+                          //                     ),
+                          //                     const SizedBox(height: 12),
+                          //                     SizedBox(
+                          //                       width: double.infinity,
+                          //                       child: ElevatedButton(
+                          //                         onPressed:
+                          //                             tmpSelectedPaymentMethod ==
+                          //                                     null
+                          //                                 ? null
+                          //                                 : () {
+                          //                                     setState(() {
+                          //                                       selectedPaymentMethod =
+                          //                                           tmpSelectedPaymentMethod;
+                          //                                     });
+                          //                                     Navigator.pop(
+                          //                                         context);
+                          //                                   },
+                          //                         style:
+                          //                             ElevatedButton.styleFrom(
+                          //                           backgroundColor:
+                          //                               Colors.blue,
+                          //                           padding: const EdgeInsets
+                          //                               .symmetric(vertical: 8),
+                          //                           shape:
+                          //                               RoundedRectangleBorder(
+                          //                             borderRadius:
+                          //                                 BorderRadius.circular(
+                          //                                     30),
+                          //                           ),
+                          //                         ),
+                          //                         child: const Text(
+                          //                           'Apply',
+                          //                           style: TextStyle(
+                          //                               fontSize: 18,
+                          //                               color: Colors.white),
+                          //                         ),
+                          //                       ),
+                          //                     ),
+                          //                   ],
+                          //                 ),
+                          //               );
+                          //             },
+                          //           );
+                          //         },
+                          //       );
+                          //     }),
 
                           // const Divider(),
 
@@ -326,7 +557,8 @@ class _Checkout1PageState extends State<Checkout1Page> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text('Shipment'),
-                              Text(StringUtil.formatMoney(shipmentPrice))
+                              Text(StringUtil.formatMoney(
+                                  selectedDeliveryMethod?.price ?? "0"))
                             ],
                           ),
                           Row(

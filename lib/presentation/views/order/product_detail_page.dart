@@ -4,8 +4,10 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dentalities/core/router/app_router.dart';
 import 'package:dentalities/core/util/string_util.dart';
 import 'package:dentalities/data/models/product_model.dart';
+import 'package:dentalities/data/models/product_variant_model.dart';
 import 'package:dentalities/domain/repositories/cart_repository.dart';
 import 'package:dentalities/presentation/blocs/cubit/cart_cubit.dart';
+import 'package:dentalities/presentation/blocs/cubit/home_cubit.dart';
 import 'package:dentalities/presentation/blocs/cubit/product_cubit.dart';
 import 'package:dentalities/presentation/widgets/add_tocart_widget.dart';
 import 'package:dentalities/presentation/widgets/added_tocart_widget.dart';
@@ -25,6 +27,7 @@ class ProductDetailPage extends StatefulWidget {
 }
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
+  HomeCubit? homeCubit;
   @override
   void initState() {
     super.initState();
@@ -33,6 +36,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       // var args = ModalRoute.of(context)?.settings.arguments as Map?;
       // String slug = args?["slug"] ?? "";
       // productCubit.getProductDetail(slug);
+      // homeCubit = context.read<HomeCubit>();
+      // setState(() {});
     });
   }
 
@@ -47,7 +52,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       ),
       builder: (ctx) => AddToCartWidget(
         product: productCubit.data.product,
-        onTap: (int quantity) {
+        selectedVariant: selectedVariant,
+        onTap: (int? variantId, int quantity) {
           // Navigator.pop(ctx);
           // showModalBottomSheet(
           //   context: context,
@@ -59,7 +65,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           // );
           //add to cart
           try {
-            productCubit.addToCart(productCubit.data.product, quantity);
+            productCubit.addToCartVariant(selectedVariant, quantity);
             CustomToast.show(context, message: "Successfully added to cart");
           } catch (e) {}
         },
@@ -67,14 +73,58 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     );
   }
 
+  ProductVariant? selectedVariant;
+
   @override
   Widget build(BuildContext context) {
+    homeCubit = context.watch<HomeCubit>();
     var args = ModalRoute.of(context)?.settings.arguments as Map?;
     String slug = "";
     Product? p = args?["item"];
+    Map<String, Map<String, Map<String, ProductVariant>>> variantMap = {};
+    List<String> variant1list = [];
+    List<String> variant2list = [];
+    List<String> variant3list = [];
+
     if (p != null) {
       slug = p.slug ?? "";
+
+      for (ProductVariant item in p.productVariants ?? []) {
+        var v1 = item.variantOneName ?? "";
+        var v2 = item.variantTwoName ?? "";
+        var v3 = item.variantThreeName ?? "";
+
+        // Level 1
+        variantMap.putIfAbsent(v1, () => {});
+
+        // Jika hanya ada varian 1
+        if (v2.isEmpty && v3.isEmpty) {
+          variantMap[v1]!["_"] = {"_": item};
+          continue;
+        }
+
+        // Level 2
+        variantMap[v1]!.putIfAbsent(v2.isEmpty ? "_" : v2, () => {});
+
+        // Level 3
+        variantMap[v1]![v2.isEmpty ? "_" : v2]![v3.isEmpty ? "_" : v3] = item;
+      }
+
+      // Ambil semua list level 1
+      variant1list = variantMap.keys.toList();
+
+      // Ambil list level 2 dari varian pertama
+      if (variant1list.isNotEmpty) {
+        variant2list = variantMap[variant1list.first]!.keys.toList();
+      }
+
+      // Ambil list level 3 dari varian pertama + level2 pertama
+      if (variant2list.isNotEmpty) {
+        variant3list =
+            variantMap[variant1list.first]![variant2list.first]!.keys.toList();
+      }
     }
+
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => productCubit..getProductDetail(slug)),
@@ -91,7 +141,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             title: const Text(''),
             actions: [
               Padding(
-                  padding: EdgeInsets.only(right: 16),
+                  padding: EdgeInsets.only(right: 12),
                   child: Stack(
                     children: [
                       GestureDetector(
@@ -102,7 +152,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     ],
                   )),
               Padding(
-                  padding: EdgeInsets.only(right: 16),
+                  padding: EdgeInsets.only(right: 12),
                   child: Stack(
                     children: [
                       GestureDetector(
@@ -127,6 +177,53 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           ),
           body: Column(
             children: [
+              Container(
+                height: 60,
+                color: Colors.grey.shade200,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: homeCubit?.data.featureCategories.length,
+                  itemBuilder: (context, index) {
+                    final category = homeCubit?.data.featureCategories[index];
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 4, vertical: 8),
+                      child: GestureDetector(
+                        onTap: () {
+                          // Navigator.pushNamed(context, routeName);
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(50),
+                            border: Border.all(
+                              color: Colors.grey[300]!, // warna
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              ClipOval(
+                                child: Image.network(
+                                  category?.featureImageThumbUrl ??
+                                      "", // ganti field gambar kategori
+                                  width: 32,
+                                  height: 32,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 12,
+                              ),
+                              Text(category?.name ?? "")
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
               Expanded(
                 child: ListView(
                   children: [
@@ -164,11 +261,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       ),
                     ),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
 
                     // ===== Nama Produk =====
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -235,7 +332,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           ),
                           // Text(
                           //   product?.description ?? "",
-                          //   style: TextStyle(fontSize: 16),
+                          //   style: TextStyle(fontSize: 12),
                           // ),
                           SizedBox(
                             height: 8,
@@ -245,8 +342,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                               Container(
                                   height: 40,
                                   width: 70,
-                                  child:
-                                      Image.asset("assets/images/banner.png")),
+                                  child: Image.network(
+                                    product?.brand?.featureImageUrl ?? "",
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Image.asset(
+                                          "assets/images/banner.png");
+                                    },
+                                  )),
                               SizedBox(
                                 width: 8,
                               ),
@@ -275,11 +377,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       ),
                     ),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
 
                     // ===== Tentang Produk (key-value) =====
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -291,7 +393,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             ),
                           ),
                           const SizedBox(height: 8),
-                          _buildKeyValue('Specialization', 'General Dentistry'),
+                          _buildKeyValue('Specialization',
+                              product?.categories?.first.name ?? ""),
                           _buildKeyValue('Treatment', 'Cracked Tooth'),
                           _buildKeyValue(
                               'Product Type', 'Digital Impression Scanners'),
@@ -300,10 +403,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       ),
                     ),
                     Divider(),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
                     // ===== Advantages =====
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
                       child: const _ExpandableSection(
                         title: 'Advantages',
                         icon: "assets/icons/product_detail_advantage.svg",
@@ -311,11 +414,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       ),
                     ),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
 
                     // ===== Indications =====
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
                       child: const _ExpandableSection(
                         title: 'Indications',
                         icon: "assets/icons/product_detail_indication.svg",
@@ -323,27 +426,44 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       ),
                     ),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
                     Divider(),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
                     VariantSection(
-                      sizes: ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'],
-                      colors: [
-                        'Black',
-                        'Blue',
-                        'Dark Purple',
-                        'Golden',
-                        'Green',
-                        'Orange',
-                        'Red',
-                        'White',
-                        'Yellow'
-                      ],
+                      varian1LabelName: product?.variantOne ?? "",
+                      varian2LabelName: product?.variantTwo ?? "",
+                      variant1list: variant1list,
+                      variant2list: variant2list,
+                      onVariantSelected: (selectedVariant1, selectedVariant2) {
+                        if (selectedVariant2 != null) {
+                          selectedVariant = variantMap[selectedVariant1]
+                              ?[selectedVariant2]?["_"]!;
+                        } else {
+                          selectedVariant =
+                              variantMap[selectedVariant1]?["_"]?["_"];
+                        }
+                        // if (selectedVariant3 != null) {
+                        //   selectedVariant =
+                        //       variantMap[selectedVariant1][selectedVariant2][selectedVariant3];
+                        // }
+                        log("@Selected variant ID: ${selectedVariant?.id}");
+                        setState(() {});
+                      },
                     ),
-                    const SizedBox(height: 16),
+                    // Visibility(
+                    //   visible: selectedVariant == null,
+                    //   child: Padding(
+                    //     padding: const EdgeInsets.symmetric(horizontal: 16),
+                    //     child: Text(
+                    //       "Variant is required",
+                    //       style: TextStyle(color: Colors.red),
+                    //     ),
+                    //   ),
+                    // ),
+                    // const SizedBox(height: 12),
                     Divider(),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
                     DoctorReviewCard(
                       name: "drg. Fajar Pratama, Sp.Pros",
                       date: "10 July 2025",
@@ -352,21 +472,21 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       imageUrl:
                           "https://mydentalshop.s3.ap-southeast-3.amazonaws.com/category/v3pkGkkVixPnrNTVToS8I5kU3MQeX6yUtUMIHn8L.jpeg",
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
                     Divider(),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
                     HowToUseSection(
                       videoThumbnailUrl:
                           "https://mydentalshop.s3.ap-southeast-3.amazonaws.com/category/v3pkGkkVixPnrNTVToS8I5kU3MQeX6yUtUMIHn8L.jpeg",
                       videoDuration: "12:00",
                       onSeeMore: () {},
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
                     Divider(),
-                    const SizedBox(height: 16),
-                    BundlingProductSection(title: "Buy with Supplementaries"),
-                    const SizedBox(height: 16),
+                    // const SizedBox(height: 12),
+                    // BundlingProductSection(title: "Buy with Supplementaries"),
+                    const SizedBox(height: 12),
                     RelatedProductSection(
                       products: productCubit.data.relatedProduct,
                     ),
@@ -380,15 +500,20 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 child: SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed:
+                        //selectedVariant != null
+                        //     ?
+                        () {
                       addToCart();
                     },
+                    // : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blueAccent,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50),
                       ),
+                      minimumSize: Size(0, 36),
                     ),
                     child: const Text(
                       'Add to Cart',
@@ -455,7 +580,7 @@ class _ExpandableSection extends StatelessWidget {
             ),
             Text(
               title,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
             ),
           ],
         ),
@@ -474,55 +599,126 @@ class _ExpandableSection extends StatelessWidget {
   }
 }
 
-class VariantSection extends StatelessWidget {
-  final List<String> sizes;
-  final List<String> colors;
+class VariantSection extends StatefulWidget {
+  final String? varian1LabelName;
+  final String? varian2LabelName;
+  final String? varian3LabelName;
+  final List<String> variant1list;
+  final List<String> variant2list;
+  final Function(String? variant1, String? variant2) onVariantSelected;
 
   const VariantSection({
     super.key,
-    required this.sizes,
-    required this.colors,
+    this.varian1LabelName,
+    this.varian2LabelName,
+    this.varian3LabelName,
+    required this.variant1list,
+    required this.variant2list,
+    required this.onVariantSelected,
   });
+
+  @override
+  State<VariantSection> createState() => _VariantSectionState();
+}
+
+class _VariantSectionState extends State<VariantSection> {
+  String? selectedVariant1;
+  String? selectedVariant2;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
       color: Colors.white,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text("Variant",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-          const SizedBox(height: 16),
-          _buildLabel("Size"),
-          _buildValueList(sizes),
+          Text(
+            "Variant",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          ),
           const SizedBox(height: 12),
-          _buildLabel("Color"),
-          _buildValueList(colors),
+          _buildLabel(
+            widget.varian1LabelName ?? "",
+          ),
+          _buildValueList(
+            widget.variant1list,
+            selectedVariant1,
+            (value) {
+              setState(() {
+                selectedVariant1 = value;
+                _notifySelection();
+              });
+            },
+          ),
+          const SizedBox(height: 12),
+          Visibility(
+            visible: widget.variant2list.isNotEmpty &&
+                widget.variant2list.first != "_",
+            child: Column(
+              children: [
+                _buildLabel(widget.varian2LabelName ?? ""),
+                _buildValueList(
+                  widget.variant2list,
+                  selectedVariant2,
+                  (value) {
+                    setState(() {
+                      selectedVariant2 = value;
+                      _notifySelection();
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildLabel(String text) {
-    return Text(text, style: const TextStyle(fontWeight: FontWeight.bold));
+    return Text(
+      text,
+      style: const TextStyle(fontWeight: FontWeight.bold),
+    );
   }
 
-  Widget _buildValueList(List<String> items) {
+  Widget _buildValueList(
+    List<String> items,
+    String? selectedItem,
+    ValueChanged<String> onSelected,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(top: 4.0),
       child: Wrap(
         spacing: 8,
         runSpacing: 8,
-        children: items
-            .map((e) => Text(
-                  e,
-                  style: const TextStyle(color: Colors.black87),
-                ))
-            .toList(),
+        children: items.map((item) {
+          final isSelected = item == selectedItem;
+          return GestureDetector(
+            onTap: () => onSelected(item),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: isSelected ? Colors.blue : Colors.grey[200],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                item,
+                style: TextStyle(
+                  color: isSelected ? Colors.white : Colors.black87,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                ),
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
+  }
+
+  void _notifySelection() {
+    widget.onVariantSelected(selectedVariant1, selectedVariant2);
   }
 }
 
@@ -544,13 +740,13 @@ class DoctorReviewCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.white,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text("What doctor said",
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           Row(
             children: [
               Container(
@@ -584,7 +780,7 @@ class DoctorReviewCard extends StatelessWidget {
               color: Colors.black87,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           Row(
             children: [
               _buildDot(true),
@@ -627,7 +823,7 @@ class HowToUseSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -668,7 +864,7 @@ class HowToUseSection extends StatelessWidget {
               )
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           // ...steps.map((e) => _buildStep(e)).toList(),
           if (onSeeMore != null)
             GestureDetector(
@@ -683,7 +879,7 @@ class HowToUseSection extends StatelessWidget {
 
   // Widget _buildStep(HowToUseStep step) {
   //   return Padding(
-  //     padding: const EdgeInsets.only(bottom: 16),
+  //     padding: const EdgeInsets.only(bottom: 12),
   //     child: Row(
   //       crossAxisAlignment: CrossAxisAlignment.start,
   //       children: [

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dentalities/core/router/app_router.dart';
 import 'package:dentalities/core/util/string_util.dart';
 import 'package:dentalities/data/models/transaction_response_model.dart';
@@ -10,6 +12,7 @@ class OrderItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // log("@ORDER: ${item.status}");
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
@@ -145,41 +148,46 @@ class OrderItem extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SizedBox(
-                      width: 12,
-                    ),
-                    Container(
-                      height: 30,
-                      width: 100,
-                      child: item.status == "unpaid"
-                          ? ElevatedButton(
-                              onPressed: () {},
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blue,
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 16),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20)),
-                              ),
-                              child: const Text('Pay',
-                                  style: TextStyle(color: Colors.white)),
-                            )
-                          : item.status == "done"
-                              ? OutlinedButton(
+                    Visibility(
+                      visible: item.status == "unpaid" || item.status == "done",
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 12),
+                        child: Container(
+                          height: 30,
+                          width: 100,
+                          child: item.status == "unpaid"
+                              ? ElevatedButton(
                                   onPressed: () {},
-                                  style: OutlinedButton.styleFrom(
-                                    backgroundColor: Colors.white,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.blue,
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 16),
                                     shape: RoundedRectangleBorder(
-                                        side: BorderSide(color: Colors.blue),
                                         borderRadius:
                                             BorderRadius.circular(20)),
                                   ),
-                                  child: const Text('Buy Again',
-                                      style: TextStyle(color: Colors.blue)),
+                                  child: const Text('Pay',
+                                      style: TextStyle(color: Colors.white)),
                                 )
-                              : Text(""),
+                              : item.status == "done"
+                                  ? OutlinedButton(
+                                      onPressed: () {},
+                                      style: OutlinedButton.styleFrom(
+                                        backgroundColor: Colors.white,
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16),
+                                        shape: RoundedRectangleBorder(
+                                            side:
+                                                BorderSide(color: Colors.blue),
+                                            borderRadius:
+                                                BorderRadius.circular(20)),
+                                      ),
+                                      child: const Text('Buy Again',
+                                          style: TextStyle(color: Colors.blue)),
+                                    )
+                                  : Text(""),
+                        ),
+                      ),
                     ),
                   ],
                 ),

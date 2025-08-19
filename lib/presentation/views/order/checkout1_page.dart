@@ -158,9 +158,22 @@ class _Checkout1PageState extends State<Checkout1Page> {
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
+                                                  GestureDetector(
+                                                    onTap: () {
+                                                      Navigator.pop(context);
+                                                    },
+                                                    child: Icon(
+                                                      Icons.close,
+                                                      size: 32,
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                    height: 10,
+                                                  ),
                                                   const Text(
-                                                    "Select Shipment Address",
+                                                    "Shipping Address",
                                                     style: TextStyle(
+                                                        fontSize: 18,
                                                         fontWeight:
                                                             FontWeight.bold),
                                                   ),
@@ -184,8 +197,13 @@ class _Checkout1PageState extends State<Checkout1Page> {
                                                                   value;
                                                             });
                                                           },
-                                                          title: Text(e
-                                                              .getShippingAddress()),
+                                                          activeColor:
+                                                              Colors.blue,
+                                                          title: Text(
+                                                            e.getShippingAddress(),
+                                                            style: TextStyle(
+                                                                fontSize: 14),
+                                                          ),
                                                           controlAffinity:
                                                               ListTileControlAffinity
                                                                   .trailing, // 🔹 radio di kanan
@@ -205,7 +223,6 @@ class _Checkout1PageState extends State<Checkout1Page> {
                                                                   null
                                                               ? null
                                                               : () {
-                                                                  //apply
                                                                   setState(() {
                                                                     selectedAddress =
                                                                         tmpSelectedAddressMethod;
@@ -231,7 +248,7 @@ class _Checkout1PageState extends State<Checkout1Page> {
                                                       child: const Text(
                                                         'Apply',
                                                         style: TextStyle(
-                                                            fontSize: 18,
+                                                            fontSize: 16,
                                                             color:
                                                                 Colors.white),
                                                       ),
@@ -260,9 +277,12 @@ class _Checkout1PageState extends State<Checkout1Page> {
                               style: TextStyle(fontWeight: FontWeight.bold)),
                           ListTile(
                               contentPadding: EdgeInsets.zero,
-                              title: Text(selectedDeliveryMethod != null
-                                  ? '${selectedDeliveryMethod?.serviceDisplay}'
-                                  : "Select Delivery Method"),
+                              title: Text(
+                                selectedDeliveryMethod != null
+                                    ? '${selectedDeliveryMethod?.serviceDisplay}'
+                                    : "Select Delivery Method",
+                                style: TextStyle(fontSize: 14),
+                              ),
                               subtitle: selectedDeliveryMethod != null
                                   ? Text(selectedDeliveryMethod != null
                                       ? '${StringUtil.formatMoney(selectedDeliveryMethod?.price)}'
@@ -298,9 +318,22 @@ class _Checkout1PageState extends State<Checkout1Page> {
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
+                                              GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(
+                                                  Icons.close,
+                                                  size: 32,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: 10,
+                                              ),
                                               const Text(
-                                                "Select Delivery Method",
+                                                "Shipment",
                                                 style: TextStyle(
+                                                    fontSize: 18,
                                                     fontWeight:
                                                         FontWeight.bold),
                                               ),
@@ -324,6 +357,7 @@ class _Checkout1PageState extends State<Checkout1Page> {
                                                               value;
                                                         });
                                                       },
+                                                      activeColor: Colors.blue,
                                                       title: Row(
                                                         mainAxisAlignment:
                                                             MainAxisAlignment
@@ -364,7 +398,6 @@ class _Checkout1PageState extends State<Checkout1Page> {
                                                               null
                                                           ? null
                                                           : () {
-                                                              // Apply
                                                               setState(() {
                                                                 selectedDeliveryMethod =
                                                                     tmpSelectedDeliveryMethod;
@@ -388,7 +421,7 @@ class _Checkout1PageState extends State<Checkout1Page> {
                                                   child: const Text(
                                                     'Apply',
                                                     style: TextStyle(
-                                                        fontSize: 18,
+                                                        fontSize: 16,
                                                         color: Colors.white),
                                                   ),
                                                 ),

@@ -149,12 +149,12 @@ class _HomeTabState extends State<HomeTab> {
           SizedBox(
             height: 20,
           ),
-          BundlingProductSection(
-            title: "Save more with bundling",
-          ),
-          SizedBox(
-            height: 20,
-          ),
+          // BundlingProductSection(
+          //   title: "Save more with bundling",
+          // ),
+          // SizedBox(
+          //   height: 20,
+          // ),
           NewArrivalProductSection(),
           SizedBox(
             height: 20,
@@ -166,7 +166,9 @@ class _HomeTabState extends State<HomeTab> {
           BlocBuilder(
               bloc: homeCubit,
               builder: (context, state) {
-                return TopBrandSection(brands: homeCubit.data.brands);
+                return Visibility(
+                    visible: homeCubit.data.brands.isNotEmpty,
+                    child: TopBrandSection(brands: homeCubit.data.brands));
               }),
           SizedBox(
             height: 4,
@@ -174,8 +176,11 @@ class _HomeTabState extends State<HomeTab> {
           BlocBuilder(
               bloc: cartCubit,
               builder: (context, state) {
-                return CheckoutReminderSection(
-                  carts: cartCubit.data.cart?.cartItems ?? [],
+                return Visibility(
+                  visible: (cartCubit.data.cart?.cartItems ?? []).isNotEmpty,
+                  child: CheckoutReminderSection(
+                    carts: cartCubit.data.cart?.cartItems ?? [],
+                  ),
                 );
               }),
           SizedBox(

@@ -104,9 +104,18 @@ class _DeliveryAddressPageState extends State<DeliveryAddressPage> {
                 //     e.value.districtName +
                 //     ', ' +
                 //     e.value.postcode,
-                onEdit: () {
-                  Navigator.pushNamed(context, AppRouter.deliveryAddressAdd,
+                onEdit: () async {
+                  var res = await Navigator.pushNamed(
+                      context, AppRouter.deliveryAddressAdd,
                       arguments: {"address": e.value});
+                  if (res is Map?) {
+                    if (res?["action"] == "delete") {
+                      onDelete(res?["id"]);
+                    }
+                  } else {
+                    HomeCubit homeCubit = context.read<HomeCubit>();
+                    await homeCubit.fetchProfile();
+                  }
                 },
                 onDelete: (id) {
                   onDelete(id);
@@ -200,15 +209,15 @@ class _AddressCard extends StatelessWidget {
                       SizedBox(
                         width: 12,
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          onDelete(id);
-                        },
-                        child: const Text(
-                          "Delete Address",
-                          style: TextStyle(color: Colors.red),
-                        ),
-                      )
+                      // GestureDetector(
+                      //   onTap: () {
+                      //     onDelete(id);
+                      //   },
+                      //   child: const Text(
+                      //     "Delete Address",
+                      //     style: TextStyle(color: Colors.red),
+                      //   ),
+                      // )
                     ],
                   ),
                 ],

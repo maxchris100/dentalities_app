@@ -7,6 +7,7 @@ import 'package:dentalities/data/models/transaction_response_model.dart';
 import 'package:dentalities/presentation/blocs/cubit/cart_cubit.dart';
 import 'package:dentalities/presentation/views/order/webview_payment_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -98,14 +99,36 @@ class _OrderDetailPageState extends State<OrderDetailPage>
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                          child: Text("Order Number",
-                              style: const TextStyle(color: Colors.grey))),
-                      Text(item?.invoiceNumber ?? "",
-                          style: const TextStyle(fontWeight: FontWeight.w500)),
-                    ],
+                  GestureDetector(
+                    onTap: () {
+                      Clipboard.setData(
+                          ClipboardData(text: item?.invoiceNumber ?? ""));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Copied to Clipboard')),
+                      );
+                    },
+                    child: Row(
+                      children: [
+                        Expanded(
+                            child: Text("Order Number",
+                                style: const TextStyle(color: Colors.grey))),
+                        Row(
+                          children: [
+                            Text(item?.invoiceNumber ?? "",
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w500)),
+                            SizedBox(
+                              width: 4,
+                            ),
+                            Icon(
+                              Icons.copy,
+                              color: Colors.blue,
+                              size: 18,
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                   SizedBox(height: 8),
                   Row(
@@ -389,6 +412,33 @@ class _OrderDetailPageState extends State<OrderDetailPage>
                           borderRadius: BorderRadius.circular(30)),
                     ),
                     child: const Text('Continue to Payment',
+                        style: TextStyle(fontSize: 16, color: Colors.white)),
+                  ),
+                ),
+              ),
+            ),
+
+            Visibility(
+              visible: item?.status == "on_delivery",
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      //download invoice
+                      String url = item?.shippingLabelPdfUrl ?? "";
+                      if (!await launchUrl(Uri.parse(url))) {
+                        ToastUtil.showToastError("", 'Could not launch $url');
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30)),
+                    ),
+                    child: const Text('Download Resi Pengiriman',
                         style: TextStyle(fontSize: 16, color: Colors.white)),
                   ),
                 ),

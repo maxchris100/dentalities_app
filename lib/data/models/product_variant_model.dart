@@ -42,7 +42,7 @@ class ProductVariant {
   });
 
   factory ProductVariant.fromJson(Map<String, dynamic> json) {
-    print("@ProductVariant");
+    // print("@ProductVariant");
     return ProductVariant(
       id: json['id'],
       sku: json['sku'] ?? '',

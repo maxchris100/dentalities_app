@@ -51,6 +51,7 @@ class Transaction {
   String? cnoteNo;
   String? invoicePdf;
   String? shippingLabelPdf;
+  String? shippingLabelPdfUrl;
   int? userId;
   UserAddress? shippingAddress;
   List<TransactionItem>? transactionItems;
@@ -78,13 +79,14 @@ class Transaction {
     this.cnoteNo,
     this.invoicePdf,
     this.shippingLabelPdf,
+    this.shippingLabelPdfUrl,
     this.userId,
     this.shippingAddress,
     this.transactionItems,
   });
 
   factory Transaction.fromJson(Map<String, dynamic> json) {
-    print("@");
+    // print("@");
     return Transaction(
       paymentResponse: json['payment_response'] != null
           ? PaymentResponse.fromJson(json['payment_response'])
@@ -110,6 +112,7 @@ class Transaction {
       cnoteNo: json['cnote_no'],
       invoicePdf: json['invoice_pdf'],
       shippingLabelPdf: json['shipping_label_pdf'],
+      shippingLabelPdfUrl: json['shipping_label_pdf_url'],
       userId: json['user_id'],
       shippingAddress: json['shipping_address'] != null
           ? UserAddress.fromJson(json['shipping_address'])
@@ -124,16 +127,13 @@ class Transaction {
     String text = '';
     if (status == "unpaid") {
       text = "Waiting Payment";
+    } else if (status == "paid") {
+      text = "Processing Payment";
+    } else if (status == "on_delivery") {
+      text = "Shipping";
+    } else if (status == "done") {
+      text = "Done";
     }
-    // else if (status == "paid") {
-    //   text = "Processing";
-    // }
-    // else if (status == "paid") {
-    //   text = "Processing";
-    // }
-    // else if (status == "paid") {
-    //   text = "Processing";
-    // }
     return text;
   }
 
@@ -186,7 +186,7 @@ class PaymentResponse {
   });
 
   factory PaymentResponse.fromJson(Map<String, dynamic> json) {
-    print("@");
+    // print("@");
     return PaymentResponse(
       merchantID: json['merchantID'],
       transactionNo: json['transactionNo'],
@@ -253,7 +253,7 @@ class TransactionItem {
   });
 
   factory TransactionItem.fromJson(Map<String, dynamic> json) {
-    print("@");
+    // print("@");
     return TransactionItem(
       isDiscounted: json['is_discounted'],
       id: json['id'],

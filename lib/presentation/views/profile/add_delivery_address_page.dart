@@ -17,6 +17,9 @@ class AddEditDeliveryAddressPage extends StatefulWidget {
 class _AddEditDeliveryAddressPageState
     extends State<AddEditDeliveryAddressPage> {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController labelCtrl = TextEditingController();
+  final TextEditingController phoneCtrl = TextEditingController();
+  // final TextEditingController emailCtrl = TextEditingController();
   final TextEditingController postalCodeCtrl = TextEditingController();
   final TextEditingController addressCtrl = TextEditingController();
 
@@ -41,6 +44,7 @@ class _AddEditDeliveryAddressPageState
       } else {
         deliveryAddressCubit.loadProvinces();
       }
+      setState(() {});
     });
   }
 
@@ -152,6 +156,113 @@ class _AddEditDeliveryAddressPageState
           title: Text(isEdit ? "Edit Address" : "Add Address"),
           backgroundColor: Colors.white,
           elevation: 0,
+          actions: [
+            Visibility(
+              visible: isEdit,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 16),
+                child: GestureDetector(
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.vertical(top: Radius.circular(20)),
+                      ),
+                      builder: (_) {
+                        return Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Icon(
+                                  Icons.close,
+                                  size: 32,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              const Text(
+                                "Delete Address?",
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                  "Are you sure to delete this address? This action can’t be undone."),
+                              const SizedBox(height: 12),
+                              SizedBox(
+                                width: double.infinity,
+                                child: OutlinedButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  style: OutlinedButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 8),
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(30),
+                                          side: BorderSide(
+                                              color: Colors.grey[300]!,
+                                              strokeAlign: 2)),
+                                      backgroundColor: Colors.white),
+                                  child: const Text(
+                                    'Cancel',
+                                    style: TextStyle(
+                                        fontSize: 16, color: Colors.black),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 8,
+                              ),
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    Navigator.pop(context, {
+                                      "action": "delete",
+                                      "id": address?.id
+                                    });
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                    padding:
+                                        const EdgeInsets.symmetric(vertical: 8),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    'Delete',
+                                    style: TextStyle(
+                                        fontSize: 16, color: Colors.white),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  },
+                  child: const Text(
+                    "Delete",
+                    style: TextStyle(
+                        color: Colors.red, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            )
+          ],
         ),
         body: Padding(
           padding: const EdgeInsets.all(16),
@@ -166,6 +277,57 @@ class _AddEditDeliveryAddressPageState
                       //     style:
                       //         TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                       // const SizedBox(height: 16),
+                      const Text("Address Name"),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: labelCtrl,
+                        maxLength: 8,
+                        decoration: InputDecoration(
+                            hintText: 'Address Name',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            counterText: ''),
+                        validator: (value) => value == null || value.isEmpty
+                            ? 'Address Name is required'
+                            : null,
+                      ),
+                      const SizedBox(height: 12),
+                      const Text("Phone"),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: phoneCtrl,
+                        keyboardType: TextInputType.number,
+                        maxLength: 8,
+                        decoration: InputDecoration(
+                            hintText: 'Phone',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            counterText: ''),
+                        validator: (value) => value == null || value.isEmpty
+                            ? 'Phone is required'
+                            : null,
+                      ),
+                      const SizedBox(height: 12),
+                      // const Text("Email"),
+                      // const SizedBox(height: 8),
+                      // TextFormField(
+                      //   controller: postalCodeCtrl,
+                      //   keyboardType: TextInputType.number,
+                      //   maxLength: 8,
+                      //   decoration: InputDecoration(
+                      //       hintText: 'Postal Code',
+                      //       border: OutlineInputBorder(
+                      //         borderRadius: BorderRadius.circular(12),
+                      //       ),
+                      //       counterText: ''),
+                      //   validator: (value) => value == null || value.isEmpty
+                      //       ? 'Postal Code is required'
+                      //       : null,
+                      // ),
+                      // const SizedBox(height: 12),
+
                       const Text("Province"),
                       const SizedBox(height: 8),
                       BottomSheetSelector<Map>(
@@ -246,11 +408,11 @@ class _AddEditDeliveryAddressPageState
                         maxLines: 2,
                         maxLength: 300,
                         decoration: InputDecoration(
-                          hintText: 'Address',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
+                            hintText: 'Address',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            counter: Text("")),
                         validator: (value) => value == null || value.isEmpty
                             ? 'Address is required'
                             : null,

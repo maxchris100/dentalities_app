@@ -24,10 +24,12 @@ class TopBrandSection extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Top brands",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              const Text("Top Brands",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  // Navigator.push
+                },
                 child: const Text(
                   "See All",
                   style: TextStyle(

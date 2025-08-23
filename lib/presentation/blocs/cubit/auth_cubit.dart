@@ -121,7 +121,8 @@ class AuthCubit extends Cubit<AuthState> {
 
       emit(AuthAuthenticated(user));
     } catch (e) {
-      debugPrint('Refresh Token error: $e');
+      debugPrint('Login error: $e');
+      emit(AuthError('Login failed. Please check your credentials.'));
     }
   }
 

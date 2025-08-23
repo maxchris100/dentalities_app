@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dentalities/core/router/app_router.dart';
 import 'package:dentalities/core/util/string_util.dart';
+import 'package:dentalities/core/util/toast_util.dart';
 import 'package:dentalities/data/models/product_model.dart';
 import 'package:dentalities/data/models/product_variant_model.dart';
 import 'package:dentalities/domain/repositories/cart_repository.dart';
@@ -18,6 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProductDetailPage extends StatefulWidget {
   const ProductDetailPage({super.key});
@@ -526,6 +528,153 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 ),
               ),
             ],
+          ),
+          floatingActionButton: Transform.translate(
+            offset: Offset(0, 10),
+            child: FloatingActionButton(
+              onPressed: () async {
+                String url = "https://wa.me/6281212049191";
+                if (!await launchUrl(Uri.parse(url))) {
+                  ToastUtil.showToastError("", 'Could not launch chat');
+                }
+              },
+              shape: CircleBorder(),
+              backgroundColor: Colors.blue,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SvgPicture.asset(
+                    "assets/icons/home_cs.svg",
+                    color: Colors.white,
+                    height: 24,
+                  ),
+                  Text(
+                    "Chat",
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+          bottomNavigationBar: Material(
+            elevation: 12,
+            color: Colors.white,
+            shadowColor: Colors.black26,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10,
+                    offset: Offset(0, -2),
+                  ),
+                ],
+              ),
+              child: BottomAppBar(
+                elevation: 12,
+                color: Colors.transparent,
+                height: 64,
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamedAndRemoveUntil(
+                              context, AppRouter.home, (route) => false);
+                        },
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SvgPicture.asset(
+                              "assets/icons/home_home.svg",
+                              color: Colors.grey,
+                              height: 24,
+                            ),
+                            Text(
+                              "Home",
+                              style: TextStyle(fontSize: 11, color: Colors.grey),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(context, "/wishlist");
+                        },
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SvgPicture.asset(
+                              "assets/icons/home_wishlist.svg",
+                              color: Colors.grey,
+                              height: 24,
+                            ),
+                            Text(
+                              "Wishlist",
+                              style: TextStyle(fontSize: 11, color: Colors.grey),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Spacer(flex: 1),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(context, AppRouter.cart);
+                        },
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SvgPicture.asset(
+                              "assets/icons/home_transaction.svg",
+                              color: Colors.grey,
+                              height: 24,
+                            ),
+                            Text(
+                              "Transaction",
+                              style: TextStyle(fontSize: 11, color: Colors.grey),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(context, AppRouter.userProfile);
+                        },
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SvgPicture.asset(
+                              "assets/icons/home_profile.svg",
+                              color: Colors.grey,
+                              height: 24,
+                            ),
+                            Text(
+                              "Profile",
+                              style: TextStyle(fontSize: 11, color: Colors.grey),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
         );
       }),

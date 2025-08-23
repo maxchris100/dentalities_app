@@ -101,21 +101,21 @@ class _SignUpPageState extends State<SignUpPage> {
     setState(() {
       onSubmit = true;
     });
-    if (selectedSalutation == null) {
-      return;
-    }
-    if (signUpCubit.state.selectedProvinceId == null) {
-      return;
-    }
-    if (signUpCubit.state.selectedCityId == null) {
-      return;
-    }
-    if (signUpCubit.state.selectedDistrictId == null) {
-      return;
-    }
-    if (signUpCubit.state.selectedSubdistrictId == null) {
-      return;
-    }
+    // if (selectedSalutation == null) {
+    //   return;
+    // }
+    // if (signUpCubit.state.selectedProvinceId == null) {
+    //   return;
+    // }
+    // if (signUpCubit.state.selectedCityId == null) {
+    //   return;
+    // }
+    // if (signUpCubit.state.selectedDistrictId == null) {
+    //   return;
+    // }
+    // if (signUpCubit.state.selectedSubdistrictId == null) {
+    //   return;
+    // }
     setState(() {
       isSubmiting = true;
     });
@@ -130,12 +130,12 @@ class _SignUpPageState extends State<SignUpPage> {
       phoneNumber: phoneController.text.replaceFirst('62', ''),
       email: emailController.text.trim().toLowerCase(),
       password: passwordController.text,
-      provinceId: signUpCubit.state.selectedProvinceId!["id"].toString(),
-      cityId: signUpCubit.state.selectedCityId!["id"].toString(),
-      districtId: signUpCubit.state.selectedDistrictId!["id"].toString(),
-      subdistrictId: signUpCubit.state.selectedSubdistrictId!["id"].toString(),
-      postalCode: postalController.text,
-      address: addressController.text,
+      // provinceId: signUpCubit.state.selectedProvinceId!["id"].toString(),
+      // cityId: signUpCubit.state.selectedCityId!["id"].toString(),
+      // districtId: signUpCubit.state.selectedDistrictId!["id"].toString(),
+      // subdistrictId: signUpCubit.state.selectedSubdistrictId!["id"].toString(),
+      // postalCode: postalController.text,
+      // address: addressController.text,
     );
     setState(() {
       isSubmiting = false;
@@ -205,6 +205,30 @@ class _SignUpPageState extends State<SignUpPage> {
               const Text("Account Informations",
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               const SizedBox(height: 16),
+
+              Text("Full Name"),
+              SizedBox(
+                height: 8,
+              ),
+              TextFormField(
+                controller: fullNameController,
+                decoration: InputDecoration(
+                  hintText: 'Full Name',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
+                onChanged: (value) {
+                  _formKey2.currentState!.validate();
+                },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Full Name is required';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 12),
+
               // Email Field
               Text("Email"),
               SizedBox(
@@ -332,69 +356,69 @@ class _SignUpPageState extends State<SignUpPage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 12),
-              Text("Salutation"),
-              SizedBox(
-                height: 8,
-              ),
-              BottomSheetSelector<String>(
-                label: "Salutation",
-                selectedValue: selectedSalutation,
-                items: ['Mr.', 'Mrs.', 'Dr.', 'Prof.'],
-                onSelected: (value) =>
-                    setState(() => selectedSalutation = value),
-              ),
-              Visibility(
-                visible: onSubmit && selectedSalutation == null,
-                child: Text(
-                  "Salutation is required",
-                  style: TextStyle(color: Colors.red),
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text("Prefix Title"),
-              SizedBox(
-                height: 8,
-              ),
-              TextFormField(
-                controller: prefixController,
-                decoration: InputDecoration(
-                  hintText: 'Prefix',
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                ),
-                onChanged: (value) {
-                  _formKey2.currentState!.validate();
-                },
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Prefix Title is required';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 12),
-              Text("Suffix Title"),
-              SizedBox(
-                height: 8,
-              ),
-              TextFormField(
-                controller: suffixController,
-                decoration: InputDecoration(
-                  hintText: 'Suffix Title',
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                ),
-                onChanged: (value) {
-                  _formKey2.currentState!.validate();
-                },
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Suffix Title is required';
-                  }
-                  return null;
-                },
-              ),
+              // const SizedBox(height: 12),
+              // Text("Salutation"),
+              // SizedBox(
+              //   height: 8,
+              // ),
+              // BottomSheetSelector<String>(
+              //   label: "Salutation",
+              //   selectedValue: selectedSalutation,
+              //   items: ['Mr.', 'Mrs.', 'Dr.', 'Prof.'],
+              //   onSelected: (value) =>
+              //       setState(() => selectedSalutation = value),
+              // ),
+              // Visibility(
+              //   visible: onSubmit && selectedSalutation == null,
+              //   child: Text(
+              //     "Salutation is required",
+              //     style: TextStyle(color: Colors.red),
+              //   ),
+              // ),
+              // const SizedBox(height: 12),
+              // Text("Prefix Title"),
+              // SizedBox(
+              //   height: 8,
+              // ),
+              // TextFormField(
+              //   controller: prefixController,
+              //   decoration: InputDecoration(
+              //     hintText: 'Prefix',
+              //     border: OutlineInputBorder(
+              //         borderRadius: BorderRadius.circular(12)),
+              //   ),
+              //   onChanged: (value) {
+              //     _formKey2.currentState!.validate();
+              //   },
+              //   validator: (value) {
+              //     if (value == null || value.isEmpty) {
+              //       return 'Prefix Title is required';
+              //     }
+              //     return null;
+              //   },
+              // ),
+              // const SizedBox(height: 12),
+              // Text("Suffix Title"),
+              // SizedBox(
+              //   height: 8,
+              // ),
+              // TextFormField(
+              //   controller: suffixController,
+              //   decoration: InputDecoration(
+              //     hintText: 'Suffix Title',
+              //     border: OutlineInputBorder(
+              //         borderRadius: BorderRadius.circular(12)),
+              //   ),
+              //   onChanged: (value) {
+              //     _formKey2.currentState!.validate();
+              //   },
+              //   validator: (value) {
+              //     if (value == null || value.isEmpty) {
+              //       return 'Suffix Title is required';
+              //     }
+              //     return null;
+              //   },
+              // ),
             ],
           ),
         );
@@ -597,28 +621,28 @@ class _SignUpPageState extends State<SignUpPage> {
                               Row(
                                 children: [
                                   _stepIndicator("Account", 0),
-                                  Expanded(
-                                    child: Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(horizontal: 8),
-                                      child: Divider(
-                                        color: Colors.grey,
-                                        thickness: 1,
-                                      ),
-                                    ),
-                                  ),
-                                  _stepIndicator("Personal", 1),
-                                  Expanded(
-                                    child: Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(horizontal: 8),
-                                      child: Divider(
-                                        color: Colors.grey,
-                                        thickness: 1,
-                                      ),
-                                    ),
-                                  ),
-                                  _stepIndicator("Address", 2),
+                                  // Expanded(
+                                  //   child: Padding(
+                                  //     padding:
+                                  //         EdgeInsets.symmetric(horizontal: 8),
+                                  //     child: Divider(
+                                  //       color: Colors.grey,
+                                  //       thickness: 1,
+                                  //     ),
+                                  //   ),
+                                  // ),
+                                  // _stepIndicator("Personal", 1),
+                                  // Expanded(
+                                  //   child: Padding(
+                                  //     padding:
+                                  //         EdgeInsets.symmetric(horizontal: 8),
+                                  //     child: Divider(
+                                  //       color: Colors.grey,
+                                  //       thickness: 1,
+                                  //     ),
+                                  //   ),
+                                  // ),
+                                  // _stepIndicator("Address", 2),
                                 ],
                               ),
                               const SizedBox(height: 24),
@@ -637,47 +661,47 @@ class _SignUpPageState extends State<SignUpPage> {
                         padding: const EdgeInsets.symmetric(horizontal: 24),
                         child: Row(
                           children: [
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: _currentStep > 0 ? _prevStep : null,
-                                style: ElevatedButton.styleFrom(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 12),
-                                  backgroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12)),
-                                ),
-                                child: Text(
-                                  "Previous",
-                                  style: TextStyle(color: Colors.black),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
+                            // Expanded(
+                            //   child: ElevatedButton(
+                            //     onPressed: _currentStep > 0 ? _prevStep : null,
+                            //     style: ElevatedButton.styleFrom(
+                            //       padding:
+                            //           const EdgeInsets.symmetric(vertical: 12),
+                            //       backgroundColor: Colors.white,
+                            //       shape: RoundedRectangleBorder(
+                            //           borderRadius: BorderRadius.circular(12)),
+                            //     ),
+                            //     child: Text(
+                            //       "Previous",
+                            //       style: TextStyle(color: Colors.black),
+                            //     ),
+                            //   ),
+                            // ),
+                            // const SizedBox(width: 12),
                             Expanded(
                               child: ElevatedButton(
                                 onPressed:
-                                    _currentStep == 2 ? _register : _nextStep,
+                                    _currentStep == 0 ? _register : _nextStep,
                                 style: ElevatedButton.styleFrom(
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 12),
-                                    backgroundColor: _currentStep == 2
+                                    backgroundColor: _currentStep == 0
                                         ? Colors.blue
                                         : Colors.white,
                                     shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(12),
                                         side: BorderSide(
-                                            color: _currentStep == 2
+                                            color: _currentStep == 0
                                                 ? Colors.blue
                                                 : Colors.white)),
                                     side: BorderSide(
-                                        color: _currentStep == 2
+                                        color: _currentStep == 0
                                             ? Colors.white
                                             : Colors.blue)),
                                 child: Text(
-                                  _currentStep == 2 ? "Register" : "Next",
+                                  _currentStep == 0 ? "Register" : "Next",
                                   style: TextStyle(
-                                      color: _currentStep == 2
+                                      color: _currentStep == 0
                                           ? Colors.white
                                           : Colors.blue),
                                 ),

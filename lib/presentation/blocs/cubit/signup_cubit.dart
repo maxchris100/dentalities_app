@@ -101,12 +101,12 @@ class SignUpCubit extends Cubit<SignUpState> {
     required String phoneNumber,
     required String email,
     required String password,
-    required String provinceId,
-    required String cityId,
-    required String districtId,
-    required String subdistrictId,
-    required String postalCode,
-    required String address,
+    String? provinceId,
+    String? cityId,
+    String? districtId,
+    String? subdistrictId,
+    String? postalCode,
+    String? address,
   }) async {
     emit(state.copyWith(isSubmit: true, error: null));
     try {
@@ -119,12 +119,12 @@ class SignUpCubit extends Cubit<SignUpState> {
         phoneNumber: phoneNumber,
         email: email,
         password: password,
-        provinceId: provinceId,
-        cityId: cityId,
-        districtId: districtId,
-        subdistrictId: subdistrictId,
-        postalCode: postalCode,
-        address: address,
+        // provinceId: provinceId,
+        // cityId: cityId,
+        // districtId: districtId,
+        // subdistrictId: subdistrictId,
+        // postalCode: postalCode,
+        // address: address,
       );
 
       // Optional: handle data / simpan user, dll

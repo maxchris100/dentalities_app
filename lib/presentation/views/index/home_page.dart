@@ -10,6 +10,8 @@ import 'package:dentalities/presentation/views/index/cs_tab.dart';
 import 'package:dentalities/presentation/widgets/app_drawer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:dentalities/core/util/toast_util.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -140,10 +142,15 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: Transform.translate(
         offset: Offset(0, 10), // ↓ Turunkan sedikit ke bawah
         child: FloatingActionButton(
-          onPressed: () {
-            setState(() {
-              _selectedIndex = 2;
-            });
+          onPressed: () async {
+            // setState(() {
+            //   _selectedIndex = 2;
+            // });
+
+            String url = "https://wa.me/6281212049191";
+            if (!await launchUrl(Uri.parse(url))) {
+              ToastUtil.showToastError("", 'Could not launch $url');
+            }
           },
           shape: CircleBorder(),
           backgroundColor: Colors.blue,

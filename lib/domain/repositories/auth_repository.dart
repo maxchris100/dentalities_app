@@ -39,12 +39,12 @@ class AuthRepository {
     required String phoneNumber,
     required String email,
     required String password,
-    required String provinceId,
-    required String cityId,
-    required String districtId,
-    required String subdistrictId,
-    required String postalCode,
-    required String address,
+    String? provinceId,
+    String? cityId,
+    String? districtId,
+    String? subdistrictId,
+    String? postalCode,
+    String? address,
     CancelToken? cancelToken,
   }) async {
     return await DioClient.instance.post(

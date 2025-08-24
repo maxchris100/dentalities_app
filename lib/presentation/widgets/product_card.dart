@@ -117,11 +117,14 @@ class ProductCard extends StatelessWidget {
             const SizedBox(height: 8),
 
             // --- NAME ---
-            Text(
-              product.name ?? "",
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontWeight: FontWeight.w500),
+            SizedBox(
+              height: 40,
+              child: Text(
+                product.name ?? "",
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontWeight: FontWeight.w500),
+              ),
             ),
             const SizedBox(height: 4),
 
@@ -182,12 +185,10 @@ class ProductCard extends StatelessWidget {
                       ),
                       builder: (ctx) => AddToCartWidget(
                         product: p,
-                        onTap: (int? variantId, int quantity) {
-                          try {
-                            productCubit.addToCart(p, quantity);
-                            CustomToast.show(context,
-                                message: "Successfully added to cart");
-                          } catch (_) {}
+                        onTap: (int? variantId, int quantity) async {
+                          var message = await productCubit.addToCartVariant(
+                              variantId, quantity);
+                          CustomToast.show(context, message: message);
                         },
                       ),
                     );

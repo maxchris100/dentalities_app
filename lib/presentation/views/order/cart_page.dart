@@ -117,18 +117,26 @@ class _CartPageState extends State<CartPage> {
 
                         return CartItemWidget(
                           isSelected: selected[id] ?? false,
-                          imageUrl: item.productImage ?? "",
-                          name: item.productName ?? "",
-                          slug: item.productSlug ?? "",
+                          imageUrl:
+                              item.productVariant?.product?.featureImageUrl ??
+                                  "",
+                          name: item.productVariant?.product?.name ?? "",
+                          slug: item.productVariant?.product?.slug ?? "",
                           variant: [
-                            item.variantOneName,
-                            item.variantTwoName,
-                            item.variantThreeName,
+                            item.productVariant?.variantOneName,
+                            item.productVariant?.variantTwoName,
+                            item.productVariant?.variantThreeName,
                           ].where((e) => e?.isNotEmpty ?? false).join(', '),
                           price: StringUtil.formatMoney(item.price),
+                          priceAfterDiscount:
+                              (item.price_after_discount ?? 0) > 0
+                                  ? StringUtil.formatMoney(
+                                      item.price_after_discount ?? 0)
+                                  : null,
                           quantity: quantity[id]!,
                           onAdd: () => _changeQty(id, 1),
                           onRemove: () => _changeQty(id, -1),
+                          onDelete: () => _removeCart(id, 0),
                           onChecked: (val) => _toggleItem(id, val),
                           isGrid: isGrid,
                         );
@@ -167,6 +175,20 @@ class _CartPageState extends State<CartPage> {
     // Start debounce baru
     debounceTimers[id] = Timer(const Duration(milliseconds: 500), () {
       cartCubit.addToCartVariant(id, quantity[id]!);
+    });
+  }
+
+  void _removeCart(int id, int delta) {
+    quantity[id] = 0;
+    // Cancel timer kalau sebelumnya ada
+    debounceTimers[id]?.cancel();
+
+    // Start debounce baru
+    debounceTimers[id] = Timer(const Duration(milliseconds: 500), () {
+      cartCubit.addToCartVariant(id, 0).then((res) {
+        selected.remove(id);
+        quantity.remove(id);
+      });
     });
   }
 

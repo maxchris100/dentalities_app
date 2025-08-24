@@ -8,9 +8,11 @@ class CartItemWidget extends StatelessWidget {
   final String slug;
   final String variant;
   final String price;
+  final String? priceAfterDiscount;
   final int quantity;
   final VoidCallback onAdd;
   final VoidCallback onRemove;
+  final VoidCallback onDelete;
   final ValueChanged<bool?> onChecked;
   final bool isGrid;
 
@@ -22,9 +24,11 @@ class CartItemWidget extends StatelessWidget {
       required this.slug,
       required this.variant,
       required this.price,
+      this.priceAfterDiscount,
       required this.quantity,
       required this.onAdd,
       required this.onRemove,
+      required this.onDelete,
       required this.onChecked,
       this.isGrid = false});
 
@@ -78,14 +82,31 @@ class CartItemWidget extends StatelessWidget {
                                 SizedBox(
                                   height: 6,
                                 ),
-                                Text(price,
-                                    style: TextStyle(
-                                      color: price == 'FREE'
-                                          ? Colors.red
-                                          : Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    )),
+                                Row(
+                                  children: [
+                                    Text(priceAfterDiscount ?? "",
+                                        style: TextStyle(
+                                          color: price == 'FREE'
+                                              ? Colors.red
+                                              : Colors.blue,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        )),
+                                    Visibility(
+                                      visible: priceAfterDiscount != price,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(left: 8),
+                                        child: Text(price ?? "",
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                                decoration: TextDecoration
+                                                    .lineThrough)),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                                 SizedBox(
                                   height: 12,
                                 ),
@@ -111,6 +132,11 @@ class CartItemWidget extends StatelessWidget {
                                       ),
                                     ),
                                     _buildQtyButton(Icons.add, onAdd),
+                                    Expanded(child: Container()),
+                                    _buildQtyButton(Icons.delete, onDelete),
+                                    SizedBox(
+                                      width: 16,
+                                    ),
                                   ],
                                 ),
                               ],
@@ -196,6 +222,12 @@ class CartItemWidget extends StatelessWidget {
                           SizedBox(
                             width: 12,
                           ),
+                          Container(
+                              padding: EdgeInsets.all(8),
+                              child: _buildQtyButton2(Icons.delete, onDelete)),
+                          SizedBox(
+                            width: 8,
+                          ),
                         ],
                       ),
                     ],
@@ -214,10 +246,12 @@ class CartItemWidget extends StatelessWidget {
         width: 32,
         height: 32,
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.blue),
+          border: Border.all(
+              color: icon == Icons.delete ? Colors.grey : Colors.blue),
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Icon(icon, size: 18, color: Colors.blue),
+        child: Icon(icon,
+            size: 18, color: icon == Icons.delete ? Colors.red : Colors.blue),
       ),
     );
   }
@@ -225,7 +259,8 @@ class CartItemWidget extends StatelessWidget {
   Widget _buildQtyButton2(IconData icon, VoidCallback onTap) {
     return InkWell(
       onTap: onTap,
-      child: Icon(icon, size: 18, color: Colors.blue),
+      child: Icon(icon,
+          size: 18, color: icon == Icons.delete ? Colors.red : Colors.blue),
     );
   }
 }

@@ -89,8 +89,8 @@ class UserModel extends Equatable {
     return UserModel(
       id: map['id'] != null ? map['id'] as int : null,
       iat: map['iat'] != null ? map['iat'] as int : null,
-      firstName: map['firstName'] != null ? map['firstName'] as String : null,
-      lastName: map['lastName'] != null ? map['lastName'] as String : null,
+      firstName: map['first_name'] != null ? map['first_name'] as String : null,
+      lastName: map['last_name'] != null ? map['last_name'] as String : null,
       sub: map['sub'] != null ? map['sub'] as String : null,
       role: map['role'] != null ? map['role'] as String : null,
       channel: map['channel'] != null ? map['channel'] as String : null,
@@ -101,14 +101,14 @@ class UserModel extends Equatable {
       salutation:
           map['salutation'] != null ? map['salutation'] as String : null,
       titlePrefix:
-          map['titlePrefix'] != null ? map['titlePrefix'] as String : null,
+          map['title_prefix'] != null ? map['title_prefix'] as String : null,
       titleSuffix:
-          map['titleSuffix'] != null ? map['titleSuffix'] as String : null,
-      fullName: map['fullName'],
-      phoneCode: map['phoneCode'],
+          map['title_suffix'] != null ? map['title_suffix'] as String : null,
+      fullName: map['full_name'] != null ? map['full_name'] as String : null,
+      phoneCode: map['phone_code'],
       phone: map['phone'],
-      isApproved: map['isApproved'],
-      loginToken: map['loginToken'],
+      isApproved: map['is_approved'],
+      loginToken: map['login_token'],
       userAddresses: map['user_addresses'] != null
           ? UserAddress.fromList(map['user_addresses'])
           : [],

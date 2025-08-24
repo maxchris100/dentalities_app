@@ -11,7 +11,7 @@ class CartRepository {
     CancelToken? cancelToken,
   }) async {
     return await DioClient.instance.get(
-      "/api/cart",
+      "/api/v2/cart",
       queryParameters: {
         "page": page,
         "limit": limit,
@@ -25,7 +25,7 @@ class CartRepository {
     CancelToken? cancelToken,
   }) async {
     return await DioClient.instance.post(
-      "/api/cart/update",
+      "/api/v2/cart/update",
       data: [
         {
           "product_variant_id": productVariantId,

@@ -124,7 +124,7 @@ class _ToastWidgetState extends State<_ToastWidget>
               );
             },
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 3),
               child: Row(
                 children: [
                   const Icon(Icons.check_circle, color: Colors.green),
@@ -150,7 +150,7 @@ class _ToastWidgetState extends State<_ToastWidget>
                       ),
                       backgroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 4),
+                          horizontal: 12, vertical: 0),
                     ),
                     child: const Text(
                       'View Cart',

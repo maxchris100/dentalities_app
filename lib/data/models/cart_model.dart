@@ -1,7 +1,11 @@
+import 'package:dentalities/data/models/product_variant_model.dart';
+
 class CartItem {
   int? id;
   String? sku;
+  bool is_discounted;
   int? price;
+  int? price_after_discount;
   int? total;
   int? weight;
   int? discount;
@@ -18,39 +22,52 @@ class CartItem {
   String? variantOneName;
   String? variantTwoName;
   String? variantThreeName;
+  ProductVariant? productVariant;
 
-  CartItem({
-    this.id,
-    this.sku,
-    this.price,
-    this.total,
-    this.weight,
-    this.discount,
-    this.quantity,
-    this.subtotal,
-    this.productName,
-    this.productSlug,
-    this.productImage,
-    this.productImagePath,
-    this.productVariantId,
-    this.variantOneId,
-    this.variantTwoId,
-    this.variantThreeId,
-    this.variantOneName,
-    this.variantTwoName,
-    this.variantThreeName,
-  });
+  CartItem(
+      {this.id,
+      this.sku,
+      this.price,
+      this.price_after_discount,
+      this.total,
+      this.weight,
+      this.discount,
+      this.quantity,
+      this.subtotal,
+      this.productName,
+      this.productSlug,
+      this.productImage,
+      this.productImagePath,
+      this.productVariantId,
+      this.variantOneId,
+      this.variantTwoId,
+      this.variantThreeId,
+      this.variantOneName,
+      this.variantTwoName,
+      this.variantThreeName,
+      this.productVariant,
+      this.is_discounted = false});
 
   factory CartItem.fromJson(Map<String, dynamic> json) {
+    print("@Cartitem");
     return CartItem(
       id: json['id'],
       sku: json['sku'],
-      price: json['price'],
-      total: json['total'],
+      is_discounted:
+          json['is_discounted'] != null ? json['is_discounted'] : false,
+      price: json['price'] != null ? double.parse(json['price']).toInt() : null,
+      price_after_discount: json['price_after_discount'] != null
+          ? double.parse(json['price_after_discount']).toInt()
+          : null,
+      total: json['total'] != null ? double.parse(json['total']).toInt() : null,
       weight: json['weight'],
-      discount: json['discount'],
+      discount: json['discount'] != null
+          ? double.parse(json['discount']).toInt()
+          : null,
       quantity: json['quantity'],
-      subtotal: json['subtotal'],
+      subtotal: json['subtotal'] != null
+          ? double.parse(json['subtotal']).toInt()
+          : null,
       productName: json['product_name'],
       productSlug: json['product_slug'],
       productImage: json['product_image'],
@@ -62,6 +79,7 @@ class CartItem {
       variantOneName: json['variant_one_name'],
       variantTwoName: json['variant_two_name'],
       variantThreeName: json['variant_three_name'],
+      productVariant: ProductVariant.fromJson(json['product_variant']),
     );
   }
 
@@ -122,6 +140,7 @@ class CartResponse {
   });
 
   factory CartResponse.fromJson(Map<String, dynamic> json) {
+    print("@cart");
     return CartResponse(
       id: json['id'],
       totalCost: json['total_cost'],

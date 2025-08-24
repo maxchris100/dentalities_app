@@ -55,7 +55,7 @@ class FeatureProductSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildHeader(context, "Special for your speciality"),
+          _buildHeader(context, "You might like"),
           const SizedBox(height: 12),
           GridView.builder(
             shrinkWrap: true,

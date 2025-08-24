@@ -174,6 +174,9 @@ class _LoginPageState extends State<LoginPage> {
                                 border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12)),
                               ),
+                              onChanged: (value) {
+                                _formKey.currentState!.validate();
+                              },
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Email is required';
@@ -210,6 +213,18 @@ class _LoginPageState extends State<LoginPage> {
                                       : Icons.visibility_off),
                                 ),
                               ),
+                              onChanged: (value) {
+                                _formKey.currentState!.validate();
+                              },
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Password is required';
+                                }
+                                if (value.length < 6) {
+                                  return 'Password length minimum 6 characters';
+                                }
+                                return null;
+                              },
                             ),
 
                             // Forgot Password

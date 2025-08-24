@@ -44,15 +44,15 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   void initState() {
     if (Constant.getQAEnvironment()) {
-      emailController.text = "test001@yopmail.com";
-      phoneController.text = "62878321731";
-      passwordController.text = "123456";
-      fullNameController.text = "Test 1";
-      prefixController.text = "Mr";
-      suffixController.text = "Mr";
+      // emailController.text = "test001@yopmail.com";
+      // phoneController.text = "62878321731";
+      // passwordController.text = "123456";
+      // fullNameController.text = "Test 1";
+      // prefixController.text = "Mr";
+      // suffixController.text = "Mr";
 
-      postalController.text = "11840";
-      addressController.text = "test ";
+      // postalController.text = "11840";
+      // addressController.text = "test ";
     }
     super.initState();
     signUpCubit = SignUpCubit();
@@ -98,6 +98,10 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Future _register() async {
+    if (!_formKey1.currentState!.validate()) {
+      return;
+    }
+
     setState(() {
       onSubmit = true;
     });
@@ -147,10 +151,15 @@ class _SignUpPageState extends State<SignUpPage> {
 
         return;
       } else {
-        ToastUtil.showToast("", res.data["message"] ?? "");
+        if (res.data["errors"] != null && res.data["errors"] is List) {
+          if (res.data["errors"].length > 0) {
+            ToastUtil.showToastError("", res.data["errors"][0]["msg"] ?? "");
+            return;
+          }
+        }
+        ToastUtil.showToastError("", res.data["message"] ?? "");
       }
     }
-    ToastUtil.showToast("", "Error creating account");
   }
 
   Widget _stepIndicator(String title, int step) {
@@ -218,7 +227,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       borderRadius: BorderRadius.circular(12)),
                 ),
                 onChanged: (value) {
-                  _formKey2.currentState!.validate();
+                  _formKey1.currentState!.validate();
                 },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -289,40 +298,40 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
               const SizedBox(height: 12),
               // Password Field
-              Text("Password"),
-              SizedBox(
-                height: 8,
-              ),
-              TextFormField(
-                controller: passwordController,
-                focusNode: passwordFocus,
-                obscureText: obscureText,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                  suffixIcon: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        obscureText = !obscureText;
-                      });
-                    },
-                    child: Icon(
-                        obscureText ? Icons.visibility : Icons.visibility_off),
-                  ),
-                ),
-                onChanged: (value) {
-                  _formKey1.currentState!.validate();
-                },
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Password is required';
-                  }
-                  if (value.length < 6) {
-                    return 'Password length minimum 6 characters';
-                  }
-                  return null;
-                },
-              ),
+              // Text("Password"),
+              // SizedBox(
+              //   height: 8,
+              // ),
+              // TextFormField(
+              //   controller: passwordController,
+              //   focusNode: passwordFocus,
+              //   obscureText: obscureText,
+              //   decoration: InputDecoration(
+              //     border: OutlineInputBorder(
+              //         borderRadius: BorderRadius.circular(12)),
+              //     suffixIcon: GestureDetector(
+              //       onTap: () {
+              //         setState(() {
+              //           obscureText = !obscureText;
+              //         });
+              //       },
+              //       child: Icon(
+              //           obscureText ? Icons.visibility : Icons.visibility_off),
+              //     ),
+              //   ),
+              //   onChanged: (value) {
+              //     _formKey1.currentState!.validate();
+              //   },
+              //   validator: (value) {
+              //     if (value == null || value.isEmpty) {
+              //       return 'Password is required';
+              //     }
+              //     if (value.length < 6) {
+              //       return 'Password length minimum 6 characters';
+              //     }
+              //     return null;
+              //   },
+              // ),
             ],
           ),
         );
@@ -698,13 +707,24 @@ class _SignUpPageState extends State<SignUpPage> {
                                         color: _currentStep == 0
                                             ? Colors.white
                                             : Colors.blue)),
-                                child: Text(
-                                  _currentStep == 0 ? "Register" : "Next",
-                                  style: TextStyle(
-                                      color: _currentStep == 0
-                                          ? Colors.white
-                                          : Colors.blue),
-                                ),
+                                child: isSubmiting
+                                    ? SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: Center(
+                                          child: CircularProgressIndicator(
+                                            color: Colors.white,
+                                            padding: EdgeInsets.zero,
+                                          ),
+                                        ),
+                                      )
+                                    : Text(
+                                        _currentStep == 0 ? "Register" : "Next",
+                                        style: TextStyle(
+                                            color: _currentStep == 0
+                                                ? Colors.white
+                                                : Colors.blue),
+                                      ),
                               ),
                             ),
                           ],
@@ -719,7 +739,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               onTap: () {
                                 Navigator.pushNamedAndRemoveUntil(
                                   context,
-                                  AppRouter.signIn,
+                                  "/",
                                   (route) => false,
                                 );
                               },

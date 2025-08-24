@@ -14,6 +14,7 @@ import 'package:meta/meta.dart';
 import '../../widgets/product_model.dart';
 
 class HomeData {
+  int selectedIndex;
   final List<Category> featureCategories;
   final List<dynamic> topDoctors;
   final List<Banner> banners;
@@ -24,7 +25,8 @@ class HomeData {
   final List<Category> categories;
 
   HomeData(
-      {required this.featureCategories,
+      {this.selectedIndex = 0,
+      required this.featureCategories,
       required this.topDoctors,
       required this.banners,
       required this.testimonies,
@@ -34,6 +36,7 @@ class HomeData {
       required this.categories});
 
   HomeData copyWith({
+    int? selectedIndex,
     List<Category>? featureCategories,
     List<Banner>? banners,
     List<Testimony>? testimonies,
@@ -44,6 +47,7 @@ class HomeData {
     List<Category>? categories,
   }) {
     return HomeData(
+        selectedIndex: selectedIndex ?? 0,
         featureCategories: featureCategories ?? this.featureCategories,
         banners: banners ?? this.banners,
         testimonies: testimonies ?? this.testimonies,
@@ -83,6 +87,10 @@ class HomeCubit extends Cubit<HomeState> {
       brands: [],
       countries: []);
   HomeCubit() : super(HomeInitial());
+  void setIndex(int index) {
+    data = data.copyWith(selectedIndex: index);
+    emit(HomeLoaded(data));
+  }
 
   Future<void> fetchFeatureCategories() async {
     try {
@@ -99,12 +107,11 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> fetchMenuList() async {
     try {
       final datas = await HomeRepository.getListMenu();
-      List<Brand> brands = Brand.fromList(datas.data["data"]["brands"]);
+      // List<Brand> brands = Brand.fromList(datas.data["data"]["brands"]);
       List<Category> categories =
           Category.fromList(datas.data["data"]["categories"]);
       List<Country> countries = Country.fromList(datas.data["data"]["origins"]);
-      data = data.copyWith(
-          brands: brands, categories: categories, countries: countries);
+      data = data.copyWith(categories: categories, countries: countries);
       emit(HomeLoaded(data));
     } catch (e) {
       emit(HomeError('Failed to load banners: $e'));
@@ -116,6 +123,17 @@ class HomeCubit extends Cubit<HomeState> {
       final banners = await HomeRepository.getBanners();
       List<Banner> list = Banner.fromList(banners.data["data"]);
       data = data.copyWith(banners: list);
+      emit(HomeLoaded(data));
+    } catch (e) {
+      emit(HomeError('Failed to load banners: $e'));
+    }
+  }
+
+  Future<void> fetchBrands() async {
+    try {
+      final brands = await HomeRepository.getBrands();
+      List<Brand> list = Brand.fromList(brands.data["data"]);
+      data = data.copyWith(brands: list);
       emit(HomeLoaded(data));
     } catch (e) {
       emit(HomeError('Failed to load banners: $e'));
@@ -169,6 +187,7 @@ class HomeCubit extends Cubit<HomeState> {
     fetchFeatureCategories();
     fetchMenuList();
     fetchBanners();
+    fetchBrands();
     fetchTestimonial();
     fetchProfile();
   }

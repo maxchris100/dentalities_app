@@ -1,7 +1,9 @@
+import 'package:dentalities/core/util/toast_util.dart';
 import 'package:dentalities/presentation/blocs/cubit/home_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeBannerSection extends StatefulWidget {
   const HomeBannerSection({super.key});
@@ -31,15 +33,24 @@ class _HomeBannerSectionState extends State<HomeBannerSection> {
                 items: homeCubit.data.banners.map((path) {
                   return Builder(
                     builder: (BuildContext context) {
-                      return AnimatedOpacity(
-                        opacity: 1.0,
-                        duration: const Duration(milliseconds: 500),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(16),
-                          child: Image.network(
-                            path.imageUrl,
-                            fit: BoxFit.cover,
-                            width: double.infinity,
+                      return GestureDetector(
+                        onTap: () async {
+                          String url = path.image;
+                          if (!await launchUrl(Uri.parse(url))) {
+                            ToastUtil.showToastError(
+                                "", 'Could not launch $url');
+                          }
+                        },
+                        child: AnimatedOpacity(
+                          opacity: 1.0,
+                          duration: const Duration(milliseconds: 500),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(16),
+                            child: Image.network(
+                              path.image,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                            ),
                           ),
                         ),
                       );

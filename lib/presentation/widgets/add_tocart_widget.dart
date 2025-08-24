@@ -179,6 +179,7 @@ class _AddToCartWidgetState extends State<AddToCartWidget> {
 // --- VARIANT 2 ---
             if (variant2list.isNotEmpty && variant2list.first != "_")
               Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     widget.product?.variantTwo ?? "",
@@ -334,31 +335,31 @@ class _AddToCartWidgetState extends State<AddToCartWidget> {
               ],
             ),
 
-            if (quantity < 3) ...[
-              const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.orange.shade50,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  children: [
-                    SvgPicture.asset(
-                      "assets/icons/discount_fill.svg",
-                    ),
-                    SizedBox(width: 8),
-                    Expanded(
-                        child: Text(
-                      'Add ${3 - 1} more to get discount',
-                      style: TextStyle(
-                          color: Color(0xffE65100),
-                          fontWeight: FontWeight.bold),
-                    )),
-                  ],
-                ),
-              ),
-            ],
+            // if (quantity < 3) ...[
+            //   const SizedBox(height: 12),
+            //   Container(
+            //     padding: const EdgeInsets.all(10),
+            //     decoration: BoxDecoration(
+            //       color: Colors.orange.shade50,
+            //       borderRadius: BorderRadius.circular(8),
+            //     ),
+            //     child: Row(
+            //       children: [
+            //         SvgPicture.asset(
+            //           "assets/icons/discount_fill.svg",
+            //         ),
+            //         SizedBox(width: 8),
+            //         Expanded(
+            //             child: Text(
+            //           'Add ${3 - 1} more to get discount',
+            //           style: TextStyle(
+            //               color: Color(0xffE65100),
+            //               fontWeight: FontWeight.bold),
+            //         )),
+            //       ],
+            //     ),
+            //   ),
+            // ],
 
             const SizedBox(height: 20),
 
@@ -366,9 +367,13 @@ class _AddToCartWidgetState extends State<AddToCartWidget> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: selectedVariant1 == null &&
-                        selectedVariant2 == null &&
-                        selectedVariant3 == null
+                onPressed: variantMap[selectedVariant1 ?? "_"]
+                                ?[selectedVariant2 ?? "_"]
+                            ?[selectedVariant3 ?? "_"] ==
+                        null
+                    // selectedVariant1 == null &&
+                    //         selectedVariant2 == null &&
+                    //         selectedVariant3 == null
                     ? null
                     : () {
                         if (selectedVariant2 != null) {
@@ -378,7 +383,7 @@ class _AddToCartWidgetState extends State<AddToCartWidget> {
                           selectedVariant =
                               variantMap[selectedVariant1]?["_"]?["_"];
                         }
-                        log("Selected Variant ID: ${selectedVariant?.id}");
+                        log("Selected Variant ID: ${selectedVariant?.id} ${selectedVariant?.variantOneName} ${selectedVariant?.variantTwoName} ${selectedVariant?.variantThreeName}");
                         widget.onTap(selectedVariant?.id, quantity);
                       },
                 style: ElevatedButton.styleFrom(

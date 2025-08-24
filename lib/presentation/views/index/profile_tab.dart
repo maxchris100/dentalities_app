@@ -74,7 +74,7 @@ class _ProfileTabState extends State<ProfileTab> {
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.blue,
+                                  color: Colors.black,
                                 ),
                               ),
                               SizedBox(height: 4),
@@ -210,13 +210,22 @@ class _ProfileTabState extends State<ProfileTab> {
                   child: Text(
                       "Version ${AppVersion.version}+${AppVersion.buildNumber}"),
                 ),
-                IconButton(
-                  onPressed: () {
-                    AuthCubit authCubit = context.read<AuthCubit>();
-                    authCubit.logout();
-                  },
-                  icon: Row(
-                    children: [const Icon(Icons.logout), Text("Logout")],
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: IconButton(
+                    onPressed: () {
+                      AuthCubit authCubit = context.read<AuthCubit>();
+                      authCubit.logout();
+                    },
+                    icon: Row(
+                      children: [
+                        const Icon(Icons.logout),
+                        SizedBox(
+                          width: 16,
+                        ),
+                        Text("Logout")
+                      ],
+                    ),
                   ),
                 ),
                 // Row(

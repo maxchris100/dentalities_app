@@ -64,24 +64,26 @@ class ProductCubit extends Cubit<ProductState> {
     }
   }
 
-  Future<void> addToCart(Product? p, int quantity) async {
-    log("@PRODUCT: ADD TO CART PRODUCT: ${p?.id} $quantity");
+  // Future<String> addToCart(Product? p, int quantity) async {
+  //   log("@PRODUCT: ADD TO CART PRODUCT: ${p?.id} $quantity");
+  //   try {
+  //     final res = await CartRepository.addUpdateCart(
+  //         productVariantId: p?.productVariants?.first.id, quantity: quantity);
+  //     return "Cart Updated";
+  //     // return res.data["message"] ?? "";
+  //   } catch (e) {}
+  //   return "Error Adding to cart";
+  // }
+
+  Future<String> addToCartVariant(int? productVariantId, int quantity) async {
+    log("@PRODUCT: ADD TO CART PRODUCT VARIANT: ${productVariantId} $quantity");
     try {
       final res = await CartRepository.addUpdateCart(
-          productVariantId: p?.productVariants?.first.id, quantity: quantity);
-
-      ToastUtil.showToast("", res.data["message"] ?? "");
+          productVariantId: productVariantId, quantity: quantity);
+      return "Cart Updated";
+      // return res.data["message"] ?? "";
     } catch (e) {}
-  }
-
-  Future<void> addToCartVariant(ProductVariant? p, int quantity) async {
-    log("@PRODUCT: ADD TO CART PRODUCT VARIANT: ${p?.id} $quantity");
-    try {
-      final res = await CartRepository.addUpdateCart(
-          productVariantId: p?.id, quantity: quantity);
-
-      ToastUtil.showToast("", res.data["message"] ?? "");
-    } catch (e) {}
+    return "Error Adding to cart";
   }
 
   Future<void> getProductByCategorySlug(String categorySlug) async {

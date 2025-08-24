@@ -28,7 +28,7 @@ class TodaysDiscountSection extends StatelessWidget {
                   Text(
                     "Up to 50% off",
                     style: TextStyle(
-                      color: Colors.blue,
+                      color: Color(0xff546E7A),
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -39,7 +39,7 @@ class TodaysDiscountSection extends StatelessWidget {
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: Colors.red,
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Text(
                   "23:30:59",

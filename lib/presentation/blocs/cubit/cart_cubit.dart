@@ -66,7 +66,7 @@ class CartCubit extends Cubit<CartState> {
   Future<void> fetchCart() async {
     try {
       final cart = await CartRepository.getCart();
-      CartResponse list = CartResponse.fromJson(cart.data["data"]);
+      CartResponse list = CartResponse.fromJson(cart.data["data"]["cart"]);
       data = data.copyWith(cart: list);
       emit(CartLoaded(data));
     } catch (e) {
@@ -92,8 +92,11 @@ class CartCubit extends Cubit<CartState> {
     try {
       final res = await CartRepository.addUpdateCart(
           productVariantId: productVariantId, quantity: quantity);
-
-      emit(CartLoaded(data));
+      if (quantity == 0) {
+        await fetchCart();
+      } else {
+        emit(CartLoaded(data));
+      }
       // ToastUtil.showToast("", "Cart updated");
     } catch (e) {
       emit(CartError('Failed to load carts: $e'));

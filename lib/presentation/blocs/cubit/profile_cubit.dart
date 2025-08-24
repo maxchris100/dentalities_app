@@ -33,7 +33,6 @@ class ProfileCubit extends Cubit<ProfileState> {
   Future<void> fetchProfileData() async {
     try {
       emit(ProfileLoading());
-      var response = await ProfileRepository.getProfile();
 
       try {
         final datas = await ProfileRepository.getProfile();

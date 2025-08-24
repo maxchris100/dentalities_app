@@ -57,6 +57,9 @@ class _ProfileChangePasswordPageState extends State<ProfileChangePasswordPage> {
       );
       setState(() => onSubmit = false);
       if (res["status"]) {
+        passController.clear();
+        newPassController.clear();
+        confirmPassController.clear();
         ToastUtil.showToast("", res["message"]);
       } else {
         ToastUtil.showToastError("", res["message"]);

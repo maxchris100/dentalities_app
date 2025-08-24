@@ -86,15 +86,23 @@ class Transaction {
   });
 
   factory Transaction.fromJson(Map<String, dynamic> json) {
-    // print("@");
+    print("@");
     return Transaction(
       paymentResponse: json['payment_response'] != null
           ? PaymentResponse.fromJson(json['payment_response'])
           : null,
       id: json['id'],
       status: json['status'],
-      expiredAt: json['expired_at'],
-      createdAt: json['created_at'],
+      expiredAt: json['expired_at'] != null
+          ? json['expired_at']
+          : json['expiredAt'] != null
+              ? json['expiredAt']
+              : null,
+      createdAt: json['created_at'] != null
+          ? json['created_at']
+          : json['createdAt'] != null
+              ? json['createdAt']
+              : null,
       updatedAt: json['updated_at'],
       uuid: json['uuid'],
       invoiceNumber: json['invoice_number'],

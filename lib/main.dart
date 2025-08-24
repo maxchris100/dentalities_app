@@ -102,6 +102,7 @@ class MyApp extends StatelessWidget {
               ],
               debugShowCheckedModeBanner: false,
               home: AuthWrapper(),
+              initialRoute: "/",
               navigatorKey: Constant.getNavigatorKey(),
               routes: AppRouter.onGenerateRoute(),
               onGenerateRoute: (settings) {

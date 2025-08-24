@@ -21,7 +21,7 @@ class CheckoutReminderSection extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               "Don't forget to checkout",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
           ),
           const SizedBox(height: 10),
@@ -44,11 +44,17 @@ class CheckoutReminderSection extends StatelessWidget {
                   padding: EdgeInsets.all(12),
                   child: Column(
                       children: carts.asMap().entries.map((e) {
-                    return _buildCartItem(
-                      title: e.value.productName ?? "",
-                      price: StringUtil.formatMoney(e.value.price),
-                      brand: e.value.sku ?? "",
-                      image: "assets/images/banner.png",
+                    return Padding(
+                      padding: e.key > 0
+                          ? const EdgeInsets.only(top: 8)
+                          : EdgeInsets.zero,
+                      child: _buildCartItem(
+                        title: e.value.productName ?? "",
+                        price: StringUtil.formatMoney(e.value.price),
+                        priceBeforeDiscount: e.value.discount?.toString(),
+                        brand: e.value.sku ?? "",
+                        image: e.value.productImage ?? "",
+                      ),
                     );
                   }).toList()),
                 ),
@@ -91,19 +97,50 @@ class CheckoutReminderSection extends StatelessWidget {
   Widget _buildCartItem({
     required String title,
     required String price,
+    String? priceBeforeDiscount,
     required String brand,
     required String image,
   }) {
     return Row(
       children: [
-        Image.asset(image, width: 40, height: 40),
+        Image.network(
+          image,
+          width: 40,
+          height: 40,
+          errorBuilder: (context, error, stackTrace) {
+            return Image.asset(
+              "assets/images/banner.png",
+              width: 40,
+              height: 40,
+            );
+          },
+        ),
         const SizedBox(width: 10),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
-              Text(price, style: const TextStyle(fontWeight: FontWeight.bold)),
+              Row(
+                children: [
+                  Text(price,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue,
+                      )),
+                  Visibility(
+                    visible: priceBeforeDiscount != null,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 8),
+                      child: Text(priceBeforeDiscount ?? "",
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              decoration: TextDecoration.lineThrough)),
+                    ),
+                  ),
+                ],
+              ),
               Row(
                 children: [
                   const Icon(Icons.verified, size: 14, color: Colors.purple),

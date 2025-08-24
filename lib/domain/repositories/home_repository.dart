@@ -26,7 +26,17 @@ class HomeRepository {
     CancelToken? cancelToken,
   }) async {
     return await DioClient.instance.get(
-      "/api/v2/home/banners",
+      // "/api/v2/home/banners",
+      "/api/home/banners",
+      cancelToken: cancelToken,
+    );
+  }
+
+  static Future<Response> getBrands({
+    CancelToken? cancelToken,
+  }) async {
+    return await DioClient.instance.get(
+      "/api/v2/brand",
       cancelToken: cancelToken,
     );
   }

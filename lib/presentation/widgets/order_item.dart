@@ -2,9 +2,11 @@ import 'dart:developer';
 
 import 'package:dentalities/core/router/app_router.dart';
 import 'package:dentalities/core/util/string_util.dart';
+import 'package:dentalities/core/util/toast_util.dart';
 import 'package:dentalities/data/models/transaction_response_model.dart';
 import 'package:dentalities/presentation/widgets/product_card.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class OrderItem extends StatelessWidget {
   final Transaction item;
@@ -157,7 +159,17 @@ class OrderItem extends StatelessWidget {
                           width: 100,
                           child: item.status == "unpaid"
                               ? ElevatedButton(
-                                  onPressed: () {},
+                                  onPressed: () async {
+                                    if (true) {
+                                      String url =
+                                          item?.paymentResponse?.redirectURL ??
+                                              "";
+                                      if (!await launchUrl(Uri.parse(url))) {
+                                        ToastUtil.showToastError(
+                                            "", 'Could not launch $url');
+                                      }
+                                    }
+                                  },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.blue,
                                     padding: const EdgeInsets.symmetric(

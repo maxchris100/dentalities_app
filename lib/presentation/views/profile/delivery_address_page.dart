@@ -64,9 +64,17 @@ class _DeliveryAddressPageState extends State<DeliveryAddressPage> {
                     side: BorderSide(color: Colors.blue)),
                 minimumSize: const Size.fromHeight(48),
               ),
-              onPressed: () {
-                Navigator.pushNamed(context, AppRouter.deliveryAddressAdd,
+              onPressed: () async {
+                var res = await Navigator.pushNamed(
+                    context, AppRouter.deliveryAddressAdd,
                     arguments: {});
+                if (res is Map?) {
+                  if (res?["refresh"] == 1) {
+                    HomeCubit homeCubit = context.read<HomeCubit>();
+                    await homeCubit.fetchProfile();
+                    setState(() {});
+                  }
+                }
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -112,9 +120,12 @@ class _DeliveryAddressPageState extends State<DeliveryAddressPage> {
                     if (res?["action"] == "delete") {
                       onDelete(res?["id"]);
                     }
-                  } else {
-                    HomeCubit homeCubit = context.read<HomeCubit>();
-                    await homeCubit.fetchProfile();
+
+                    if (res?["refresh"] == 1) {
+                      HomeCubit homeCubit = context.read<HomeCubit>();
+                      await homeCubit.fetchProfile();
+                      setState(() {});
+                    }
                   }
                 },
                 onDelete: (id) {

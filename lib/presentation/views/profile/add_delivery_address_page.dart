@@ -128,7 +128,7 @@ class _AddEditDeliveryAddressPageState
       HomeCubit homeCubit = context.read<HomeCubit>();
       await homeCubit.fetchProfile();
 
-      Navigator.pop(context, true);
+      Navigator.pop(context, {"refresh": 1});
     } catch (e) {
       ToastUtil.showToastError("", "$e");
     } finally {
@@ -298,7 +298,7 @@ class _AddEditDeliveryAddressPageState
                       TextFormField(
                         controller: phoneCtrl,
                         keyboardType: TextInputType.number,
-                        maxLength: 8,
+                        maxLength: 13,
                         decoration: InputDecoration(
                             hintText: 'Phone',
                             border: OutlineInputBorder(

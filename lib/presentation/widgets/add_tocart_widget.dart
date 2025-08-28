@@ -167,8 +167,8 @@ class _AddToCartWidgetState extends State<AddToCartWidget> {
                   onSelected: (_) {
                     setState(() {
                       selectedVariant1 = v1;
-                      selectedVariant2 = null;
-                      selectedVariant3 = null;
+                      // selectedVariant2 = null;
+                      // selectedVariant3 = null;
                     });
                   },
                   selectedColor: Colors.blue,
@@ -200,7 +200,7 @@ class _AddToCartWidgetState extends State<AddToCartWidget> {
                         onSelected: (_) {
                           setState(() {
                             selectedVariant2 = v2;
-                            selectedVariant3 = null;
+                            // selectedVariant3 = null;
                           });
                         },
                         selectedColor: Colors.blue,

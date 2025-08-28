@@ -42,10 +42,10 @@ class ProductRepository {
   }) async {
     final queryParams = <String, dynamic>{};
     if (limit != null) queryParams['limit'] = limit;
-    if (brands != null) {
+    if (brands != null && brands != "") {
       queryParams['brands'] = brands;
     }
-    if (categories != null) {
+    if (categories != null && categories != "") {
       queryParams['categories'] = categories;
     }
     if (keyword != null) {

@@ -1,5 +1,7 @@
 import 'package:dentalities/core/constant/constant.dart';
 import 'package:dentalities/core/util/toast_util.dart';
+import 'package:dentalities/data/models/brand_model.dart';
+import 'package:dentalities/data/models/category_model.dart';
 import 'package:dentalities/data/models/product_model.dart';
 import 'package:dentalities/data/models/recent_search.dart';
 import 'package:dentalities/presentation/blocs/cubit/home_cubit.dart';
@@ -25,6 +27,10 @@ class _SearchPageState extends State<SearchPage> {
 
   bool isSearched = false;
   HomeCubit? homeCubit;
+
+  Map<String, Category> initSelectedCategories = {};
+  Map<String, Brand> initSelectedBrands = {};
+
   @override
   void initState() {
     // TODO: implement initState
@@ -35,8 +41,17 @@ class _SearchPageState extends State<SearchPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final args = ModalRoute.of(context)?.settings.arguments as Map?;
       String slug = args?['categoryslug'] ?? "";
+      Brand? brand = args?['brand'];
+      Category? category = args?['category'];
+      if (brand != null) {
+        initSelectedBrands[brand.id.toString()] = brand;
+      }
+      if (category != null) {
+        initSelectedCategories[category.id.toString()] = category;
+      }
       productCubit.getProductByCategorySlug(slug);
-      productCubit.getSearchProduct(null);
+      productCubit.getSearchProduct('',
+          brands: brand?.id.toString(), categories: category?.id.toString());
 
       if (args != null) {
         if (args["search_focus"] == 1) {
@@ -189,26 +204,40 @@ class _SearchPageState extends State<SearchPage> {
                                 child: SizedBox(
                                   height: 200,
                                 )),
-                            FilterBar(),
+                            FilterBar(
+                              initSelectedCategories: initSelectedCategories,
+                              initSelectedBrands: initSelectedBrands,
+                              onFilterChanged: (p0, p1) {
+                                productCubit.getSearchProduct(
+                                  searchController.text.trim(),
+                                  categories: p0,
+                                  brands: p1,
+                                );
+                              },
+                            ),
                             SizedBox(
                               height: 8,
                             ),
                             Expanded(
-                                child: GridView.count(
-                              crossAxisCount: 2,
-                              padding: const EdgeInsets.all(12),
-                              crossAxisSpacing: 12,
-                              mainAxisSpacing: 16,
-                              childAspectRatio:
-                                  0.6, // sesuaikan tinggi/lebarnya
-                              shrinkWrap: true,
-                              physics:
-                                  NeverScrollableScrollPhysics(), // kalau sudah dalam scroll view
-                              children:
-                                  productCubit.data.listProduct.map((product) {
-                                return ProductCard(product: product);
-                              }).toList(),
-                            )),
+                                child: state is ProductError
+                                    ? Center(
+                                        child: CircularProgressIndicator(),
+                                      )
+                                    : GridView.count(
+                                        crossAxisCount: 2,
+                                        padding: const EdgeInsets.all(12),
+                                        crossAxisSpacing: 12,
+                                        mainAxisSpacing: 16,
+                                        childAspectRatio:
+                                            0.6, // sesuaikan tinggi/lebarnya
+                                        shrinkWrap: true,
+                                        physics:
+                                            NeverScrollableScrollPhysics(), // kalau sudah dalam scroll view
+                                        children: productCubit.data.listProduct
+                                            .map((product) {
+                                          return ProductCard(product: product);
+                                        }).toList(),
+                                      )),
                           ],
                         ),
                   Visibility(

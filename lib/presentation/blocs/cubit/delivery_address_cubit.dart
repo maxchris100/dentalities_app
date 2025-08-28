@@ -1,8 +1,6 @@
 import 'package:dentalities/core/util/dio_client.dart';
-import 'package:dentalities/domain/repositories/auth_repository.dart';
 import 'package:dentalities/domain/repositories/general_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 
 class DeliveryAddressState extends Equatable {
@@ -162,49 +160,5 @@ class DeliveryAddressCubit extends Cubit<DeliveryAddressState> {
 
   void selectSubdistrict(Map subdistrictId) {
     emit(state.copyWith(selectedSubdistrictId: subdistrictId));
-  }
-
-  Future<void> addAddress({
-    required String provinceId,
-    required String cityId,
-    required String districtId,
-    required String subdistrictId,
-    required String postalCode,
-    required String address,
-  }) async {
-    await DioClient.instance.post(
-      "/api/v2/account/add-address",
-      data: {
-        "province_id": provinceId,
-        "city_id": cityId,
-        "district_id": districtId,
-        "subdistrict_id": subdistrictId,
-        "postal_code": postalCode,
-        "address": address,
-      },
-    );
-  }
-
-  Future<void> updateAddress({
-    required int userAddressId,
-    required String provinceId,
-    required String cityId,
-    required String districtId,
-    required String subdistrictId,
-    required String postalCode,
-    required String address,
-  }) async {
-    await DioClient.instance.post(
-      "/api/v2/account/add-address",
-      data: {
-        "user_address_id": userAddressId,
-        "province_id": provinceId,
-        "city_id": cityId,
-        "district_id": districtId,
-        "subdistrict_id": subdistrictId,
-        "postal_code": postalCode,
-        "address": address,
-      },
-    );
   }
 }

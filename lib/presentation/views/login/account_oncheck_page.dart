@@ -1,6 +1,8 @@
 import 'package:dentalities/core/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:dentalities/core/util/toast_util.dart';
 
 class AccountOnCheckPage extends StatelessWidget {
   const AccountOnCheckPage({super.key});
@@ -50,8 +52,11 @@ class AccountOnCheckPage extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton(
-                    onPressed: () {
-                      // Implement contact support logic
+                    onPressed: () async {
+                      String url = "https://wa.me/6281212049191";
+                      if (!await launchUrl(Uri.parse(url))) {
+                        ToastUtil.showToastError("", 'Could not launch $url');
+                      }
                     },
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: Colors.blue),

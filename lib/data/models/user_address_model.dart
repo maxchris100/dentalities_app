@@ -18,33 +18,40 @@ class UserAddress {
   final String? firstName;
   final String? lastName;
   final String? fullName;
+  final String? phoneCode;
+  final String? phoneNumber;
+  final String? label;
   final String lat;
   final String lng;
   DateTime? createdAt;
   DateTime? updatedAt;
   int? transactionId;
 
-  UserAddress(
-      {required this.id,
-      required this.provinceName,
-      required this.cityName,
-      required this.districtName,
-      required this.villageName,
-      required this.address,
-      required this.villageCode,
-      this.jneProvinceId,
-      this.jneCityId,
-      this.jneDistrictId,
-      this.jneSubdistrictId,
-      this.jneTariffCode,
-      required this.postcode,
-      required this.userId,
-      this.firstName,
-      this.lastName,
-      this.fullName,
-      required this.lat,
-      required this.lng,
-      this.transactionId});
+  UserAddress({
+    required this.id,
+    required this.provinceName,
+    required this.cityName,
+    required this.districtName,
+    required this.villageName,
+    required this.address,
+    required this.villageCode,
+    this.jneProvinceId,
+    this.jneCityId,
+    this.jneDistrictId,
+    this.jneSubdistrictId,
+    this.jneTariffCode,
+    required this.postcode,
+    required this.userId,
+    this.firstName,
+    this.lastName,
+    this.fullName,
+    required this.lat,
+    required this.lng,
+    this.transactionId,
+    this.phoneCode,
+    this.phoneNumber,
+    this.label,
+  });
 
   static List<UserAddress> fromList(List<dynamic> list) {
     return list.map((item) => UserAddress.fromJson(item)).toList();
@@ -70,6 +77,9 @@ class UserAddress {
       firstName: json['first_name'],
       lastName: json['last_name'],
       fullName: json['full_name'],
+      phoneCode: json['phone_code'],
+      phoneNumber: json['phone_number'],
+      label: json['label'],
       lat: StringUtil.castToString(json['lat']),
       lng: StringUtil.castToString(json['lng']),
       // createdAt: DateTime.parse(json['createdAt']),

@@ -1,5 +1,6 @@
 import 'package:dentalities/core/util/toast_util.dart';
 import 'package:dentalities/data/models/user_address_model.dart';
+import 'package:dentalities/domain/repositories/profile_repository.dart';
 import 'package:dentalities/presentation/blocs/cubit/delivery_address_cubit.dart';
 import 'package:dentalities/presentation/blocs/cubit/home_cubit.dart';
 import 'package:dentalities/presentation/widgets/search_bottom_sheet.dart';
@@ -19,7 +20,7 @@ class _AddEditDeliveryAddressPageState
   final _formKey = GlobalKey<FormState>();
   final TextEditingController labelCtrl = TextEditingController();
   final TextEditingController phoneCtrl = TextEditingController();
-  // final TextEditingController emailCtrl = TextEditingController();
+  final TextEditingController fullNameCtrl = TextEditingController();
   final TextEditingController postalCodeCtrl = TextEditingController();
   final TextEditingController addressCtrl = TextEditingController();
 
@@ -96,6 +97,9 @@ class _AddEditDeliveryAddressPageState
 
     try {
       final payload = {
+        "label": labelCtrl.text.trim(),
+        "phone": phoneCtrl.text.trim(),
+        "fullName": "",
         "provinceId": selected.selectedProvinceId!["id"].toString(),
         "cityId": selected.selectedCityId!["id"].toString(),
         "districtId": selected.selectedDistrictId!["id"].toString(),
@@ -103,10 +107,13 @@ class _AddEditDeliveryAddressPageState
         "postalCode": postalCodeCtrl.text.trim(),
         "address": addressCtrl.text.trim(),
       };
-
+      var res;
       if (isEdit) {
-        await deliveryAddressCubit.updateAddress(
+        res = await ProfileRepository.updateAddress(
           userAddressId: address!.id,
+          label: payload["label"]!,
+          phone: payload["phone"]!,
+          fullName: payload["label"]!,
           provinceId: payload["provinceId"]!,
           cityId: payload["cityId"]!,
           districtId: payload["districtId"]!,
@@ -115,7 +122,10 @@ class _AddEditDeliveryAddressPageState
           address: payload["address"]!,
         );
       } else {
-        await deliveryAddressCubit.addAddress(
+        res = await ProfileRepository.addAddress(
+          label: payload["label"]!,
+          phone: payload["phone"]!,
+          fullName: payload["label"]!,
           provinceId: payload["provinceId"]!,
           cityId: payload["cityId"]!,
           districtId: payload["districtId"]!,
@@ -277,19 +287,19 @@ class _AddEditDeliveryAddressPageState
                       //     style:
                       //         TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                       // const SizedBox(height: 16),
-                      const Text("Address Name"),
+                      const Text("Address Label"),
                       const SizedBox(height: 8),
                       TextFormField(
                         controller: labelCtrl,
                         maxLength: 8,
                         decoration: InputDecoration(
-                            hintText: 'Address Name',
+                            hintText: 'Address Label',
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
                             counterText: ''),
                         validator: (value) => value == null || value.isEmpty
-                            ? 'Address Name is required'
+                            ? 'Address Label is required'
                             : null,
                       ),
                       const SizedBox(height: 12),

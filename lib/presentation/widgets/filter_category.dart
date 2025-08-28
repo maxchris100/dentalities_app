@@ -4,13 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FilterCategory extends StatefulWidget {
-  const FilterCategory({super.key});
+  Map<String, Category>? selectedCategories = {};
+  FilterCategory({super.key, this.selectedCategories});
 
   @override
   State<FilterCategory> createState() => _FilterCategoryState();
 }
 
 class _FilterCategoryState extends State<FilterCategory> {
+  final Map<String, Category> selectedCategories = {};
   List<Category> specializations = [];
   //  [
   //   "All",
@@ -45,13 +47,55 @@ class _FilterCategoryState extends State<FilterCategory> {
       final args = ModalRoute.of(context)?.settings.arguments as Map?;
       HomeCubit homeCubit = context.read<HomeCubit>();
       specializations = homeCubit.data.categories;
+      if (widget.selectedCategories != null) {
+        selectedCategories.addAll(widget.selectedCategories!);
+      }
       setState(() {});
     });
   }
 
-  String? selectedSpecialization;
+  // String? selectedSpecialization;
   String? selectedTreatment;
   String? selectedProductType;
+
+  Widget buildChipCategory({
+    required List<Category> options,
+  }) {
+    return Container(
+      width: double.infinity,
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 0,
+        children: options.map((item) {
+          final isSelected = selectedCategories[item.id.toString()] != null;
+          return ChoiceChip(
+            label: Text(
+              item.name,
+              style: TextStyle(fontSize: 11),
+            ),
+            selected: isSelected,
+            onSelected: (_) {
+              setState(() {
+                if (isSelected) {
+                  selectedCategories.remove(item.id.toString());
+                } else {
+                  final category = specializations.firstWhere(
+                      (element) => element.id.toString() == item.id.toString());
+                  selectedCategories[category.id.toString()] = category;
+                }
+              });
+            },
+            showCheckmark: false,
+            selectedColor: Colors.blue,
+            labelStyle: TextStyle(
+              color: isSelected ? Colors.white : Colors.black,
+            ),
+            backgroundColor: Colors.grey[200],
+          );
+        }).toList(),
+      ),
+    );
+  }
 
   Widget buildChipSelector({
     required List<String> options,
@@ -90,6 +134,7 @@ class _FilterCategoryState extends State<FilterCategory> {
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Align(
                 alignment: Alignment.centerLeft,
@@ -100,18 +145,18 @@ class _FilterCategoryState extends State<FilterCategory> {
               ),
               const SizedBox(height: 8),
 
+              const Text(
+                "Category",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+
               /// Scrollable content
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        "Category",
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-
                       /// SPECIALIZATION
                       ExpansionTile(
                         tilePadding: EdgeInsets.all(0),
@@ -125,13 +170,8 @@ class _FilterCategoryState extends State<FilterCategory> {
                           side: BorderSide.none,
                         ),
                         children: [
-                          buildChipSelector(
-                            options:
-                                specializations.map((e) => e.name).toList(),
-                            selectedValue: selectedSpecialization,
-                            onSelected: (val) {
-                              setState(() => selectedSpecialization = val);
-                            },
+                          buildChipCategory(
+                            options: specializations.map((e) => e).toList(),
                           ),
                         ],
                       ),
@@ -195,9 +235,10 @@ class _FilterCategoryState extends State<FilterCategory> {
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).pop({
-                      'specialization': selectedSpecialization,
-                      'treatment': selectedTreatment,
-                      'productType': selectedProductType,
+                      // 'specialization': selectedSpecialization,
+                      // 'treatment': selectedTreatment,
+                      // 'productType': selectedProductType,
+                      'selectedCategories': selectedCategories,
                     });
                   },
                   style: ElevatedButton.styleFrom(

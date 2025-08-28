@@ -3,7 +3,7 @@ class Country {
   final String name;
   final String slug;
   final int sortOrder;
-  final String featureImageUrl;
+  String? featureImageUrl;
   // final DateTime createdAt;
   // final DateTime updatedAt;
 
@@ -12,7 +12,7 @@ class Country {
     required this.name,
     required this.slug,
     required this.sortOrder,
-    required this.featureImageUrl,
+    this.featureImageUrl,
     // required this.createdAt,
     // required this.updatedAt,
   });
@@ -22,6 +22,7 @@ class Country {
   }
 
   factory Country.fromJson(Map<String, dynamic> json) {
+    print("@");
     return Country(
       id: json['id'],
       name: json['name'],

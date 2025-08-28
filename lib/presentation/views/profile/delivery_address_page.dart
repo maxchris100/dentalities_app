@@ -102,16 +102,13 @@ class _DeliveryAddressPageState extends State<DeliveryAddressPage> {
                 id: e.value.id,
                 isSelected: e.key == 0,
                 icon: "assets/icons/address_office.svg",
-                title: e.value.firstName ?? "",
+                title: e.value.label ?? "",
                 address: e.value.address,
+                phoneNumber: (e.value.phoneCode ?? "") +
+                    ((e.value.phoneNumber ?? "").startsWith("62")
+                        ? (e.value.phoneNumber ?? "").substring(2)
+                        : (e.value.phoneNumber ?? "")),
                 addressDetail: e.value.getShippingAddress(),
-                // e.value.provinceName +
-                //     ', ' +
-                //     e.value.cityName +
-                //     ', ' +
-                //     e.value.districtName +
-                //     ', ' +
-                //     e.value.postcode,
                 onEdit: () async {
                   var res = await Navigator.pushNamed(
                       context, AppRouter.deliveryAddressAdd,
@@ -148,6 +145,7 @@ class _AddressCard extends StatelessWidget {
   final bool isSelected;
   final String icon;
   final String title;
+  final String phoneNumber;
   final String address;
   final String addressDetail;
   final VoidCallback onEdit;
@@ -158,6 +156,7 @@ class _AddressCard extends StatelessWidget {
     required this.isSelected,
     required this.icon,
     required this.title,
+    required this.phoneNumber,
     required this.address,
     required this.addressDetail,
     required this.onEdit,
@@ -195,11 +194,10 @@ class _AddressCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text("Address",
-                      style: TextStyle(fontSize: 10, color: Colors.black)),
                   Text(title,
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold)),
+                      style: TextStyle(fontSize: 16, color: Colors.black)),
+                  Text(phoneNumber,
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 4),
                   Text(addressDetail,
                       style: const TextStyle(color: Colors.black)),

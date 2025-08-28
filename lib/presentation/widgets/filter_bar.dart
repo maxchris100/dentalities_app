@@ -1,9 +1,21 @@
+import 'package:dentalities/data/models/brand_model.dart';
+import 'package:dentalities/data/models/category_model.dart';
+import 'package:dentalities/data/models/country_model.dart';
 import 'package:dentalities/presentation/widgets/filter_brand.dart';
 import 'package:dentalities/presentation/widgets/filter_category.dart';
 import 'package:flutter/material.dart';
 
 class FilterBar extends StatefulWidget {
-  const FilterBar({Key? key}) : super(key: key);
+  Map<String, Category> initSelectedCategories = {};
+  Map<String, Brand> initSelectedBrands = {};
+
+  Function(String, String) onFilterChanged;
+  FilterBar(
+      {Key? key,
+      required this.onFilterChanged,
+      required this.initSelectedCategories,
+      required this.initSelectedBrands})
+      : super(key: key);
 
   @override
   State<FilterBar> createState() => _FilterBarState();
@@ -13,8 +25,23 @@ class _FilterBarState extends State<FilterBar> {
   String? selectedSort;
   bool onPromo = false;
   bool readyStock = false;
-  List<String> selectedCategories = [];
-  List<String> selectedBrands = [];
+  Map<String, Category> selectedCategories = {};
+  Map<String, Brand> selectedBrands = {};
+  Map<String, Country> selectedCountry = {};
+
+  // List<String> selectedCountries = [];
+  // List<String> selectedBrands = [];
+
+  // List<String> selectedCategories = [];
+  // List<String> selectedCountries = [];
+  // List<String> selectedBrands = [];
+
+  @override
+  void initState() {
+    selectedCategories = widget.initSelectedCategories;
+    selectedBrands = widget.initSelectedBrands;
+    super.initState();
+  }
 
   void _showSortOptions() {
     showModalBottomSheet(
@@ -71,59 +98,38 @@ class _FilterBarState extends State<FilterBar> {
     // );
   }
 
-  void _showCategoryOptions() {
+  Future _showCategoryOptions() async {
     // final allCategories = ['Electronics', 'Books', 'Fashion', 'Home'];
-    showModalBottomSheet(
+    var result = await showModalBottomSheet(
         context: context,
         builder: (_) {
-          return FilterCategory();
-        }
-
-        // StatefulBuilder(
-        //   builder: (context, setModalState) =>
-
-        //   Column(
-        //     children: [
-        //       Expanded(
-        //         child: ListView(
-        //           children: allCategories
-        //               .map(
-        //                 (cat) => CheckboxListTile(
-        //                   title: Text(cat),
-        //                   value: selectedCategories.contains(cat),
-        //                   onChanged: (val) {
-        //                     setModalState(() {
-        //                       if (val == true) {
-        //                         selectedCategories.add(cat);
-        //                       } else {
-        //                         selectedCategories.remove(cat);
-        //                       }
-        //                     });
-        //                   },
-        //                 ),
-        //               )
-        //               .toList(),
-        //         ),
-        //       ),
-        //       TextButton(
-        //         onPressed: () {
-        //           setState(() {});
-        //           Navigator.pop(context);
-        //         },
-        //         child: const Text("Apply"),
-        //       )
-        //     ],
-        //   ),
-        // ),
-        );
+          return FilterCategory(
+            selectedCategories: selectedCategories,
+          );
+        });
+    if (result != null) {
+      setState(() {
+        selectedCategories =
+            (result['selectedCategories'] as Map<String, Category>);
+        widget.onFilterChanged(selectedCategories.keys.toList().join(','),
+            selectedBrands.keys.toList().join(','));
+      });
+    }
   }
 
-  void _showBrandsOptions() {
-    showModalBottomSheet(
+  Future _showBrandsOptions() async {
+    var result = await showModalBottomSheet(
         context: context,
         builder: (_) {
-          return FilterBrand();
+          return FilterBrand(selectedBrands: selectedBrands);
         });
+    if (result != null) {
+      setState(() {
+        selectedBrands = (result['selectedBrands'] as Map<String, Brand>);
+        widget.onFilterChanged(selectedCategories.keys.toList().join(','),
+            selectedBrands.keys.toList().join(','));
+      });
+    }
   }
 
   void _clearFilters() {
@@ -133,6 +139,9 @@ class _FilterBarState extends State<FilterBar> {
       readyStock = false;
       selectedCategories.clear();
       selectedBrands.clear();
+
+      widget.onFilterChanged(selectedCategories.keys.toList().join(','),
+          selectedBrands.keys.toList().join(','));
     });
   }
 

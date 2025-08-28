@@ -114,9 +114,11 @@ class ProductCubit extends Cubit<ProductState> {
     }
   }
 
-  Future<void> getSearchProduct(String? keyword) async {
+  Future<void> getSearchProduct(String? keyword,
+      {String? brands, String? categories}) async {
     try {
-      final datas = await ProductRepository.searchProducts(keyword: keyword);
+      final datas = await ProductRepository.searchProducts(
+          keyword: keyword, brands: brands, categories: categories);
       List<Product> p = Product.fromList(datas.data["data"]["data"]);
 
 // 1 =

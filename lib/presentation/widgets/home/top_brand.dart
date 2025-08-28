@@ -1,3 +1,4 @@
+import 'package:dentalities/core/router/app_router.dart';
 import 'package:dentalities/data/models/brand_model.dart';
 import 'package:flutter/material.dart';
 
@@ -50,20 +51,28 @@ class TopBrandSection extends StatelessWidget {
             spacing: 10,
             runSpacing: 10,
             children: brands.map((brand) {
-              return Container(
-                width: MediaQuery.of(context).size.width / 2 - 24,
-                height: 70,
-                // padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: ClipRRect(
-                  borderRadius:
-                      BorderRadius.circular(12), // Sama dengan BoxDecoration
-                  child: Image.network(
-                    brand.featureImageUrl ?? "",
-                    fit: BoxFit.cover,
+              return GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, AppRouter.search, arguments: {
+                    "brand": brand,
+                    "search_focus": 0,
+                  });
+                },
+                child: Container(
+                  width: MediaQuery.of(context).size.width / 2 - 24,
+                  height: 70,
+                  // padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: ClipRRect(
+                    borderRadius:
+                        BorderRadius.circular(12), // Sama dengan BoxDecoration
+                    child: Image.network(
+                      brand.featureImageUrl ?? "",
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               );

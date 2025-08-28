@@ -52,51 +52,61 @@ class ProfileRepository {
     );
   }
 
-  static Future<Response> addAddress({
+  static Future<dynamic> addAddress({
+    required String label,
+    required String phone,
+    required String fullName,
     required String provinceId,
     required String cityId,
     required String districtId,
     required String subdistrictId,
     required String postalCode,
     required String address,
-    CancelToken? cancelToken,
   }) async {
     return await DioClient.instance.post(
       "/api/v2/account/add-address",
       data: {
+        "label": label,
+        "phone_code": "62",
+        "phone_number": phone,
+        "full_name": fullName,
         "province_id": provinceId,
         "city_id": cityId,
         "district_id": districtId,
         "subdistrict_id": subdistrictId,
         "postal_code": postalCode,
-        "address": address
+        "address": address,
       },
-      cancelToken: cancelToken,
     );
   }
 
-  static Future<Response> updateAddress({
+  static Future<dynamic> updateAddress({
     required int userAddressId,
+    required String label,
+    required String phone,
+    required String fullName,
     required String provinceId,
     required String cityId,
     required String districtId,
     required String subdistrictId,
     required String postalCode,
     required String address,
-    CancelToken? cancelToken,
   }) async {
     return await DioClient.instance.post(
-      "/api/v2/account/add-address",
+      "/api/v2/account/update-address",
       data: {
         "user_address_id": userAddressId,
+        "label": label,
+        "phone_code": "62",
+        "phone_number": phone,
+        "full_name": fullName,
         "province_id": provinceId,
         "city_id": cityId,
         "district_id": districtId,
         "subdistrict_id": subdistrictId,
         "postal_code": postalCode,
-        "address": address
+        "address": address,
       },
-      cancelToken: cancelToken,
     );
   }
 

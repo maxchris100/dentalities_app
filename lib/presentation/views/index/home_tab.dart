@@ -78,7 +78,10 @@ class _HomeTabState extends State<HomeTab> {
                           return GestureDetector(
                             onTap: () {
                               Navigator.pushNamed(context, AppRouter.search,
-                                  arguments: {"categoryslug": e.slug});
+                                  arguments: {
+                                    "category": e,
+                                    "search_focus": 0
+                                  });
                             },
                             child: _CategoryItem(
                                 e.featureImageThumbUrl ??
@@ -172,7 +175,7 @@ class _HomeTabState extends State<HomeTab> {
                     child: TopBrandSection(brands: homeCubit.data.brands));
               }),
           SizedBox(
-            height: 4,
+            height: 20,
           ),
           BlocBuilder(
               bloc: cartCubit,

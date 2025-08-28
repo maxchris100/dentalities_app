@@ -48,13 +48,7 @@ class CheckoutReminderSection extends StatelessWidget {
                       padding: e.key > 0
                           ? const EdgeInsets.only(top: 8)
                           : EdgeInsets.zero,
-                      child: _buildCartItem(
-                        title: e.value.productName ?? "",
-                        price: StringUtil.formatMoney(e.value.price),
-                        priceBeforeDiscount: e.value.discount?.toString(),
-                        brand: e.value.sku ?? "",
-                        image: e.value.productImage ?? "",
-                      ),
+                      child: _buildCartItem(item: e.value),
                     );
                   }).toList()),
                 ),
@@ -95,16 +89,12 @@ class CheckoutReminderSection extends StatelessWidget {
   }
 
   Widget _buildCartItem({
-    required String title,
-    required String price,
-    String? priceBeforeDiscount,
-    required String brand,
-    required String image,
+    required CartItem item,
   }) {
     return Row(
       children: [
         Image.network(
-          image,
+          item.productVariant?.product?.featureImageUrl ?? "",
           width: 40,
           height: 40,
           errorBuilder: (context, error, stackTrace) {
@@ -120,19 +110,25 @@ class CheckoutReminderSection extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
+              Text(item.productVariant?.product?.name ?? "",
+                  maxLines: 1, overflow: TextOverflow.ellipsis),
               Row(
                 children: [
-                  Text(price,
+                  Text(StringUtil.formatMoney(item.price),
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.blue,
                       )),
                   Visibility(
-                    visible: priceBeforeDiscount != null,
+                    visible: (item.price_after_discount ?? 0) > 0 &&
+                        (item.price_after_discount ?? 0) != item.price,
                     child: Padding(
                       padding: const EdgeInsets.only(left: 8),
-                      child: Text(priceBeforeDiscount ?? "",
+                      child: Text(
+                          (item.price_after_discount ?? 0) > 0
+                              ? StringUtil.formatMoney(
+                                  item.price_after_discount ?? 0)
+                              : "",
                           style: TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.bold,
@@ -141,13 +137,21 @@ class CheckoutReminderSection extends StatelessWidget {
                   ),
                 ],
               ),
-              Row(
-                children: [
-                  const Icon(Icons.verified, size: 14, color: Colors.purple),
-                  const SizedBox(width: 4),
-                  Text(brand, style: const TextStyle(fontSize: 12)),
-                ],
-              )
+              Text(
+                  [
+                    item.productVariant?.variantOneName,
+                    item.productVariant?.variantTwoName,
+                    item.productVariant?.variantThreeName,
+                  ].where((e) => e?.isNotEmpty ?? false).join(', '),
+                  style: TextStyle(color: Colors.blueGrey)),
+              // Row(
+              //   children: [
+              //     const Icon(Icons.verified, size: 14, color: Colors.purple),
+              //     const SizedBox(width: 4),
+              //     Text(item.productName ?? "",
+              //         style: const TextStyle(fontSize: 12)),
+              //   ],
+              // )
             ],
           ),
         ),

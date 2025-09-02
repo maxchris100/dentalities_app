@@ -51,10 +51,11 @@ class _ProfileChangeProfilePageState extends State<ProfileChangeProfilePage> {
     if (_formKey.currentState!.validate()) {
       String name = fullNameController.text.trim();
       var res = await profileCubit?.updateProfileData(
-          email: Constant.userLocalDataSource.userData!.email!,
-          name: name,
-          phoneCode: '62',
-          phoneNumber: Constant.userLocalDataSource.userData!.phone ?? "");
+        email: Constant.userLocalDataSource.userData!.email!,
+        name: name,
+        phoneCode: '62',
+        phoneNumber: Constant.userLocalDataSource.userData!.phone ?? "",
+      );
       setState(() => onSubmit = false);
       if (res["status"]) {
         ToastUtil.showToast("", res["message"]);

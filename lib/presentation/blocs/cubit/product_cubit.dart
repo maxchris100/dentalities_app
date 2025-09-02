@@ -1,10 +1,13 @@
 import 'dart:developer';
 
 import 'package:dentalities/core/util/toast_util.dart';
+import 'package:dentalities/data/models/cart_model.dart';
 import 'package:dentalities/data/models/product_model.dart';
 import 'package:dentalities/data/models/product_model.dart';
 import 'package:dentalities/data/models/product_variant_model.dart';
 import 'package:dentalities/domain/repositories/product_repository.dart';
+import 'package:dentalities/presentation/blocs/cubit/cart_cubit.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
 
@@ -75,11 +78,14 @@ class ProductCubit extends Cubit<ProductState> {
   //   return "Error Adding to cart";
   // }
 
-  Future<String> addToCartVariant(int? productVariantId, int quantity) async {
+  Future<String> addToCartVariant(
+      BuildContext context, int? productVariantId, int quantity) async {
     log("@PRODUCT: ADD TO CART PRODUCT VARIANT: ${productVariantId} $quantity");
     try {
       final res = await CartRepository.addUpdateCart(
           productVariantId: productVariantId, quantity: quantity);
+      CartCubit cartCubit = context.read<CartCubit>();
+      await cartCubit.fetchCart();
       return "Cart Updated";
       // return res.data["message"] ?? "";
     } catch (e) {}

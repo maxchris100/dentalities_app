@@ -390,7 +390,8 @@ class _OrderDetailPageState extends State<OrderDetailPage>
             Visibility(
               visible: item?.status == "unpaid",
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.only(
+                    top: 12, bottom: 20, left: 16, right: 16),
                 child: SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(

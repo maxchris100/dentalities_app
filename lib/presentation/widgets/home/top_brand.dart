@@ -27,18 +27,18 @@ class TopBrandSection extends StatelessWidget {
             children: [
               const Text("Top Brands",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-              GestureDetector(
-                onTap: () {
-                  // Navigator.push
-                },
-                child: const Text(
-                  "See All",
-                  style: TextStyle(
-                    color: Colors.blue,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
+              // GestureDetector(
+              //   onTap: () {
+              //     // Navigator.push
+              //   },
+              //   child: const Text(
+              //     "See All",
+              //     style: TextStyle(
+              //       color: Colors.blue,
+              //       fontWeight: FontWeight.bold,
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         ),

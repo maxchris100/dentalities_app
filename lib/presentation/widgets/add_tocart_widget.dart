@@ -1,9 +1,12 @@
 import 'dart:developer';
 
 import 'package:dentalities/core/util/string_util.dart';
+import 'package:dentalities/data/models/cart_model.dart';
 import 'package:dentalities/data/models/product_model.dart';
 import 'package:dentalities/data/models/product_variant_model.dart';
+import 'package:dentalities/presentation/blocs/cubit/cart_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class AddToCartWidget extends StatefulWidget {
@@ -30,19 +33,56 @@ class _AddToCartWidgetState extends State<AddToCartWidget> {
 
   ProductVariant? selectedVariant;
 
+  CartCubit? cartCubit;
   @override
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      cartCubit = context.read<CartCubit>();
+      await cartCubit?.fetchCart();
       if (widget.selectedVariant != null) {
         selectedVariant = widget.selectedVariant;
         selectedVariant1 = widget.selectedVariant?.variantOneName ?? "_";
         selectedVariant2 = widget.selectedVariant?.variantTwoName ?? "_";
         selectedVariant3 = widget.selectedVariant?.variantThreeName ?? "_";
+        initCartVariantQty();
       }
       setState(() {});
     });
+  }
+
+  void setSelectedVariant() {
+    if (selectedVariant3 != "_") {
+      selectedVariant = variantMap[selectedVariant1 ?? "_"]
+          ?[selectedVariant2 ?? "_"]?[selectedVariant3 ?? "_"];
+    } else if (selectedVariant2 != "_") {
+      selectedVariant = variantMap[selectedVariant1]?[selectedVariant2]?["_"];
+    } else {
+      selectedVariant = variantMap[selectedVariant1]?["_"]?["_"];
+    }
+
+    log("Selected Variant ID: ${selectedVariant?.id} "
+        "${selectedVariant?.variantOneName} "
+        "${selectedVariant?.variantTwoName} "
+        "${selectedVariant?.variantThreeName}");
+
+    initCartVariantQty();
+    setState(() {});
+  }
+
+  void initCartVariantQty() {
+    if (selectedVariant == null) {
+      return;
+    }
+
+    quantity = 1;
+    for (CartItem e in cartCubit?.data.cart?.cartItems ?? []) {
+      log("@CHECK Selected QTY: ${e.productVariantId} && ${selectedVariant?.id} : QTY: ${e.quantity}");
+      if (e.productVariantId == selectedVariant?.id) {
+        quantity = e.quantity ?? 1;
+      }
+    }
   }
 
   @override
@@ -170,6 +210,7 @@ class _AddToCartWidgetState extends State<AddToCartWidget> {
                       // selectedVariant2 = null;
                       // selectedVariant3 = null;
                     });
+                    setSelectedVariant();
                   },
                   selectedColor: Colors.blue,
                 );
@@ -202,6 +243,7 @@ class _AddToCartWidgetState extends State<AddToCartWidget> {
                             selectedVariant2 = v2;
                             // selectedVariant3 = null;
                           });
+                          setSelectedVariant();
                         },
                         selectedColor: Colors.blue,
                       );
@@ -234,6 +276,7 @@ class _AddToCartWidgetState extends State<AddToCartWidget> {
                           setState(() {
                             selectedVariant3 = v3;
                           });
+                          setSelectedVariant();
                         },
                         selectedColor: Colors.blue,
                       );
@@ -365,30 +408,32 @@ class _AddToCartWidgetState extends State<AddToCartWidget> {
 
             // Add to Cart Button
             SizedBox(
+              height: 40,
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: variantMap[selectedVariant1 ?? "_"]
-                                ?[selectedVariant2 ?? "_"]
-                            ?[selectedVariant3 ?? "_"] ==
-                        null
+                onPressed: selectedVariant == null
+                    // variantMap[selectedVariant1 ?? "_"]
+                    //                 ?[selectedVariant2 ?? "_"]
+                    //             ?[selectedVariant3 ?? "_"] ==
+                    //         null
                     // selectedVariant1 == null &&
                     //         selectedVariant2 == null &&
                     //         selectedVariant3 == null
                     ? null
                     : () {
-                        if (selectedVariant2 != null) {
-                          selectedVariant = variantMap[selectedVariant1]
-                              ?[selectedVariant2]?["_"]!;
-                        } else {
-                          selectedVariant =
-                              variantMap[selectedVariant1]?["_"]?["_"];
-                        }
-                        log("Selected Variant ID: ${selectedVariant?.id} ${selectedVariant?.variantOneName} ${selectedVariant?.variantTwoName} ${selectedVariant?.variantThreeName}");
+                        // if (selectedVariant2 != null) {
+                        //   selectedVariant = variantMap[selectedVariant1]
+                        //       ?[selectedVariant2]?["_"]!;
+                        // } else {
+                        //   selectedVariant =
+                        //       variantMap[selectedVariant1]?["_"]?["_"];
+                        // }
+                        log("UPDATE CART Selected Variant ID: ${selectedVariant?.id} ${selectedVariant?.variantOneName} ${selectedVariant?.variantTwoName} ${selectedVariant?.variantThreeName} : (QTY: $quantity)");
                         widget.onTap(selectedVariant?.id, quantity);
                       },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  padding: const EdgeInsets.symmetric(vertical: 0),
                 ),
                 child: const Text('Add to Cart',
                     style: TextStyle(fontSize: 16, color: Colors.white)),

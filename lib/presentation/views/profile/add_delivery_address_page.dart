@@ -51,6 +51,13 @@ class _AddEditDeliveryAddressPageState
 
   Future loadData(UserAddress? address) async {
     try {
+      labelCtrl.text = address?.label ?? "";
+      if ((address?.phoneNumber ?? "").startsWith("62")) {
+        phoneCtrl.text = address?.phoneNumber ?? "";
+      } else {
+        phoneCtrl.text =
+            (address?.phoneCode ?? "") + (address?.phoneNumber ?? "");
+      }
       postalCodeCtrl.text = address?.postcode ?? "";
       addressCtrl.text = address?.address ?? "";
 
@@ -308,7 +315,7 @@ class _AddEditDeliveryAddressPageState
                       TextFormField(
                         controller: phoneCtrl,
                         keyboardType: TextInputType.number,
-                        maxLength: 13,
+                        maxLength: 17,
                         decoration: InputDecoration(
                             hintText: 'Phone',
                             border: OutlineInputBorder(

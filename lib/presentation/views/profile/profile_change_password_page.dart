@@ -60,9 +60,9 @@ class _ProfileChangePasswordPageState extends State<ProfileChangePasswordPage> {
         passController.clear();
         newPassController.clear();
         confirmPassController.clear();
-        ToastUtil.showToast("", res["message"]);
+        ToastUtil.showToast("", "Success change password");
       } else {
-        ToastUtil.showToastError("", res["message"]);
+        ToastUtil.showToastError("", "Failed change password");
       }
       return;
     }

@@ -7,7 +7,13 @@ class ProductVideosSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List videoThumbnails = ["assets/images/banner.png"];
+    List videoThumbnails = [
+      "assets/images/banner.png",
+      "assets/images/banner.png",
+      "assets/images/banner.png",
+      "assets/images/banner.png",
+      "assets/images/banner.png"
+    ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

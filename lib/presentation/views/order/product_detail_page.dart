@@ -66,8 +66,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           //   builder: (_) => AddedToCartWidget(),
           // );
           //add to cart
-          var message = await productCubit.addToCartVariant(
-              selectedVariant?.id, quantity);
+          var message =
+              await productCubit.addToCartVariant(context, variantId, quantity);
           CustomToast.show(context, message: message);
         },
       ),
@@ -501,8 +501,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               ),
               // ===== Tombol Tambah ke Keranjang =====
               Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.only(
+                    bottom: 20, top: 12, left: 16, right: 16),
                 child: SizedBox(
+                  height: 40,
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed:
@@ -514,7 +516,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     // : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blueAccent,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      padding: const EdgeInsets.symmetric(vertical: 0),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50),
                       ),

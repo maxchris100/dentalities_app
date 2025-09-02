@@ -85,18 +85,20 @@ class _WishlistTabState extends State<WishlistTab> {
                       ])),
                     ),
                     Expanded(
-                        child: GridView.count(
-                      crossAxisCount: 2,
-                      padding: const EdgeInsets.all(12),
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 16,
-                      childAspectRatio: 0.6, // sesuaikan tinggi/lebarnya
-                      shrinkWrap: true,
-                      physics:
-                          NeverScrollableScrollPhysics(), // kalau sudah dalam scroll view
-                      children: productCubit.data.listProduct.map((product) {
-                        return ProductCard(product: product);
-                      }).toList(),
+                        child: SingleChildScrollView(
+                      child: GridView.count(
+                        crossAxisCount: 2,
+                        padding: const EdgeInsets.all(12),
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 16,
+                        childAspectRatio: 0.6, // sesuaikan tinggi/lebarnya
+                        shrinkWrap: true,
+                        physics:
+                            NeverScrollableScrollPhysics(), // kalau sudah dalam scroll view
+                        children: productCubit.data.listProduct.map((product) {
+                          return ProductCard(product: product);
+                        }).toList(),
+                      ),
                     )),
                   ],
                 )),

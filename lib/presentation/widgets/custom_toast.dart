@@ -124,7 +124,7 @@ class _ToastWidgetState extends State<_ToastWidget>
               );
             },
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 3),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
               child: Row(
                 children: [
                   const Icon(Icons.check_circle, color: Colors.green),
@@ -139,8 +139,9 @@ class _ToastWidgetState extends State<_ToastWidget>
                     width: 8,
                   ),
                   TextButton(
-                    onPressed: () {
+                    onPressed: () async {
                       log("@View Cart clicked");
+                      Navigator.pop(context);
                       Navigator.pushNamed(context, AppRouter.cart);
                     },
                     style: TextButton.styleFrom(
@@ -151,6 +152,7 @@ class _ToastWidgetState extends State<_ToastWidget>
                       backgroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 0),
+                      minimumSize: Size(0, 26), // kontrol tinggi tombol
                     ),
                     child: const Text(
                       'View Cart',

@@ -6,32 +6,34 @@ import 'package:flutter/material.dart';
 import '../../../data/models/product_model.dart';
 
 class NewArrivalProductSection extends StatelessWidget {
-  const NewArrivalProductSection({super.key});
+  final List<Product> products;
+
+  const NewArrivalProductSection({super.key, required this.products});
 
   @override
   Widget build(BuildContext context) {
-    final products = [
-      Product(
-        name: "TotalC-Ram Permanen Adhesive Resin Cement) 8g Syringe)",
-        // title: 'PureOffice Professional Intracanal Dental Whiten...',
-        brand: Brand(name: "Itena"),
-        featureImage:
-            "https://mydentalshop.s3.ap-southeast-3.amazonaws.com/product/4FmL6ScFo1nn1zOfPfSe2NQH9e7mDpkciQFurRlo.jpeg",
-        price: 985000,
-        // oldPrice: 'Rp1.189.000',
-        // badge: 'New arrival 10%',
-      ),
-      Product(
-        name: "TotalC-Ram Permanen Adhesive Resin Cement) 8g Syringe)",
-        // title: 'PureOffice Professional Intracanal Dental Whiten...',
-        brand: Brand(name: "Itena"),
-        featureImage:
-            "https://mydentalshop.s3.ap-southeast-3.amazonaws.com/product/4FmL6ScFo1nn1zOfPfSe2NQH9e7mDpkciQFurRlo.jpeg",
-        price: 985000,
-        // oldPrice: 'Rp1.189.000',
-        // badge: 'New arrival 10%',
-      ),
-    ];
+    // final products = [
+    //   Product(
+    //     name: "TotalC-Ram Permanen Adhesive Resin Cement) 8g Syringe)",
+    //     // title: 'PureOffice Professional Intracanal Dental Whiten...',
+    //     brand: Brand(name: "Itena"),
+    //     featureImage:
+    //         "https://mydentalshop.s3.ap-southeast-3.amazonaws.com/product/4FmL6ScFo1nn1zOfPfSe2NQH9e7mDpkciQFurRlo.jpeg",
+    //     price: 985000,
+    //     // oldPrice: 'Rp1.189.000',
+    //     // badge: 'New arrival 10%',
+    //   ),
+    //   Product(
+    //     name: "TotalC-Ram Permanen Adhesive Resin Cement) 8g Syringe)",
+    //     // title: 'PureOffice Professional Intracanal Dental Whiten...',
+    //     brand: Brand(name: "Itena"),
+    //     featureImage:
+    //         "https://mydentalshop.s3.ap-southeast-3.amazonaws.com/product/4FmL6ScFo1nn1zOfPfSe2NQH9e7mDpkciQFurRlo.jpeg",
+    //     price: 985000,
+    //     // oldPrice: 'Rp1.189.000',
+    //     // badge: 'New arrival 10%',
+    //   ),
+    // ];
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -70,8 +72,10 @@ class NewArrivalProductSection extends StatelessWidget {
                   const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
           GestureDetector(
               onTap: () {
-                Navigator.pushNamed(context, AppRouter.productDetail,
-                    arguments: {"title": "Feature Product"});
+                Navigator.pushNamed(context, AppRouter.search, arguments: {
+                  "is_new": 1,
+                  "search_focus": 0,
+                });
               },
               child: const Text("See All",
                   style: TextStyle(

@@ -34,26 +34,46 @@ class ProductRepository {
   }
 
   static Future<Response> searchProducts({
-    int? limit,
+    int? page = 1,
+    int? limit = 20,
+    String? sort = 'latest',
     String? keyword,
     String? brands,
     String? categories,
+    int? newArrival,
+    int? readyStock,
+    int? onPromo,
     CancelToken? cancelToken,
   }) async {
     final queryParams = <String, dynamic>{};
+    if (page != null) queryParams['page'] = page;
     if (limit != null) queryParams['limit'] = limit;
     if (brands != null && brands != "") {
-      queryParams['brands'] = brands;
+      // queryParams['brands'] = brands;
+      queryParams['brand'] = brands;
     }
     if (categories != null && categories != "") {
-      queryParams['categories'] = categories;
+      // queryParams['categories'] = categories;
+      queryParams['category'] = categories;
     }
     if (keyword != null) {
       queryParams['keyword'] = keyword;
     }
-
+    if (sort != null) {
+      queryParams['sort'] = sort;
+    }
+    if (newArrival == 1) {
+      queryParams['is_new'] = true;
+    }
+    if (readyStock == 1) {
+      queryParams['in_stock'] = true;
+    }
+    if (onPromo == 1) {
+      // queryParams['on_sale'] = true;
+    }
     return await DioClient.instance.get(
-      "/api/home/search-products",
+      "/api/v2/product",
+      // "/api/home/search-products",
       queryParameters: queryParams,
       cancelToken: cancelToken,
     );

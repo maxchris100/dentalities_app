@@ -52,6 +52,26 @@ class ProfileRepository {
     );
   }
 
+  static Future<Response> getDefaultAddress({
+    CancelToken? cancelToken,
+  }) async {
+    return await DioClient.instance.get(
+      "/api/v2/account/default-address",
+      cancelToken: cancelToken,
+    );
+  }
+
+  static Future<dynamic> updateDefaultAddress({
+    required int userAddressId,
+  }) async {
+    return await DioClient.instance.post(
+      "/api/v2/account/default-address",
+      data: {
+        "user_address_id": userAddressId,
+      },
+    );
+  }
+
   static Future<dynamic> addAddress({
     required String label,
     required String phone,

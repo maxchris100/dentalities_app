@@ -7,12 +7,12 @@ dependencies {
 }
 
 android {
-    namespace "com.dentalities.dentalities"
+    namespace "com.dentalities.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion  
  
     defaultConfig {
-        applicationId "com.dentalities.dentalities"
+        applicationId "com.dentalities.app"
         minSdkVersion 23
         targetSdkVersion 34
         versionCode 1

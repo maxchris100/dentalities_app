@@ -4,13 +4,15 @@ import 'package:dentalities/core/router/app_router.dart';
 import 'package:dentalities/core/util/string_util.dart';
 import 'package:dentalities/core/util/toast_util.dart';
 import 'package:dentalities/data/models/transaction_response_model.dart';
+import 'package:dentalities/presentation/views/order/webview_payment_page.dart';
 import 'package:dentalities/presentation/widgets/product_card.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class OrderItem extends StatelessWidget {
   final Transaction item;
-  const OrderItem({super.key, required this.item});
+  final VoidCallback? refreshStatus;
+  const OrderItem({super.key, required this.item, this.refreshStatus});
 
   @override
   Widget build(BuildContext context) {
@@ -161,13 +163,25 @@ class OrderItem extends StatelessWidget {
                               ? ElevatedButton(
                                   onPressed: () async {
                                     if (true) {
-                                      String url =
-                                          item?.paymentResponse?.redirectURL ??
-                                              "";
-                                      if (!await launchUrl(Uri.parse(url))) {
-                                        ToastUtil.showToastError(
-                                            "", 'Could not launch $url');
-                                      }
+                                      // String url =
+                                      //     item.paymentResponse?.redirectURL ??
+                                      //         "";
+                                      // if (!await launchUrl(Uri.parse(url))) {
+                                      //   ToastUtil.showToastError(
+                                      //       "", 'Could not launch $url');
+                                      // }
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => WebViewPaymentPage(
+                                            data: item.toJson(),
+                                          ),
+                                        ),
+                                      ).then((x) {
+                                        if (refreshStatus != null) {
+                                          refreshStatus!();
+                                        }
+                                      });
                                     }
                                   },
                                   style: ElevatedButton.styleFrom(

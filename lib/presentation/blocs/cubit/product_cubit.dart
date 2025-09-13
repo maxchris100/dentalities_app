@@ -14,23 +14,31 @@ import 'package:meta/meta.dart';
 import '../../../domain/repositories/cart_repository.dart';
 
 class ProductData {
+  final bool productDetailWishlist;
   final Product? product;
   final List<Product> listProduct;
   final List<Product> relatedProduct;
-  ProductData(
-      {this.product,
-      this.listProduct = const [],
-      this.relatedProduct = const []});
+
+  ProductData({
+    this.product,
+    this.listProduct = const [],
+    this.relatedProduct = const [],
+    this.productDetailWishlist = false, // ✅ default false
+  });
 
   ProductData copyWith({
+    bool? productDetailWishlist,
     Product? product,
     List<Product>? listProduct,
     List<Product>? relatedProduct,
   }) {
     return ProductData(
-        product: product ?? this.product,
-        listProduct: listProduct ?? this.listProduct,
-        relatedProduct: relatedProduct ?? this.relatedProduct);
+      productDetailWishlist:
+          productDetailWishlist ?? this.productDetailWishlist,
+      product: product ?? this.product,
+      listProduct: listProduct ?? this.listProduct,
+      relatedProduct: relatedProduct ?? this.relatedProduct,
+    );
   }
 }
 
@@ -111,7 +119,12 @@ class ProductCubit extends Cubit<ProductState> {
       Product p = Product.fromJson(product.data["data"]["product"]);
       List<Product> relatedProducts =
           Product.fromList(product.data["data"]["related_products"]);
-      data = data.copyWith(product: p, relatedProduct: relatedProducts);
+
+      // var res = await checkWishlistStatus(p.id);
+      data = data.copyWith(
+          product: p,
+          relatedProduct: relatedProducts,
+          productDetailWishlist: true);
       emit(ProductLoaded(data));
       return p;
     } catch (e) {
@@ -121,11 +134,23 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   Future<void> getSearchProduct(String? keyword,
-      {String? brands, String? categories}) async {
+      {String? brands,
+      String? categories,
+      int? newArrival,
+      int? readyStock,
+      int? onPromo,
+      String? sort}) async {
     try {
       final datas = await ProductRepository.searchProducts(
-          keyword: keyword, brands: brands, categories: categories);
-      List<Product> p = Product.fromList(datas.data["data"]["data"]);
+          keyword: keyword,
+          brands: brands,
+          categories: categories,
+          newArrival: newArrival,
+          readyStock: readyStock,
+          onPromo: onPromo,
+          sort: sort);
+      // List<Product> p = Product.fromList(datas.data["data"]["data"]);
+      List<Product> p = Product.fromList(datas.data["data"]["products"]);
 
 // 1 =
 // "total_items" -> 2

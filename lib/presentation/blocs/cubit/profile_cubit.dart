@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:dentalities/core/constant/constant.dart';
+import 'package:dentalities/data/models/user_address_model.dart';
 import 'package:dentalities/data/models/user_model.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:meta/meta.dart';
@@ -39,6 +40,12 @@ class ProfileCubit extends Cubit<ProfileState> {
         UserModel data = UserModel.fromMap(datas.data["data"]);
 
         Constant.userLocalDataSource.saveUser(data);
+
+        final defaultAddress = await ProfileRepository.getDefaultAddress();
+        UserAddress userAddress =
+            UserAddress.fromJson(defaultAddress.data["data"]);
+        Constant.userLocalDataSource.setDefaultAddress(userAddress);
+
         // emit(ProfileLoaded(data));
       } catch (e) {
         emit(ProfileError('Failed to load profile: $e'));

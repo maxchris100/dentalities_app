@@ -31,6 +31,8 @@ class _OrderDetailPageState extends State<OrderDetailPage>
   int totalItem = 0;
 
   HomeCubit? homeCubit;
+  CartCubit? cartCubit;
+
   @override
   void initState() {
     super.initState();
@@ -52,18 +54,18 @@ class _OrderDetailPageState extends State<OrderDetailPage>
       setState(() {});
 
       homeCubit = context.read<HomeCubit>();
+      cartCubit = context.read<CartCubit>();
+      cartCubit?.getOrderTracking(item?.uuid);
     });
   }
-
-  CartCubit cartCubit = CartCubit();
 
   Future refreshStatus() async {
     try {
       log("@REFRESH STATUS");
-      String id = item?.uuid ?? "";
+      String? id = item?.uuid;
       // "8b8f7377-9a21-4dc4-ac32-8128d775bcc2";
-      await cartCubit.getOrderDetail(id);
-      item = cartCubit.data.transactionDetail;
+      await cartCubit?.getOrderDetail(id);
+      item = cartCubit?.data.transactionDetail;
       log("@REFRESH STATUS ITEM: ${item?.status.toString()}");
       // if (cartCubit.data.transactionDetail?.status == "paid") {
       //   Navigator.pushNamed(context, AppRouter.paymentComplete);
@@ -396,20 +398,20 @@ class _OrderDetailPageState extends State<OrderDetailPage>
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () async {
-                      String url = item?.paymentResponse?.redirectURL ?? "";
-                      if (!await launchUrl(Uri.parse(url))) {
-                        ToastUtil.showToastError("", 'Could not launch $url');
-                      }
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (_) => WebViewPaymentPage(
-                      //       data: item!.toJson(),
-                      //     ),
-                      //   ),
-                      // ).then((x) {
-                      //   refreshStatus();
-                      // });
+                      // String url = item?.paymentResponse?.redirectURL ?? "";
+                      // if (!await launchUrl(Uri.parse(url))) {
+                      //   ToastUtil.showToastError("", 'Could not launch $url');
+                      // }
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => WebViewPaymentPage(
+                            data: item!.toJson(),
+                          ),
+                        ),
+                      ).then((x) {
+                        refreshStatus();
+                      });
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,

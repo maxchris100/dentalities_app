@@ -70,7 +70,7 @@ class _FilterCategoryState extends State<FilterCategory> {
           final isSelected = selectedCategories[item.id.toString()] != null;
           return ChoiceChip(
             label: Text(
-              item.name,
+              item.name ?? "",
               style: TextStyle(fontSize: 11),
             ),
             selected: isSelected,

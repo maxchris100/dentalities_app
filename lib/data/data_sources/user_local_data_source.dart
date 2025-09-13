@@ -1,3 +1,4 @@
+import 'package:dentalities/data/models/user_address_model.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,6 +14,8 @@ class UserLocalDataSource {
   static String? _token;
   String? get token => _token;
   UserModel? get userData => _userData;
+
+  static UserAddress? defaultAddress;
 
   static String language = 'en';
 
@@ -31,6 +34,14 @@ class UserLocalDataSource {
     } catch (_) {
       // No _token or user, bisa diabaikan
     }
+  }
+
+  UserAddress? getDefaultAddress() {
+    return defaultAddress;
+  }
+
+  void setDefaultAddress(UserAddress address) {
+    defaultAddress = address;
   }
 
   Future<String> getToken() async {
@@ -79,6 +90,7 @@ class UserLocalDataSource {
     print("@Clear CACHE");
     _userData = null;
     _token = null;
+    defaultAddress = null;
     await secureStorage.deleteAll();
     await sharedPreferences.remove(cachedUser);
     print("@Clear CACHE SUCCESS");

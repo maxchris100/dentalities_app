@@ -16,8 +16,7 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isNewArrival = true;
-
+    bool isNewArrival = product.isNew ?? false;
     double price = product.price ?? 0;
     if (price == 0) {
       price = product.productPrice ?? 0;
@@ -65,23 +64,30 @@ class ProductCard extends StatelessWidget {
                   Positioned(
                     bottom: 0,
                     left: 0,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 4),
-                      decoration: const BoxDecoration(
-                        color: Colors.orange,
-                        borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(12),
-                          bottomLeft: Radius.circular(12),
+                    child: Visibility(
+                      visible: isNewArrival,
+                      child: Container(
+                        padding: const EdgeInsets.only(
+                          left: 8,
+                          right: 12,
+                          top: 4,
+                          bottom: 4,
                         ),
-                      ),
-                      height: 35,
-                      child: const Text(
-                        "New\narrival",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 9,
+                        decoration: const BoxDecoration(
+                          color: Colors.orange,
+                          borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(12),
+                            bottomLeft: Radius.circular(12),
+                          ),
+                        ),
+                        height: 35,
+                        child: const Text(
+                          "New\narrival",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 9,
+                          ),
                         ),
                       ),
                     ),
@@ -92,7 +98,7 @@ class ProductCard extends StatelessWidget {
                     left: isNewArrival ? 40 : 0,
                     child: Container(
                       padding: const EdgeInsets.only(
-                          left: 16, right: 12, top: 4, bottom: 4),
+                          left: 8, right: 8, top: 4, bottom: 4),
                       decoration: BoxDecoration(
                         color: Colors.pinkAccent,
                         borderRadius: const BorderRadius.only(
@@ -103,7 +109,7 @@ class ProductCard extends StatelessWidget {
                       height: 35,
                       alignment: Alignment.center,
                       child: Text(
-                        "5 % off",
+                        "${product.discountPercentage?.toInt()} % off",
                         style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,

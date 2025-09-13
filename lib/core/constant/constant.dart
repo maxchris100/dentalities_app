@@ -12,7 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class Constant {
   static String baseApiUrl = dotenv.env['BASE_API_URL'] ?? "";
   static bool getQAEnvironment() {
-    return dotenv.env['ENV'] == 'development';
+    return dotenv.env['ENV'] == 'staging';
   }
 
   static final GlobalKey<NavigatorState> navigatorKey =

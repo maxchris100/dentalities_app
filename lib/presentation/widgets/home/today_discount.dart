@@ -81,11 +81,15 @@ class DiscountProductCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Image.asset(
-            'assets/images/banner.png',
-            height: 80,
-            width: double.infinity,
-            fit: BoxFit.cover,
+          ClipRRect(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(12), topRight: Radius.circular(12)),
+            child: Image.asset(
+              'assets/images/banner.png',
+              height: 80,
+              width: double.infinity,
+              fit: BoxFit.cover,
+            ),
           ),
           Expanded(
             child: Container(

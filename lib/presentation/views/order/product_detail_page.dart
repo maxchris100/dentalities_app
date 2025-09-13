@@ -34,15 +34,18 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       // var args = ModalRoute.of(context)?.settings.arguments as Map?;
       // String slug = args?["slug"] ?? "";
       // productCubit.getProductDetail(slug);
       homeCubit = context.read<HomeCubit>();
       // setState(() {});
+      cartCubit = context.read<CartCubit>();
     });
   }
 
+  bool isInWishlist = false;
+  CartCubit? cartCubit;
   ProductCubit productCubit = ProductCubit();
 
   addToCart() {
@@ -244,7 +247,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             return Builder(
                               builder: (BuildContext context) {
                                 return Image.network(
-                                  media.imageUrl,
+                                  media.imageUrl ?? "",
                                   width: 250,
                                   fit: BoxFit.cover,
                                   errorBuilder: (context, error, stackTrace) {
@@ -370,12 +373,24 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                               SizedBox(
                                 width: 8,
                               ),
-                              Icon(
-                                true
-                                    ? Icons.favorite
-                                    : Icons.favorite_border_outlined,
-                                color: true ? Colors.red : Colors.transparent,
-                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  final isInWishlist =
+                                      productCubit.data.productDetailWishlist;
+                                  if (isInWishlist) {
+                                    cartCubit?.removeFromWishlist(1);
+                                  } else {
+                                    cartCubit?.addToWishlist(
+                                        productCubit.data.product?.id ?? 0);
+                                  }
+                                },
+                                child: Icon(
+                                  productCubit.data.productDetailWishlist
+                                      ? Icons.favorite
+                                      : Icons.favorite_border_outlined,
+                                  color: true ? Colors.red : Colors.transparent,
+                                ),
+                              )
                             ],
                           )
                         ],

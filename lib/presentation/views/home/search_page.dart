@@ -43,6 +43,7 @@ class _SearchPageState extends State<SearchPage> {
       String slug = args?['categoryslug'] ?? "";
       Brand? brand = args?['brand'];
       Category? category = args?['category'];
+      int? newArrival = args?['is_new'];
       if (brand != null) {
         initSelectedBrands[brand.id.toString()] = brand;
       }
@@ -51,7 +52,9 @@ class _SearchPageState extends State<SearchPage> {
       }
       productCubit.getProductByCategorySlug(slug);
       productCubit.getSearchProduct('',
-          brands: brand?.id.toString(), categories: category?.id.toString());
+          brands: brand?.id.toString(),
+          categories: category?.id.toString(),
+          newArrival: newArrival);
 
       if (args != null) {
         if (args["search_focus"] == 1) {
@@ -207,12 +210,19 @@ class _SearchPageState extends State<SearchPage> {
                             FilterBar(
                               initSelectedCategories: initSelectedCategories,
                               initSelectedBrands: initSelectedBrands,
-                              onFilterChanged: (p0, p1) {
+                              onFilterChanged: (p0, p1,
+                                  {String? sort,
+                                  int? newArrival,
+                                  int? onPromo,
+                                  int? readyStock}) {
                                 productCubit.getSearchProduct(
-                                  searchController.text.trim(),
-                                  categories: p0,
-                                  brands: p1,
-                                );
+                                    searchController.text.trim(),
+                                    categories: p0,
+                                    brands: p1,
+                                    sort: sort,
+                                    newArrival: newArrival,
+                                    onPromo: onPromo,
+                                    readyStock: readyStock);
                               },
                             ),
                             SizedBox(

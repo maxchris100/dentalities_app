@@ -1,56 +1,59 @@
 import 'package:dentalities/data/models/product_model.dart';
 
 class ProductVariant {
-  final int id;
-  final String sku;
-  final double price;
-  final double priceBeforeDiscount;
-  final double discountPercentage;
-  final int quantity;
-  final int weight;
+  final int? id;
+  final String? sku;
+  final double? price;
+  final double? priceBeforeDiscount;
+  final double? discountPercentage;
+  final int? quantity;
+  final int? weight;
   final String? variantOneId;
   final String? variantOneName;
   final String? variantTwoId;
   final String? variantTwoName;
   final String? variantThreeId;
   final String? variantThreeName;
-  final bool isDiscounted;
-  final int productId;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final bool? isDiscounted;
+  final int? productId;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
   final Product? product;
 
   ProductVariant({
-    required this.id,
-    required this.sku,
-    required this.price,
-    required this.priceBeforeDiscount,
-    required this.discountPercentage,
-    required this.quantity,
-    required this.weight,
-    required this.variantOneId,
-    required this.variantOneName,
-    required this.variantTwoId,
-    required this.variantTwoName,
-    required this.variantThreeId,
-    required this.variantThreeName,
-    required this.isDiscounted,
-    required this.productId,
-    required this.createdAt,
-    required this.updatedAt,
+    this.id,
+    this.sku,
+    this.price,
+    this.priceBeforeDiscount,
+    this.discountPercentage,
+    this.quantity,
+    this.weight,
+    this.variantOneId,
+    this.variantOneName,
+    this.variantTwoId,
+    this.variantTwoName,
+    this.variantThreeId,
+    this.variantThreeName,
+    this.isDiscounted,
+    this.productId,
+    this.createdAt,
+    this.updatedAt,
     this.product,
   });
 
   factory ProductVariant.fromJson(Map<String, dynamic> json) {
-    // print("@ProductVariant");
     return ProductVariant(
       id: json['id'],
-      sku: json['sku'] ?? '',
-      price: double.tryParse(json['price'] ?? '0') ?? 0,
-      priceBeforeDiscount:
-          double.tryParse(json['price_before_discount'] ?? '0') ?? 0,
-      discountPercentage:
-          double.tryParse(json['discount_percentage'] ?? '0') ?? 0,
+      sku: json['sku'],
+      price: json['price'] != null
+          ? double.tryParse(json['price'].toString())
+          : null,
+      priceBeforeDiscount: json['price_before_discount'] != null
+          ? double.tryParse(json['price_before_discount'].toString())
+          : null,
+      discountPercentage: json['discount_percentage'] != null
+          ? double.tryParse(json['discount_percentage'].toString())
+          : null,
       quantity: json['quantity'],
       weight: json['weight'],
       variantOneId: json['variant_one_id'],
@@ -61,8 +64,12 @@ class ProductVariant {
       variantThreeName: json['variant_three_name'],
       isDiscounted: json['is_discounted'],
       productId: json['product_id'],
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
+      createdAt: json['createdAt'] != null
+          ? DateTime.tryParse(json['createdAt'])
+          : null,
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.tryParse(json['updatedAt'])
+          : null,
       product:
           json['product'] != null ? Product.fromJson(json['product']) : null,
     );
@@ -71,9 +78,9 @@ class ProductVariant {
   Map<String, dynamic> toJson() => {
         'id': id,
         'sku': sku,
-        'price': price.toStringAsFixed(2),
-        'price_before_discount': priceBeforeDiscount.toStringAsFixed(2),
-        'discount_percentage': discountPercentage.toStringAsFixed(2),
+        'price': price?.toStringAsFixed(2),
+        'price_before_discount': priceBeforeDiscount?.toStringAsFixed(2),
+        'discount_percentage': discountPercentage?.toStringAsFixed(2),
         'quantity': quantity,
         'weight': weight,
         'variant_one_id': variantOneId,
@@ -84,9 +91,9 @@ class ProductVariant {
         'variant_three_name': variantThreeName,
         'is_discounted': isDiscounted,
         'product_id': productId,
-        'createdAt': createdAt.toIso8601String(),
-        'updatedAt': updatedAt.toIso8601String(),
-        // 'product': product?.toJson(),
+        'createdAt': createdAt?.toIso8601String(),
+        'updatedAt': updatedAt?.toIso8601String(),
+        // 'product': product?.toJson(), // aktifkan jika Product punya toJson
       };
 
   ProductVariant copyWith({

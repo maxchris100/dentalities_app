@@ -3,15 +3,16 @@ import 'package:dentalities/data/models/banner_model.dart';
 import 'package:dentalities/data/models/brand_model.dart';
 import 'package:dentalities/data/models/category_model.dart';
 import 'package:dentalities/data/models/country_model.dart';
+import 'package:dentalities/data/models/product_model.dart';
 import 'package:dentalities/data/models/testimony_model.dart';
+import 'package:dentalities/data/models/user_address_model.dart';
 import 'package:dentalities/data/models/user_model.dart';
 import 'package:dentalities/domain/repositories/home_repository.dart';
+import 'package:dentalities/domain/repositories/product_repository.dart';
 import 'package:dentalities/domain/repositories/profile_repository.dart';
 import 'package:dio/src/response.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
-
-import '../../widgets/product_model.dart';
 
 class HomeData {
   int selectedIndex;
@@ -20,6 +21,7 @@ class HomeData {
   final List<Banner> banners;
   final List<Testimony> testimonies;
   final List<Product> recommendedProducts;
+  final List<Product> newArrival;
   final List<Country> countries;
   final List<Brand> brands;
   final List<Category> categories;
@@ -31,6 +33,7 @@ class HomeData {
       required this.banners,
       required this.testimonies,
       required this.recommendedProducts,
+      required this.newArrival,
       required this.countries,
       required this.brands,
       required this.categories});
@@ -42,6 +45,7 @@ class HomeData {
     List<Testimony>? testimonies,
     List<dynamic>? topDoctors,
     List<Product>? recommendedProducts,
+    List<Product>? newArrival,
     List<Brand>? brands,
     List<Country>? countries,
     List<Category>? categories,
@@ -53,6 +57,7 @@ class HomeData {
         testimonies: testimonies ?? this.testimonies,
         topDoctors: topDoctors ?? this.topDoctors,
         recommendedProducts: recommendedProducts ?? this.recommendedProducts,
+        newArrival: newArrival ?? this.newArrival,
         brands: brands ?? this.brands,
         countries: countries ?? this.countries,
         categories: categories ?? this.categories);
@@ -82,6 +87,7 @@ class HomeCubit extends Cubit<HomeState> {
       banners: [],
       testimonies: [],
       recommendedProducts: [],
+      newArrival: [],
       topDoctors: [],
       categories: [],
       brands: [],
@@ -126,6 +132,17 @@ class HomeCubit extends Cubit<HomeState> {
       emit(HomeLoaded(data));
     } catch (e) {
       emit(HomeError('Failed to load banners: $e'));
+    }
+  }
+
+  Future<void> fetchNewArrival() async {
+    try {
+      final res = await ProductRepository.searchProducts(newArrival: 1);
+      List<Product> list = Product.fromList(res.data["data"]["products"]);
+      data = data.copyWith(newArrival: list);
+      emit(HomeLoaded(data));
+    } catch (e) {
+      emit(HomeError('Failed to load new arrival: $e'));
     }
   }
 
@@ -177,6 +194,12 @@ class HomeCubit extends Cubit<HomeState> {
       UserModel data = UserModel.fromMap(datas.data["data"]);
 
       Constant.userLocalDataSource.saveUser(data);
+
+      final defaultAddress = await ProfileRepository.getDefaultAddress();
+      UserAddress userAddress =
+          UserAddress.fromJson(defaultAddress.data["data"]);
+      Constant.userLocalDataSource.setDefaultAddress(userAddress);
+
       // emit(HomeLoaded(data));
     } catch (e) {
       emit(HomeError('Failed to load profile: $e'));
@@ -190,5 +213,6 @@ class HomeCubit extends Cubit<HomeState> {
     fetchBrands();
     fetchTestimonial();
     fetchProfile();
+    fetchNewArrival();
   }
 }

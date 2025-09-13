@@ -86,7 +86,7 @@ class _HomeTabState extends State<HomeTab> {
                             child: _CategoryItem(
                                 e.featureImageThumbUrl ??
                                     'assets/icons/home_icon.svg',
-                                e.name),
+                                e?.name ?? ""),
                           );
                         }).toList()),
                   ),
@@ -163,7 +163,14 @@ class _HomeTabState extends State<HomeTab> {
           // SizedBox(
           //   height: 20,
           // ),
-          NewArrivalProductSection(),
+
+          BlocBuilder(
+              bloc: homeCubit,
+              builder: (context, state) {
+                return NewArrivalProductSection(
+                  products: homeCubit.data.newArrival,
+                );
+              }),
           SizedBox(
             height: 20,
           ),

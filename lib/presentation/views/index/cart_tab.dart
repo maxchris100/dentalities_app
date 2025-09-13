@@ -113,7 +113,12 @@ class _CartTabState extends State<CartTab> with TickerProviderStateMixin {
                                     context, AppRouter.orderDetail,
                                     arguments: {"item": order});
                               },
-                              child: OrderItem(item: order));
+                              child: OrderItem(
+                                item: order,
+                                refreshStatus: () {
+                                  getData(reset: true);
+                                },
+                              ));
                         } else {
                           return hasMore
                               ? const Padding(

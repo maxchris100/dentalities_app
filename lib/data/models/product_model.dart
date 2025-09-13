@@ -65,16 +65,16 @@ class Product {
   }
 
   factory Product.fromJson(Map<String, dynamic> json) {
-    // print("@Product Model");
+    print("@Product Model");
     return Product(
       featureImageUrl: json['feature_image_url'] ?? '',
       isDiscounted: json['is_discounted'] ?? false,
       id: json['id'],
       name: json['name'],
       slug: json['slug'],
-      isPublish: json['is_publish'] == 1 ? true : false,
-      isFeature: json['is_feature'] == 1 ? true : false,
-      isNew: json['is_new'] == 1 ? true : false,
+      isPublish: json['is_publish'] != null ? json['is_publish'] : false,
+      isFeature: json['is_feature'] != null ? json['is_feature'] : false,
+      isNew: json['is_new'] != null ? json['is_new'] : false,
       sku: json['sku'],
       description: json['description'] ?? '',
       variantOne: json['variant_one'],

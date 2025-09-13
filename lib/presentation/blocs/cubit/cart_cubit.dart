@@ -5,6 +5,7 @@ import 'package:dentalities/data/models/cart_model.dart';
 import 'package:dentalities/data/models/delivery_method_model.dart';
 import 'package:dentalities/data/models/product_model.dart';
 import 'package:dentalities/data/models/transaction_response_model.dart';
+import 'package:dentalities/data/models/wishlist_model.dart';
 import 'package:dentalities/domain/repositories/cart_repository.dart';
 import 'package:dentalities/domain/repositories/product_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,14 +15,18 @@ class CartData {
   final CartResponse? cart;
   final Product? product;
   final List<Product> relatedProduct;
+  final List<Wishlist> wishlistProduct;
   final List<DeliveryMethod> deliveryMethod;
   final TransactionResponse? transaction;
   final Transaction? transactionDetail;
+  final dynamic transactionTrack;
   CartData(
       {this.cart,
       this.product,
+      this.wishlistProduct = const [],
       this.transaction,
       this.transactionDetail,
+      this.transactionTrack,
       this.relatedProduct = const [],
       this.deliveryMethod = const []});
 
@@ -29,16 +34,20 @@ class CartData {
       {CartResponse? cart,
       Product? product,
       List<Product>? relatedProduct,
+      List<Wishlist>? wishlistProduct,
       List<DeliveryMethod>? deliveryMethod,
       TransactionResponse? transaction,
-      Transaction? transactionDetail}) {
+      Transaction? transactionDetail,
+      dynamic transactionTrack}) {
     return CartData(
         cart: cart ?? this.cart,
         product: product ?? this.product,
+        wishlistProduct: wishlistProduct ?? this.wishlistProduct,
         relatedProduct: relatedProduct ?? this.relatedProduct,
         deliveryMethod: deliveryMethod ?? this.deliveryMethod,
         transaction: transaction ?? this.transaction,
-        transactionDetail: transactionDetail ?? this.transactionDetail);
+        transactionDetail: transactionDetail ?? this.transactionDetail,
+        transactionTrack: transactionTrack ?? this.transactionTrack);
   }
 }
 
@@ -159,6 +168,77 @@ class CartCubit extends Cubit<CartState> {
       emit(CartLoaded(data));
     } catch (e) {
       emit(CartError('Failed to load order detail: $e'));
+    }
+  }
+
+  Future<void> getOrderTracking(String? id) async {
+    try {
+      final datas = await CartRepository.getOrderTracking(uid: id);
+      // Transaction p = Transaction.fromJson(datas.data["data"]);
+      data = data.copyWith(transactionTrack: datas.data["data"]);
+      emit(CartLoaded(data));
+    } catch (e) {
+      emit(CartError('Failed to load order detail: $e'));
+    }
+  }
+
+  Future<void> getWishlist() async {
+    try {
+      final datas = await CartRepository.getWishlist();
+      List<Wishlist> p = Wishlist.fromList(datas.data["data"]);
+      data = data.copyWith(wishlistProduct: p);
+      emit(CartLoaded(data));
+    } catch (e) {
+      emit(CartError('Failed to load wishlist: $e'));
+    }
+  }
+
+  Future<void> addToWishlist(int productId) async {
+    try {
+      await CartRepository.addToWishlist(productId: productId);
+      // refresh data setelah tambah
+      await getWishlist();
+    } catch (e) {
+      emit(CartError('Failed to add to wishlist: $e'));
+    }
+  }
+
+  Future<void> addToWishlistWithVariant(
+      int productId, int productVariantId) async {
+    try {
+      await CartRepository.addToWishlistWithVariant(
+        productId: productId,
+        productVariantId: productVariantId,
+      );
+      // refresh data
+      await getWishlist();
+    } catch (e) {
+      emit(CartError('Failed to add to wishlist (variant): $e'));
+    }
+  }
+
+  Future<void> removeFromWishlist(int id) async {
+    try {
+      await CartRepository.removeFromWishlist(id: id);
+      // refresh data
+      await getWishlist();
+    } catch (e) {
+      emit(CartError('Failed to remove from wishlist: $e'));
+    }
+  }
+
+  Future<bool> checkWishlistStatus(int productId,
+      {int? productVariantId}) async {
+    try {
+      final res = await CartRepository.checkWishlistStatus(
+        productId: productId,
+        productVariantId: productVariantId,
+      );
+
+      final isInWishlist = res.data["in_wishlist"] == true;
+      return isInWishlist;
+    } catch (e) {
+      return false;
     }
   }
 }

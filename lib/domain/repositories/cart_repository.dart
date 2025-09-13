@@ -72,4 +72,81 @@ class CartRepository {
       "/api/v2/transaction/$uid",
     );
   }
+
+  static Future<Response> getOrderTracking({
+    String? uid,
+    CancelToken? cancelToken,
+  }) async {
+    return await DioClient.instance.get(
+      "/api/v2/transaction/$uid/track",
+    );
+  }
+
+  static Future<Response> getWishlist({
+    CancelToken? cancelToken,
+  }) async {
+    return await DioClient.instance.get(
+      "/api/v2/wishlist",
+      cancelToken: cancelToken,
+    );
+  }
+
+  /// Add to wishlist (with variant)
+  static Future<Response> addToWishlistWithVariant({
+    required int productId,
+    required int productVariantId,
+    CancelToken? cancelToken,
+  }) async {
+    return await DioClient.instance.post(
+      "/api/v2/wishlist",
+      data: {
+        "product_id": productId,
+        "product_variant_id": productVariantId,
+      },
+      cancelToken: cancelToken,
+    );
+  }
+
+  /// Add to wishlist (product only)
+  static Future<Response> addToWishlist({
+    required int productId,
+    CancelToken? cancelToken,
+  }) async {
+    return await DioClient.instance.post(
+      "/api/v2/wishlist",
+      data: {
+        "product_id": productId,
+      },
+      cancelToken: cancelToken,
+    );
+  }
+
+  /// Remove item from wishlist
+  static Future<Response> removeFromWishlist({
+    required int id,
+    CancelToken? cancelToken,
+  }) async {
+    return await DioClient.instance.delete(
+      "/api/v2/wishlist/$id",
+      cancelToken: cancelToken,
+    );
+  }
+
+  /// Check wishlist status
+  static Future<Response> checkWishlistStatus({
+    required int productId,
+    int? productVariantId,
+    CancelToken? cancelToken,
+  }) async {
+    final queryParams = {
+      "product_id": productId,
+      if (productVariantId != null) "product_variant_id": productVariantId,
+    };
+
+    return await DioClient.instance.get(
+      "/api/v2/wishlist/check",
+      queryParameters: queryParams,
+      cancelToken: cancelToken,
+    );
+  }
 }

@@ -9,7 +9,8 @@ class FilterBar extends StatefulWidget {
   Map<String, Category> initSelectedCategories = {};
   Map<String, Brand> initSelectedBrands = {};
 
-  Function(String, String) onFilterChanged;
+  Function(String, String, {String? sort, int readyStock, int onPromo})
+      onFilterChanged;
   FilterBar(
       {Key? key,
       required this.onFilterChanged,
@@ -44,24 +45,122 @@ class _FilterBarState extends State<FilterBar> {
   }
 
   void _showSortOptions() {
+    String? tempSelectedSort = selectedSort;
+
+    final sortOptions = {
+      'latest': 'Relevance',
+      'most_purchased': 'Most Purchased',
+      'max_price': 'Highest Price',
+      'min_price': 'Lowest Price',
+      // 'a_z': 'A-Z',
+      // 'z_a': 'Z-A',
+    };
+
     showModalBottomSheet(
       context: context,
-      builder: (_) => ListView(
-        children: ['Popular', 'Newest', 'Price Low', 'Price High']
-            .map((sort) => ListTile(
-                  title: Text(sort),
-                  onTap: () {
-                    setState(() => selectedSort = sort);
-                    Navigator.pop(context);
-                  },
-                ))
-            .toList(),
-      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              // mainAxisSize: MainAxisSize.min,
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  padding: EdgeInsets.only(left: 16),
+                  child: const Text(
+                    "Sort",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Expanded(
+                  child: ListView.separated(
+                    itemCount: sortOptions.length,
+                    separatorBuilder: (_, __) => const Divider(height: 1),
+                    itemBuilder: (context, index) {
+                      final entry = sortOptions.entries.elementAt(index);
+                      return ListTile(
+                        title: Text(entry.value),
+                        trailing: Radio<String>(
+                          value: entry.key,
+                          groupValue: tempSelectedSort,
+                          activeColor: Colors.blue,
+                          onChanged: (value) {
+                            setModalState(() {
+                              tempSelectedSort = value!;
+                            });
+                          },
+                        ),
+                        onTap: () {
+                          setModalState(() {
+                            tempSelectedSort = entry.key;
+                          });
+                        },
+                      );
+                    },
+                  ),
+                ),
+                const Divider(height: 1),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          selectedSort = tempSelectedSort;
+                        });
+
+                        //get product
+                        Navigator.pop(context);
+                        widget.onFilterChanged(
+                          selectedCategories.keys.toList().join(','),
+                          selectedBrands.keys.toList().join(','),
+                          sort: selectedSort,
+                          readyStock: readyStock ? 1 : 0,
+                          onPromo: onPromo ? 1 : 0,
+                        );
+                      },
+                      child: const Text(
+                        'Apply',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 
   void _showReadyStockOptions() {
     setState(() => readyStock = !readyStock);
+    widget.onFilterChanged(
+      selectedCategories.keys.toList().join(','),
+      selectedBrands.keys.toList().join(','),
+      sort: selectedSort,
+      readyStock: readyStock ? 1 : 0,
+      onPromo: onPromo ? 1 : 0,
+    );
     // showModalBottomSheet(
     //   context: context,
     //   builder: (_) => ListView(
@@ -81,6 +180,14 @@ class _FilterBarState extends State<FilterBar> {
 
   void _showPromoOptions() {
     setState(() => onPromo = !onPromo);
+    widget.onFilterChanged(
+      selectedCategories.keys.toList().join(','),
+      selectedBrands.keys.toList().join(','),
+      sort: selectedSort,
+      readyStock: readyStock ? 1 : 0,
+      onPromo: onPromo ? 1 : 0,
+    );
+
     // showModalBottomSheet(
     //   context: context,
     //   builder: (_) => ListView(
@@ -111,8 +218,13 @@ class _FilterBarState extends State<FilterBar> {
       setState(() {
         selectedCategories =
             (result['selectedCategories'] as Map<String, Category>);
-        widget.onFilterChanged(selectedCategories.keys.toList().join(','),
-            selectedBrands.keys.toList().join(','));
+        widget.onFilterChanged(
+          selectedCategories.keys.toList().join(','),
+          selectedBrands.keys.toList().join(','),
+          sort: selectedSort,
+          readyStock: readyStock ? 1 : 0,
+          onPromo: onPromo ? 1 : 0,
+        );
       });
     }
   }
@@ -126,8 +238,13 @@ class _FilterBarState extends State<FilterBar> {
     if (result != null) {
       setState(() {
         selectedBrands = (result['selectedBrands'] as Map<String, Brand>);
-        widget.onFilterChanged(selectedCategories.keys.toList().join(','),
-            selectedBrands.keys.toList().join(','));
+        widget.onFilterChanged(
+          selectedCategories.keys.toList().join(','),
+          selectedBrands.keys.toList().join(','),
+          sort: selectedSort,
+          readyStock: readyStock ? 1 : 0,
+          onPromo: onPromo ? 1 : 0,
+        );
       });
     }
   }
@@ -169,18 +286,38 @@ class _FilterBarState extends State<FilterBar> {
               ),
             ),
             const SizedBox(width: 8),
-            OutlinedButton.icon(
+            OutlinedButton(
               onPressed: _showSortOptions,
-              icon: Icon(Icons.sort,
-                  color: selectedSort != null ? Colors.blue : Colors.grey),
-              label: Text('Sort',
-                  style: TextStyle(
-                      color: selectedSort != null ? Colors.blue : Colors.grey)),
               style: OutlinedButton.styleFrom(
                 minimumSize: Size(0, 36),
-                backgroundColor: Colors.white,
                 side: BorderSide(
-                    color: selectedSort != null ? Colors.blue : Colors.grey),
+                  color: selectedSort != null ? Colors.blue : Colors.grey,
+                ),
+                padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
+                foregroundColor:
+                    selectedSort != null ? Colors.blue : Colors.grey,
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.sort,
+                      color: selectedSort != null ? Colors.blue : Colors.grey),
+                  SizedBox(
+                    width: 8,
+                  ),
+                  Text(
+                    'Sort',
+                    style: TextStyle(
+                        color:
+                            selectedSort != null ? Colors.blue : Colors.grey),
+                  ),
+                  SizedBox(
+                    width: 8,
+                  ),
+                  Icon(
+                    Icons.arrow_drop_down,
+                    color: selectedSort != null ? Colors.blue : Colors.black,
+                  ),
+                ],
               ),
             ),
             const SizedBox(width: 8),
@@ -226,7 +363,7 @@ class _FilterBarState extends State<FilterBar> {
                     Icons.arrow_drop_down,
                     color: selectedCategories.isNotEmpty
                         ? Colors.blue
-                        : Colors.grey,
+                        : Colors.black,
                   ),
                 ],
               ),
@@ -257,7 +394,7 @@ class _FilterBarState extends State<FilterBar> {
                   Icon(
                     Icons.arrow_drop_down,
                     color:
-                        selectedBrands.isNotEmpty ? Colors.blue : Colors.grey,
+                        selectedBrands.isNotEmpty ? Colors.blue : Colors.black,
                   ),
                 ],
               ),

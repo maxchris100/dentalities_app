@@ -38,7 +38,7 @@ class Category {
   }
 
   factory Category.fromJson(Map<String, dynamic> json) {
-    print("@category");
+    // print("@category");
     return Category(
       id: json['id'] != null ? json['id'] : null,
       parentCategoryId: json['parent_category_id'] != null

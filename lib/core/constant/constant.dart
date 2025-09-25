@@ -21,12 +21,10 @@ class Constant {
   static SharedPreferences? sharedPreferences;
   static FlutterSecureStorage? secureStorage;
 
-  static GlobalKey<NavigatorState> initNavigatorKey() {
+  static void initNavigatorKey() {
     if (getQAEnvironment()) {
-      alice = Alice();
-      return alice!.getNavigatorKey()!;
+      alice = Alice(navigatorKey: navigatorKey);
     }
-    return navigatorKey;
   }
 
   static GlobalKey<NavigatorState> getNavigatorKey() {

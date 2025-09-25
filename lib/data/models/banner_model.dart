@@ -25,7 +25,7 @@ class Banner {
   }
 
   factory Banner.fromJson(Map<String, dynamic> json) {
-    print("@");
+    // print("@banner");
     return Banner(
       id: json['id'],
       imageUrl: json["image_url"] != null ? json['image_url'] : "",

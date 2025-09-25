@@ -293,38 +293,73 @@ class _SearchPageState extends State<SearchPage> {
                                     ? Center(
                                         child: CircularProgressIndicator(),
                                       )
-                                    : SingleChildScrollView(
-                                        controller: _scrollController,
-                                        child: Column(
-                                          children: [
-                                            GridView.count(
-                                              crossAxisCount: 2,
-                                              padding: const EdgeInsets.all(12),
-                                              crossAxisSpacing: 12,
-                                              mainAxisSpacing: 16,
-                                              childAspectRatio:
-                                                  0.6, // sesuaikan tinggi/lebarnya
-                                              shrinkWrap: true,
-                                              physics:
-                                                  NeverScrollableScrollPhysics(), // kalau sudah dalam scroll view
-                                              children: productCubit
-                                                  .data.listProduct
-                                                  .map((product) {
-                                                return ProductCard(
-                                                    product: product);
-                                              }).toList(),
-                                            ),
-                                            if (isLoadingMore)
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 16),
-                                                child: Center(
-                                                    child:
-                                                        CircularProgressIndicator()),
+                                    : RefreshIndicator(
+                                        onRefresh: () async {
+                                          _currentPage = 1;
+                                          _hasMore = true;
+                                          final newProducts = await productCubit
+                                              .getSearchProduct(
+                                                  searchController.text.trim(),
+                                                  categories:
+                                                      selectedCategories,
+                                                  brands: selectedBrands,
+                                                  sort: selectedSort,
+                                                  newArrival:
+                                                      selectedNewArrival,
+                                                  onPromo: selectedOnPromo,
+                                                  readyStock:
+                                                      selectedReadyStock,
+                                                  page: _currentPage,
+                                                  limit: _limit,
+                                                  loadMore: false);
+                                        },
+                                        child: productCubit
+                                                .data.listProduct.isEmpty
+                                            ? ListView(
+                                                // perlu ListView biar RefreshIndicator bisa jalan
+                                                children: const [
+                                                  SizedBox(height: 200),
+                                                  Center(
+                                                      child: Text(
+                                                          "No Product found")),
+                                                ],
+                                              )
+                                            : SingleChildScrollView(
+                                                controller: _scrollController,
+                                                child: Column(
+                                                  children: [
+                                                    GridView.count(
+                                                      crossAxisCount: 2,
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              12),
+                                                      crossAxisSpacing: 12,
+                                                      mainAxisSpacing: 16,
+                                                      childAspectRatio:
+                                                          0.6, // sesuaikan tinggi/lebarnya
+                                                      shrinkWrap: true,
+                                                      physics:
+                                                          NeverScrollableScrollPhysics(), // kalau sudah dalam scroll view
+                                                      children: productCubit
+                                                          .data.listProduct
+                                                          .map((product) {
+                                                        return ProductCard(
+                                                            product: product);
+                                                      }).toList(),
+                                                    ),
+                                                    if (isLoadingMore)
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                vertical: 16),
+                                                        child: Center(
+                                                            child:
+                                                                CircularProgressIndicator()),
+                                                      ),
+                                                  ],
+                                                ),
                                               ),
-                                          ],
-                                        ),
                                       )),
                           ],
                         ),

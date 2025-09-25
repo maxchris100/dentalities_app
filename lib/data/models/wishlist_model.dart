@@ -43,7 +43,7 @@ class Wishlist {
   }
 
   factory Wishlist.fromJson(Map<String, dynamic> json) {
-    print("@");
+    // print("@wishlist");
     return Wishlist(
       id: json['id'] as int?,
       productId: json['product_id'] as int?,

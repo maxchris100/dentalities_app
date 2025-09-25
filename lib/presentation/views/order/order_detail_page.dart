@@ -577,18 +577,23 @@ class _OrderDetailPageState extends State<OrderDetailPage>
                         ),
                         Row(
                           children: [
-                            Text(
-                              (p.variantOneName ?? "") +
-                                  (p.variantTwoName != null
-                                      ? ", ${p.variantTwoName} "
-                                      : ""),
-                              style: const TextStyle(color: Colors.grey),
+                            Expanded(
+                              child: Text(
+                                (p.variantOneName ?? "") +
+                                    (p.variantTwoName != null
+                                        ? ", ${p.variantTwoName} "
+                                        : "") +
+                                    "  (x ${p.quantity ?? 0})",
+                                style: const TextStyle(color: Colors.grey),
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
-                            const SizedBox(width: 8),
-                            Text(
-                              "(x ${p.quantity ?? 0})",
-                              style: const TextStyle(color: Colors.grey),
-                            ),
+                            // const SizedBox(width: 8),
+                            // Text(
+                            //   "(x ${p.quantity ?? 0})",
+                            //   style: const TextStyle(color: Colors.grey),
+                            //   overflow: TextOverflow.ellipsis,
+                            // ),
                           ],
                         )
                       ],

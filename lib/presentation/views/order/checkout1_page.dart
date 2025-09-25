@@ -7,6 +7,7 @@ import 'package:dentalities/data/models/delivery_method_model.dart';
 import 'package:dentalities/data/models/transaction_response_model.dart';
 import 'package:dentalities/data/models/user_address_model.dart';
 import 'package:dentalities/presentation/blocs/cubit/cart_cubit.dart';
+import 'package:dentalities/presentation/blocs/cubit/home_cubit.dart';
 import 'package:dentalities/presentation/blocs/cubit/profile_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -60,6 +61,8 @@ class _Checkout1PageState extends State<Checkout1Page> {
         AppRouter.home,
         (route) => false,
       );
+      HomeCubit homeCubit = context.read<HomeCubit>();
+      homeCubit.setIndex(3);
 
       Future.delayed(Duration(milliseconds: 50), () {
         Navigator.of(context).pushNamed(

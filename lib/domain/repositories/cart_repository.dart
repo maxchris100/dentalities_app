@@ -83,10 +83,16 @@ class CartRepository {
   }
 
   static Future<Response> getWishlist({
+    int? page = 1,
+    int? limit = 20,
     CancelToken? cancelToken,
   }) async {
+    final queryParams = <String, dynamic>{};
+    if (page != null) queryParams['page'] = page;
+    if (limit != null) queryParams['limit'] = limit;
     return await DioClient.instance.get(
       "/api/v2/wishlist",
+      queryParameters: queryParams,
       cancelToken: cancelToken,
     );
   }
@@ -128,6 +134,26 @@ class CartRepository {
   }) async {
     return await DioClient.instance.delete(
       "/api/v2/wishlist/$id",
+      cancelToken: cancelToken,
+    );
+  }
+
+  static Future<Response> removeFromWishlistByProduct({
+    required int id,
+    CancelToken? cancelToken,
+  }) async {
+    return await DioClient.instance.delete(
+      "/api/v2/wishlist/by-product/$id",
+      cancelToken: cancelToken,
+    );
+  }
+
+  static Future<Response> removeFromWishlistByProductVariant({
+    required int id,
+    CancelToken? cancelToken,
+  }) async {
+    return await DioClient.instance.delete(
+      "/api/v2/wishlist/by-product-variant/$id",
       cancelToken: cancelToken,
     );
   }

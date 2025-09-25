@@ -44,182 +44,188 @@ class _HomeTabState extends State<HomeTab> {
 
   @override
   Widget build(BuildContext context) {
-    AuthCubit authCubit = context.watch<AuthCubit>();
+    // AuthCubit authCubit = context.watch<AuthCubit>();
     HomeCubit homeCubit = context.watch<HomeCubit>();
     CartCubit cartCubit = context.watch<CartCubit>();
 
     FocusScope.of(context).unfocus();
     return Scaffold(
-      body: ListView(
-        controller: scrollController,
-        children: [
-          const SizedBox(height: 20),
-          HomeBannerSection(),
-          const SizedBox(height: 30),
-          BlocBuilder(
-              bloc: homeCubit,
-              builder: (context, state) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Container(
-                    height: 200,
-                    child: GridView.count(
-                        crossAxisCount: 4,
-                        scrollDirection: Axis.vertical,
-                        shrinkWrap: true,
-                        mainAxisSpacing: 0,
-                        crossAxisSpacing: 0,
-                        childAspectRatio: 1.1,
-                        children: homeCubit.data.featureCategories
-                            .where((e) => e.name != "Testing Category")
-                            .toList()
-                            .map((e) {
-                          // print(e.name);
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.pushNamed(context, AppRouter.search,
-                                  arguments: {
-                                    "category": e,
-                                    "search_focus": 0
-                                  });
-                            },
-                            child: _CategoryItem(
-                                e.featureImageThumbUrl ??
-                                    'assets/icons/home_icon.svg',
-                                e?.name ?? ""),
-                          );
-                        }).toList()),
-                  ),
-                );
-              }),
-          const SizedBox(height: 4),
-          // Padding(
-          //   padding: const EdgeInsets.symmetric(horizontal: 16),
-          //   child: Container(
-          //     decoration: BoxDecoration(
-          //       borderRadius: BorderRadius.circular(16),
-          //       color: Colors.blue[50],
-          //     ),
-          //     padding: const EdgeInsets.all(16),
-          //     child: Column(
-          //       crossAxisAlignment: CrossAxisAlignment.start,
-          //       children: [
-          //         Row(children: [
-          //           SvgPicture.asset("assets/icons/home_dental.svg"),
-          //           SizedBox(width: 8),
-          //           Text('What are you looking for?',
-          //               style: TextStyle(fontWeight: FontWeight.bold)),
-          //         ]),
-          //         const SizedBox(height: 12),
-          //         Wrap(
-          //           spacing: 5,
-          //           runSpacing: 0,
-          //           children: [
-          //             _FilterChip(
-          //                 'Just show me everything you have',
-          //                 Icon(
-          //                   Icons.space_dashboard_outlined,
-          //                   color: Colors.black,
-          //                 )),
-          //             _FilterChip(
-          //                 'I want to see your speciality products',
-          //                 SvgPicture.asset("assets/icons/filterai.svg",
-          //                     color: Colors.black)),
-          //             _FilterChip(
-          //                 "I'm looking for videos of product tutorials or clinical cases",
-          //                 Icon(Icons.play_circle_outline, color: Colors.black)),
-          //             _FilterChip(
-          //                 'Get lucky',
-          //                 SvgPicture.asset("assets/icons/discount.svg",
-          //                     color: Colors.black)),
-          //             _FilterChip(
-          //                 "I'd like to know my colleague's opinions",
-          //                 SvgPicture.asset("assets/icons/chat.svg",
-          //                     color: Colors.black)),
-          //           ],
-          //         )
-          //       ],
-          //     ),
-          //   ),
-          // ),
-          // const SizedBox(height: 24),
-          BlocBuilder(
-              bloc: cartCubit,
-              builder: (context, state) {
-                return FeatureProductSection();
-              }),
-          SizedBox(
-            height: 20,
-          ),
-          ProductVideosSection(),
-          const SizedBox(height: 24),
-          TodaysDiscountSection(),
-          SizedBox(
-            height: 20,
-          ),
-          // BundlingProductSection(
-          //   title: "Save more with bundling",
-          // ),
-          // SizedBox(
-          //   height: 20,
-          // ),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await homeCubit.init();
+          await cartCubit.fetchCart();
+        },
+        child: ListView(
+          controller: scrollController,
+          children: [
+            const SizedBox(height: 20),
+            HomeBannerSection(),
+            const SizedBox(height: 30),
+            BlocBuilder(
+                bloc: homeCubit,
+                builder: (context, state) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Container(
+                      height: 170,
+                      child: GridView.count(
+                          crossAxisCount: 4,
+                          scrollDirection: Axis.vertical,
+                          shrinkWrap: true,
+                          mainAxisSpacing: 0,
+                          crossAxisSpacing: 0,
+                          childAspectRatio: 1.1,
+                          children: homeCubit.data.featureCategories
+                              .where((e) => e.name != "Testing Category")
+                              .toList()
+                              .map((e) {
+                            // print(e.name);
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, AppRouter.search,
+                                    arguments: {
+                                      "category": e,
+                                      "search_focus": 0
+                                    });
+                              },
+                              child: _CategoryItem(
+                                  e.featureImageThumbUrl ??
+                                      'assets/icons/home_icon.svg',
+                                  e?.name ?? ""),
+                            );
+                          }).toList()),
+                    ),
+                  );
+                }),
+            // const SizedBox(height: 4),
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(horizontal: 16),
+            //   child: Container(
+            //     decoration: BoxDecoration(
+            //       borderRadius: BorderRadius.circular(16),
+            //       color: Colors.blue[50],
+            //     ),
+            //     padding: const EdgeInsets.all(16),
+            //     child: Column(
+            //       crossAxisAlignment: CrossAxisAlignment.start,
+            //       children: [
+            //         Row(children: [
+            //           SvgPicture.asset("assets/icons/home_dental.svg"),
+            //           SizedBox(width: 8),
+            //           Text('What are you looking for?',
+            //               style: TextStyle(fontWeight: FontWeight.bold)),
+            //         ]),
+            //         const SizedBox(height: 12),
+            //         Wrap(
+            //           spacing: 5,
+            //           runSpacing: 0,
+            //           children: [
+            //             _FilterChip(
+            //                 'Just show me everything you have',
+            //                 Icon(
+            //                   Icons.space_dashboard_outlined,
+            //                   color: Colors.black,
+            //                 )),
+            //             _FilterChip(
+            //                 'I want to see your speciality products',
+            //                 SvgPicture.asset("assets/icons/filterai.svg",
+            //                     color: Colors.black)),
+            //             _FilterChip(
+            //                 "I'm looking for videos of product tutorials or clinical cases",
+            //                 Icon(Icons.play_circle_outline, color: Colors.black)),
+            //             _FilterChip(
+            //                 'Get lucky',
+            //                 SvgPicture.asset("assets/icons/discount.svg",
+            //                     color: Colors.black)),
+            //             _FilterChip(
+            //                 "I'd like to know my colleague's opinions",
+            //                 SvgPicture.asset("assets/icons/chat.svg",
+            //                     color: Colors.black)),
+            //           ],
+            //         )
+            //       ],
+            //     ),
+            //   ),
+            // ),
+            // const SizedBox(height: 24),
+            BlocBuilder(
+                bloc: cartCubit,
+                builder: (context, state) {
+                  return FeatureProductSection();
+                }),
+            // SizedBox(
+            //   height: 20,
+            // ),
+            ProductVideosSection(),
+            // const SizedBox(height: 24),
+            TodaysDiscountSection(),
+            // SizedBox(
+            //   height: 20,
+            // ),
+            // BundlingProductSection(
+            //   title: "Save more with bundling",
+            // ),
+            // SizedBox(
+            //   height: 20,
+            // ),
 
-          BlocBuilder(
-              bloc: homeCubit,
-              builder: (context, state) {
-                return NewArrivalProductSection(
-                  products: homeCubit.data.newArrival,
-                );
-              }),
-          SizedBox(
-            height: 20,
-          ),
-          BlocBuilder(
-              bloc: homeCubit,
-              builder: (context, state) {
-                return Visibility(
-                    visible: homeCubit.data.brands.isNotEmpty,
-                    child: TopBrandSection(brands: homeCubit.data.brands));
-              }),
-          SizedBox(
-            height: 20,
-          ),
-          BlocBuilder(
-              bloc: cartCubit,
-              builder: (context, state) {
-                return Visibility(
-                  visible: (cartCubit.data.cart?.cartItems ?? []).isNotEmpty,
-                  child: CheckoutReminderSection(
-                    carts: cartCubit.data.cart?.cartItems ?? [],
+            BlocBuilder(
+                bloc: homeCubit,
+                builder: (context, state) {
+                  return NewArrivalProductSection(
+                    products: homeCubit.data.newArrival,
+                  );
+                }),
+            SizedBox(
+              height: 20,
+            ),
+            BlocBuilder(
+                bloc: homeCubit,
+                builder: (context, state) {
+                  return Visibility(
+                      visible: homeCubit.data.brands.isNotEmpty,
+                      child: TopBrandSection(brands: homeCubit.data.brands));
+                }),
+            SizedBox(
+              height: 20,
+            ),
+            BlocBuilder(
+                bloc: cartCubit,
+                builder: (context, state) {
+                  return Visibility(
+                    visible: (cartCubit.data.cart?.cartItems ?? []).isNotEmpty,
+                    child: CheckoutReminderSection(
+                      carts: cartCubit.data.cart?.cartItems ?? [],
+                    ),
+                  );
+                }),
+            SizedBox(
+              height: 10,
+            ),
+            HomeTestimonialSection(),
+            SizedBox(
+              height: 14,
+            ),
+            Center(
+              child: SizedBox(
+                width: 150,
+                child: OutlinedButton(
+                  onPressed: () {
+                    scrollController.animateTo(0,
+                        duration: Duration(milliseconds: 500),
+                        curve: Curves.easeIn);
+                  },
+                  child: const Text(
+                    'Back to Top',
+                    style: TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.bold),
                   ),
-                );
-              }),
-          SizedBox(
-            height: 10,
-          ),
-          HomeTestimonialSection(),
-          SizedBox(
-            height: 14,
-          ),
-          Center(
-            child: SizedBox(
-              width: 150,
-              child: OutlinedButton(
-                onPressed: () {
-                  scrollController.animateTo(0,
-                      duration: Duration(milliseconds: 500),
-                      curve: Curves.easeIn);
-                },
-                child: const Text(
-                  'Back to Top',
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
-          ),
-          const SizedBox(height: 24),
-        ],
+            const SizedBox(height: 24),
+          ],
+        ),
       ),
     );
   }

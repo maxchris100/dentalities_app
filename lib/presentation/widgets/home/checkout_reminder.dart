@@ -110,7 +110,7 @@ class CheckoutReminderSection extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(item.productVariant?.product?.name ?? "",
+              Text(item.productVariant?.product?.displayName ?? "",
                   maxLines: 1, overflow: TextOverflow.ellipsis),
               Row(
                 children: [

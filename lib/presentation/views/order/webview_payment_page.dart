@@ -119,7 +119,9 @@ class _WebViewPaymentPageState extends State<WebViewPaymentPage> {
 
   void _handlePaymentSuccess(Map<String, dynamic> data) {
     debugPrint("Payment Success: $data");
-    Navigator.pop(context);
+    ToastUtil.showToast("", 'Payment success');
+
+    // Navigator.pop(context);
     // Navigator.pushReplacementNamed(
     //   context,
     //   '/transactionResult',

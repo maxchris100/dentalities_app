@@ -120,7 +120,7 @@ class _CartPageState extends State<CartPage> {
                           imageUrl:
                               item.productVariant?.product?.featureImageUrl ??
                                   "",
-                          name: item.productVariant?.product?.name ?? "",
+                          name: item.productVariant?.product?.displayName ?? "",
                           slug: item.productVariant?.product?.slug ?? "",
                           variant: [
                             item.productVariant?.variantOneName,

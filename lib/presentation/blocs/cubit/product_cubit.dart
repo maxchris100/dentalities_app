@@ -133,15 +133,20 @@ class ProductCubit extends Cubit<ProductState> {
     }
   }
 
-  Future<void> getSearchProduct(String? keyword,
+  Future<List<Product>> getSearchProduct(String? keyword,
       {String? brands,
       String? categories,
       int? newArrival,
       int? readyStock,
       int? onPromo,
-      String? sort}) async {
+      String? sort,
+      int page = 1,
+      int limit = 20,
+      bool loadMore = false}) async {
     try {
       final datas = await ProductRepository.searchProducts(
+          page: page,
+          limit: limit,
           keyword: keyword,
           brands: brands,
           categories: categories,
@@ -151,7 +156,14 @@ class ProductCubit extends Cubit<ProductState> {
           sort: sort);
       // List<Product> p = Product.fromList(datas.data["data"]["data"]);
       List<Product> p = Product.fromList(datas.data["data"]["products"]);
-
+      if (loadMore) {
+        data = data.copyWith(
+            product: null,
+            listProduct: [...data.listProduct, ...p],
+            relatedProduct: []);
+      } else {
+        data = data.copyWith(product: null, listProduct: p, relatedProduct: []);
+      }
 // 1 =
 // "total_items" -> 2
 // 2 =
@@ -164,10 +176,11 @@ class ProductCubit extends Cubit<ProductState> {
 // "categories" -> List (24 items)
 // 6 =
 // "brands" -> List (2 items)
-      data = data.copyWith(product: null, listProduct: p, relatedProduct: []);
       emit(ProductLoaded(data));
+      return p;
     } catch (e) {
       emit(ProductError('Failed to load list product: $e'));
+      return [];
     }
   }
 }

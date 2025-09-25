@@ -20,23 +20,54 @@ class WishlistTab extends StatefulWidget {
 class _WishlistTabState extends State<WishlistTab> {
   CartCubit? cartCubit;
 
+  bool isLoadingMore = false;
+  int _currentPage = 1;
+  final int _limit = 20;
+  bool _hasMore = true;
+
+  late ScrollController _scrollController;
+
   @override
   void initState() {
     super.initState();
+
+    _scrollController = ScrollController();
+    _scrollController.addListener(() async {
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent - 200) {
+        if (!isLoadingMore && _hasMore) {
+          setState(() {
+            isLoadingMore = true;
+          });
+          _currentPage++;
+
+          final newProducts = await cartCubit?.getWishlist(
+                  page: _currentPage, limit: _limit, loadMore: true) ??
+              [];
+
+          if (newProducts.isEmpty) {
+            // Tidak ada produk baru
+            _hasMore = false;
+          }
+          setState(() {
+            isLoadingMore = false;
+          });
+        }
+      }
+    });
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      productCubit = ProductCubit();
-      productCubit.getSearchProduct(null);
-      // getData();
       FocusScope.of(context).unfocus();
 
       cartCubit = context.read<CartCubit>();
-      cartCubit?.getWishlist();
+      cartCubit?.getWishlist(page: _currentPage, limit: _limit);
     });
   }
 
-  late ProductCubit productCubit;
-  void getData() async {
-    try {} catch (ex) {}
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   final products = [
@@ -53,44 +84,42 @@ class _WishlistTabState extends State<WishlistTab> {
   ];
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-        providers: [
-          BlocProvider<ProductCubit>(
-            create: (context) => productCubit,
-          ),
-        ],
-        child: BlocBuilder<ProductCubit, ProductState>(
-            bloc: productCubit,
-            builder: (context, state) {
-              return Scaffold(
-                body: SafeArea(
-                    child: Column(
-                  children: [
-                    // Padding(
-                    //   padding: const EdgeInsets.symmetric(
-                    //       horizontal: 16, vertical: 4),
-                    //   child: Container(
-                    //       child: Stack(children: [
-                    //     Image.asset("assets/images/save_more_bundling.png"),
-                    //     Positioned(
-                    //         left: 12,
-                    //         top: 8,
-                    //         child: Column(
-                    //             crossAxisAlignment: CrossAxisAlignment.start,
-                    //             children: [
-                    //               Text("Acteon",
-                    //                   style: TextStyle(
-                    //                       fontWeight: FontWeight.bold,
-                    //                       fontSize: 16,
-                    //                       color: Colors.white)),
-                    //               Text("France",
-                    //                   style: TextStyle(color: Colors.white))
-                    //             ]))
-                    //   ])),
-                    // ),
-                    Expanded(
-                        child: SingleChildScrollView(
-                      child: GridView.count(
+    cartCubit = context.watch<CartCubit>();
+    return BlocBuilder(
+        bloc: cartCubit,
+        builder: (context, state) {
+          return Scaffold(
+            body: SafeArea(
+                child: Column(
+              children: [
+                // Padding(
+                //   padding: const EdgeInsets.symmetric(
+                //       horizontal: 16, vertical: 4),
+                //   child: Container(
+                //       child: Stack(children: [
+                //     Image.asset("assets/images/save_more_bundling.png"),
+                //     Positioned(
+                //         left: 12,
+                //         top: 8,
+                //         child: Column(
+                //             crossAxisAlignment: CrossAxisAlignment.start,
+                //             children: [
+                //               Text("Acteon",
+                //                   style: TextStyle(
+                //                       fontWeight: FontWeight.bold,
+                //                       fontSize: 16,
+                //                       color: Colors.white)),
+                //               Text("France",
+                //                   style: TextStyle(color: Colors.white))
+                //             ]))
+                //   ])),
+                // ),
+                Expanded(
+                    child: SingleChildScrollView(
+                  controller: _scrollController,
+                  child: Column(
+                    children: [
+                      GridView.count(
                         crossAxisCount: 2,
                         padding: const EdgeInsets.all(12),
                         crossAxisSpacing: 12,
@@ -100,13 +129,26 @@ class _WishlistTabState extends State<WishlistTab> {
                         physics:
                             NeverScrollableScrollPhysics(), // kalau sudah dalam scroll view
                         children: cartCubit!.data.wishlistProduct.map((w) {
-                          return ProductCard(product: w.product!);
+                          return ProductCard(
+                            product: w.product!,
+                            isWishlist: true,
+                            refreshWishlist: () {
+                              cartCubit?.getWishlist();
+                            },
+                          );
                         }).toList(),
                       ),
-                    )),
-                  ],
+                      if (isLoadingMore)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          child: Center(child: CircularProgressIndicator()),
+                        ),
+                    ],
+                  ),
                 )),
-              );
-            }));
+              ],
+            )),
+          );
+        });
   }
 }

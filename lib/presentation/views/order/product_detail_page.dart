@@ -167,12 +167,15 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       Positioned(
                           top: 5,
                           right: 5,
-                          child: Container(
-                            height: 5,
-                            width: 5,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.red,
+                          child: Visibility(
+                            visible: false,
+                            child: Container(
+                              height: 5,
+                              width: 5,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.red,
+                              ),
                             ),
                           ))
                     ],
@@ -324,7 +327,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             ],
                           ),
                           Text(
-                            product?.name ?? "",
+                            product?.displayName ?? "",
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -375,10 +378,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  final isInWishlist =
-                                      productCubit.data.productDetailWishlist;
-                                  if (isInWishlist) {
-                                    cartCubit?.removeFromWishlist(1);
+                                  // final isInWishlist =
+                                  //     productCubit.data.productDetailWishlist;
+                                  int? wishlistVariantId =
+                                      product?.isWishlistedProductVariantId;
+                                  if (wishlistVariantId != null) {
+                                    cartCubit?.removeFromWishlistByProduct(
+                                        productCubit.data.product?.id ?? 0);
                                   } else {
                                     cartCubit?.addToWishlist(
                                         productCubit.data.product?.id ?? 0);
@@ -481,7 +487,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     //   ),
                     // ),
                     // const SizedBox(height: 12),
-                    Divider(),
+                    // Divider(),
 
                     const SizedBox(height: 12),
                     DoctorReviewCard(
@@ -493,7 +499,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           "https://mydentalshop.s3.ap-southeast-3.amazonaws.com/category/v3pkGkkVixPnrNTVToS8I5kU3MQeX6yUtUMIHn8L.jpeg",
                     ),
                     const SizedBox(height: 12),
-                    Divider(),
+                    // Divider(),
 
                     const SizedBox(height: 12),
                     HowToUseSection(
@@ -879,57 +885,60 @@ class DoctorReviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text("What doctor said",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(shape: BoxShape.circle),
-                child: Image.network(
-                  imageUrl,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Image.asset("assets/images/banner.png");
-                  },
+    return Visibility(
+      visible: false,
+      child: Container(
+        color: Colors.white,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text("What doctor said",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(shape: BoxShape.circle),
+                  child: Image.network(
+                    imageUrl,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset("assets/images/banner.png");
+                    },
+                  ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(name,
-                      style: const TextStyle(fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 4),
-                  Text(date, style: const TextStyle(color: Colors.grey)),
-                ],
-              )
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            "“$comment”",
-            style: const TextStyle(
-              fontStyle: FontStyle.italic,
-              color: Colors.black87,
+                const SizedBox(width: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(name,
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 4),
+                    Text(date, style: const TextStyle(color: Colors.grey)),
+                  ],
+                )
+              ],
             ),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              _buildDot(true),
-              _buildDot(false),
-              _buildDot(false),
-            ],
-          )
-        ],
+            const SizedBox(height: 12),
+            Text(
+              "“$comment”",
+              style: const TextStyle(
+                fontStyle: FontStyle.italic,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                _buildDot(true),
+                _buildDot(false),
+                _buildDot(false),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
@@ -963,57 +972,60 @@ class HowToUseSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text("How to Use",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 12),
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  videoThumbnailUrl,
-                  height: 200,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              const Positioned.fill(
-                child: Center(
-                    child: Icon(Icons.play_circle_fill,
-                        size: 56, color: Colors.white)),
-              ),
-              Positioned(
-                bottom: 8,
-                right: 12,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.black87,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    videoDuration,
-                    style: const TextStyle(color: Colors.white, fontSize: 12),
+    return Visibility(
+      visible: false,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text("How to Use",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 12),
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(
+                    videoThumbnailUrl,
+                    height: 200,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
                   ),
                 ),
+                const Positioned.fill(
+                  child: Center(
+                      child: Icon(Icons.play_circle_fill,
+                          size: 56, color: Colors.white)),
+                ),
+                Positioned(
+                  bottom: 8,
+                  right: 12,
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.black87,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      videoDuration,
+                      style: const TextStyle(color: Colors.white, fontSize: 12),
+                    ),
+                  ),
+                )
+              ],
+            ),
+            const SizedBox(height: 12),
+            // ...steps.map((e) => _buildStep(e)).toList(),
+            if (onSeeMore != null)
+              GestureDetector(
+                onTap: onSeeMore,
+                child: const Text("See more",
+                    style: TextStyle(color: Colors.blue, fontSize: 14)),
               )
-            ],
-          ),
-          const SizedBox(height: 12),
-          // ...steps.map((e) => _buildStep(e)).toList(),
-          if (onSeeMore != null)
-            GestureDetector(
-              onTap: onSeeMore,
-              child: const Text("See more",
-                  style: TextStyle(color: Colors.blue, fontSize: 14)),
-            )
-        ],
+          ],
+        ),
       ),
     );
   }

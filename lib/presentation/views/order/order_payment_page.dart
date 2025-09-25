@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:dentalities/core/router/app_router.dart';
 import 'package:dentalities/core/util/string_util.dart';
+import 'package:dentalities/core/util/toast_util.dart';
 import 'package:dentalities/data/models/transaction_response_model.dart';
 import 'package:dentalities/presentation/blocs/cubit/cart_cubit.dart';
 import 'package:dentalities/presentation/views/order/webview_payment_page.dart';
@@ -89,9 +90,7 @@ class _OrderPaymentPageState extends State<OrderPaymentPage>
 
   void copyToClipboard(BuildContext context, String text) {
     Clipboard.setData(ClipboardData(text: text));
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Copied to Clipboard')),
-    );
+    ToastUtil.showToast("", "Copied to Clipboard");
   }
 
   Future refreshStatus() async {

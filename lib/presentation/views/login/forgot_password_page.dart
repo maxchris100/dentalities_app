@@ -26,9 +26,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     }
     final email = _emailController.text.trim();
     if (email.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please enter your email.")),
-      );
+      ToastUtil.showToast("", "Please enter your email.");
       return;
     }
     Response res;

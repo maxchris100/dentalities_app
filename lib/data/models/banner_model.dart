@@ -6,16 +6,19 @@ class Banner {
   final int? sortOrder;
   final DateTime? createdAt;
   final DateTime? updatedAt;
+  final String? linkType;
+  final String? linkValue;
 
-  Banner({
-    required this.id,
-    required this.imageUrl,
-    required this.image,
-    required this.isPublish,
-    this.sortOrder,
-    this.createdAt,
-    this.updatedAt,
-  });
+  Banner(
+      {required this.id,
+      required this.imageUrl,
+      required this.image,
+      required this.isPublish,
+      this.sortOrder,
+      this.createdAt,
+      this.updatedAt,
+      this.linkType,
+      this.linkValue});
 
   static List<Banner> fromList(List<dynamic> list) {
     return list.map((item) => Banner.fromJson(item)).toList();
@@ -29,6 +32,8 @@ class Banner {
       image: json['image'],
       isPublish: json['is_publish'] == 1 ? true : false,
       sortOrder: json['sort_order'],
+      linkType: json['link_type'],
+      linkValue: json['link_value'],
       // createdAt: DateTime.parse(json['createdAt'] ?? json['created_at']),
       // updatedAt: DateTime.parse(json['updatedAt'] ?? json['updated_at']),
     );

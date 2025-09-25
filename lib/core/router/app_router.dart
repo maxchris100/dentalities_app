@@ -9,6 +9,7 @@ import 'package:dentalities/presentation/views/profile/add_delivery_address_page
 import 'package:dentalities/presentation/views/profile/delivery_address_page.dart';
 import 'package:dentalities/presentation/views/profile/profile_change_password_page.dart';
 import 'package:dentalities/presentation/views/profile/profile_change_profile_page.dart';
+import 'package:dentalities/presentation/views/profile/setting_page.dart';
 import 'package:flutter/material.dart';
 import 'package:dentalities/presentation/views/index/home_page.dart';
 import 'package:dentalities/presentation/views/login/create_new_password_page.dart';
@@ -95,6 +96,7 @@ class AppRouter {
       deliveryAddressAdd: (context) => AddEditDeliveryAddressPage(),
       "/support": (context) => SupportPage(),
       "/notification": (context) => NotificationPage(),
+      settings: (context) => SettingPage(),
     };
   }
 }

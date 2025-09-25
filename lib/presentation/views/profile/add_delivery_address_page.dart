@@ -52,6 +52,7 @@ class _AddEditDeliveryAddressPageState
   Future loadData(UserAddress? address) async {
     try {
       labelCtrl.text = address?.label ?? "";
+      fullNameCtrl.text = address?.fullName ?? "";
       if ((address?.phoneNumber ?? "").startsWith("62")) {
         phoneCtrl.text = address?.phoneNumber ?? "";
       } else {
@@ -106,7 +107,7 @@ class _AddEditDeliveryAddressPageState
       final payload = {
         "label": labelCtrl.text.trim(),
         "phone": phoneCtrl.text.trim(),
-        "fullName": "",
+        "fullName": fullNameCtrl.text.trim(),
         "provinceId": selected.selectedProvinceId!["id"].toString(),
         "cityId": selected.selectedCityId!["id"].toString(),
         "districtId": selected.selectedDistrictId!["id"].toString(),
@@ -120,7 +121,7 @@ class _AddEditDeliveryAddressPageState
           userAddressId: address!.id,
           label: payload["label"]!,
           phone: payload["phone"]!,
-          fullName: payload["label"]!,
+          fullName: payload["fullName"]!,
           provinceId: payload["provinceId"]!,
           cityId: payload["cityId"]!,
           districtId: payload["districtId"]!,
@@ -132,7 +133,7 @@ class _AddEditDeliveryAddressPageState
         res = await ProfileRepository.addAddress(
           label: payload["label"]!,
           phone: payload["phone"]!,
-          fullName: payload["label"]!,
+          fullName: payload["fullName"]!,
           provinceId: payload["provinceId"]!,
           cityId: payload["cityId"]!,
           districtId: payload["districtId"]!,
@@ -288,153 +289,185 @@ class _AddEditDeliveryAddressPageState
             child: BlocBuilder<DeliveryAddressCubit, DeliveryAddressState>(
                 bloc: deliveryAddressCubit,
                 builder: (context, state) {
-                  return ListView(
+                  return Column(
                     children: [
-                      // const Text("Address",
-                      //     style:
-                      //         TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                      // const SizedBox(height: 16),
-                      const Text("Address Label"),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: labelCtrl,
-                        maxLength: 8,
-                        decoration: InputDecoration(
-                            hintText: 'Address Label',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
+                      Expanded(
+                        child: ListView(
+                          children: [
+                            // const Text("Address",
+                            //     style:
+                            //         TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                            // const SizedBox(height: 16),
+                            const Text("Address Label"),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: labelCtrl,
+                              maxLength: 8,
+                              decoration: InputDecoration(
+                                  hintText: 'Address Label',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  counterText: ''),
+                              validator: (value) =>
+                                  value == null || value.isEmpty
+                                      ? 'Address Label is required'
+                                      : null,
                             ),
-                            counterText: ''),
-                        validator: (value) => value == null || value.isEmpty
-                            ? 'Address Label is required'
-                            : null,
-                      ),
-                      const SizedBox(height: 12),
-                      const Text("Phone"),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: phoneCtrl,
-                        keyboardType: TextInputType.number,
-                        maxLength: 17,
-                        decoration: InputDecoration(
-                            hintText: 'Phone',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            counterText: ''),
-                        validator: (value) => value == null || value.isEmpty
-                            ? 'Phone is required'
-                            : null,
-                      ),
-                      const SizedBox(height: 12),
-                      // const Text("Email"),
-                      // const SizedBox(height: 8),
-                      // TextFormField(
-                      //   controller: postalCodeCtrl,
-                      //   keyboardType: TextInputType.number,
-                      //   maxLength: 8,
-                      //   decoration: InputDecoration(
-                      //       hintText: 'Postal Code',
-                      //       border: OutlineInputBorder(
-                      //         borderRadius: BorderRadius.circular(12),
-                      //       ),
-                      //       counterText: ''),
-                      //   validator: (value) => value == null || value.isEmpty
-                      //       ? 'Postal Code is required'
-                      //       : null,
-                      // ),
-                      // const SizedBox(height: 12),
+                            const SizedBox(height: 12),
 
-                      const Text("Province"),
-                      const SizedBox(height: 8),
-                      BottomSheetSelector<Map>(
-                        label: "Province",
-                        selectedValue: state.selectedProvinceId?["name"],
-                        items: state.provinces.map((e) => e as Map).toList(),
-                        itemLabel: (p0) => p0["name"],
-                        onSelected: (value) =>
-                            deliveryAddressCubit.selectProvince(value),
-                      ),
-                      if (onSubmit && state.selectedProvinceId == null)
-                        const Text("Province is required",
-                            style: TextStyle(color: Colors.red)),
-                      const SizedBox(height: 12),
-                      const Text("City/Regency"),
-                      const SizedBox(height: 8),
-                      BottomSheetSelector<Map>(
-                        label: "City/Regency",
-                        selectedValue: state.selectedCityId?["name"],
-                        items: state.cities.map((e) => e as Map).toList(),
-                        itemLabel: (p0) => p0["name"],
-                        onSelected: (value) =>
-                            deliveryAddressCubit.selectCity(value),
-                      ),
-                      if (onSubmit && state.selectedCityId == null)
-                        const Text("City/Regency is required",
-                            style: TextStyle(color: Colors.red)),
-                      const SizedBox(height: 12),
-                      const Text("District"),
-                      const SizedBox(height: 8),
-                      BottomSheetSelector<Map>(
-                        label: "District",
-                        selectedValue: state.selectedDistrictId?["name"],
-                        items: state.districts.map((e) => e as Map).toList(),
-                        itemLabel: (p0) => p0["name"],
-                        onSelected: (value) =>
-                            deliveryAddressCubit.selectDistrict(value),
-                      ),
-                      if (onSubmit && state.selectedDistrictId == null)
-                        const Text("District is required",
-                            style: TextStyle(color: Colors.red)),
-                      const SizedBox(height: 12),
-                      const Text("Sub-district/Village"),
-                      const SizedBox(height: 8),
-                      BottomSheetSelector<Map>(
-                        label: "Sub-district/Village",
-                        selectedValue: state.selectedSubdistrictId?["name"],
-                        items: state.subdistricts.map((e) => e as Map).toList(),
-                        itemLabel: (p0) => p0["name"],
-                        onSelected: (value) =>
-                            deliveryAddressCubit.selectSubdistrict(value),
-                      ),
-                      if (onSubmit && state.selectedSubdistrictId == null)
-                        const Text("Sub-district/Village is required",
-                            style: TextStyle(color: Colors.red)),
-                      const SizedBox(height: 12),
-                      const Text("Postal Code"),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: postalCodeCtrl,
-                        keyboardType: TextInputType.number,
-                        maxLength: 8,
-                        decoration: InputDecoration(
-                            hintText: 'Postal Code',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
+                            const Text("Full Name"),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: fullNameCtrl,
+                              maxLength: 8,
+                              decoration: InputDecoration(
+                                  hintText: 'Full Name',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  counterText: ''),
+                              validator: (value) =>
+                                  value == null || value.isEmpty
+                                      ? 'Full Name is required'
+                                      : null,
                             ),
-                            counterText: ''),
-                        validator: (value) => value == null || value.isEmpty
-                            ? 'Postal Code is required'
-                            : null,
+                            const Text("Phone"),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: phoneCtrl,
+                              keyboardType: TextInputType.number,
+                              maxLength: 17,
+                              decoration: InputDecoration(
+                                  hintText: 'Phone',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  counterText: ''),
+                              validator: (value) =>
+                                  value == null || value.isEmpty
+                                      ? 'Phone is required'
+                                      : null,
+                            ),
+                            const SizedBox(height: 12),
+                            // const Text("Email"),
+                            // const SizedBox(height: 8),
+                            // TextFormField(
+                            //   controller: postalCodeCtrl,
+                            //   keyboardType: TextInputType.number,
+                            //   maxLength: 8,
+                            //   decoration: InputDecoration(
+                            //       hintText: 'Postal Code',
+                            //       border: OutlineInputBorder(
+                            //         borderRadius: BorderRadius.circular(12),
+                            //       ),
+                            //       counterText: ''),
+                            //   validator: (value) => value == null || value.isEmpty
+                            //       ? 'Postal Code is required'
+                            //       : null,
+                            // ),
+                            // const SizedBox(height: 12),
+
+                            const Text("Province"),
+                            const SizedBox(height: 8),
+                            BottomSheetSelector<Map>(
+                              label: "Province",
+                              selectedValue: state.selectedProvinceId?["name"],
+                              items:
+                                  state.provinces.map((e) => e as Map).toList(),
+                              itemLabel: (p0) => p0["name"],
+                              onSelected: (value) =>
+                                  deliveryAddressCubit.selectProvince(value),
+                            ),
+                            if (onSubmit && state.selectedProvinceId == null)
+                              const Text("Province is required",
+                                  style: TextStyle(color: Colors.red)),
+                            const SizedBox(height: 12),
+                            const Text("City/Regency"),
+                            const SizedBox(height: 8),
+                            BottomSheetSelector<Map>(
+                              label: "City/Regency",
+                              selectedValue: state.selectedCityId?["name"],
+                              items: state.cities.map((e) => e as Map).toList(),
+                              itemLabel: (p0) => p0["name"],
+                              onSelected: (value) =>
+                                  deliveryAddressCubit.selectCity(value),
+                            ),
+                            if (onSubmit && state.selectedCityId == null)
+                              const Text("City/Regency is required",
+                                  style: TextStyle(color: Colors.red)),
+                            const SizedBox(height: 12),
+                            const Text("District"),
+                            const SizedBox(height: 8),
+                            BottomSheetSelector<Map>(
+                              label: "District",
+                              selectedValue: state.selectedDistrictId?["name"],
+                              items:
+                                  state.districts.map((e) => e as Map).toList(),
+                              itemLabel: (p0) => p0["name"],
+                              onSelected: (value) =>
+                                  deliveryAddressCubit.selectDistrict(value),
+                            ),
+                            if (onSubmit && state.selectedDistrictId == null)
+                              const Text("District is required",
+                                  style: TextStyle(color: Colors.red)),
+                            const SizedBox(height: 12),
+                            const Text("Sub-district/Village"),
+                            const SizedBox(height: 8),
+                            BottomSheetSelector<Map>(
+                              label: "Sub-district/Village",
+                              selectedValue:
+                                  state.selectedSubdistrictId?["name"],
+                              items: state.subdistricts
+                                  .map((e) => e as Map)
+                                  .toList(),
+                              itemLabel: (p0) => p0["name"],
+                              onSelected: (value) =>
+                                  deliveryAddressCubit.selectSubdistrict(value),
+                            ),
+                            if (onSubmit && state.selectedSubdistrictId == null)
+                              const Text("Sub-district/Village is required",
+                                  style: TextStyle(color: Colors.red)),
+                            const SizedBox(height: 12),
+                            const Text("Postal Code"),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: postalCodeCtrl,
+                              keyboardType: TextInputType.number,
+                              maxLength: 8,
+                              decoration: InputDecoration(
+                                  hintText: 'Postal Code',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  counterText: ''),
+                              validator: (value) =>
+                                  value == null || value.isEmpty
+                                      ? 'Postal Code is required'
+                                      : null,
+                            ),
+                            const SizedBox(height: 12),
+                            const Text("Full Address"),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: addressCtrl,
+                              maxLines: 2,
+                              maxLength: 300,
+                              decoration: InputDecoration(
+                                  hintText: 'Address',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  counter: Text("")),
+                              validator: (value) =>
+                                  value == null || value.isEmpty
+                                      ? 'Address is required'
+                                      : null,
+                            ),
+                          ],
+                        ),
                       ),
                       const SizedBox(height: 12),
-                      const Text("Full Address"),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: addressCtrl,
-                        maxLines: 2,
-                        maxLength: 300,
-                        decoration: InputDecoration(
-                            hintText: 'Address',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            counter: Text("")),
-                        validator: (value) => value == null || value.isEmpty
-                            ? 'Address is required'
-                            : null,
-                      ),
-                      const SizedBox(height: 24),
                       ElevatedButton(
                         onPressed: isLoading ? null : handleSubmit,
                         style: ElevatedButton.styleFrom(

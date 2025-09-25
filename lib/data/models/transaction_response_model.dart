@@ -141,6 +141,8 @@ class Transaction {
       text = "Shipping";
     } else if (status == "done") {
       text = "Done";
+    } else if (status == "cancelled") {
+      text = "Cancelled";
     }
     return text;
   }

@@ -197,6 +197,11 @@ class _Checkout1PageState extends State<Checkout1Page> {
                                                                   value;
                                                             });
                                                           },
+                                                          dense: true,
+                                                          contentPadding:
+                                                              EdgeInsets
+                                                                  .fromLTRB(0,
+                                                                      0, 0, 0),
                                                           activeColor:
                                                               Colors.blue,
                                                           title: Text(
@@ -358,6 +363,10 @@ class _Checkout1PageState extends State<Checkout1Page> {
                                                         });
                                                       },
                                                       activeColor: Colors.blue,
+                                                      dense: true,
+                                                      contentPadding:
+                                                          EdgeInsets.fromLTRB(
+                                                              0, 0, 0, 0),
                                                       title: Row(
                                                         mainAxisAlignment:
                                                             MainAxisAlignment

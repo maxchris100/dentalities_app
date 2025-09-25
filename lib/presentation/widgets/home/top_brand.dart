@@ -72,6 +72,12 @@ class TopBrandSection extends StatelessWidget {
                     child: Image.network(
                       brand.featureImageUrl ?? "",
                       fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Image.asset(
+                          "assets/images/banner.png",
+                          fit: BoxFit.cover,
+                        );
+                      },
                     ),
                   ),
                 ),

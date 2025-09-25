@@ -174,7 +174,7 @@ class _AddToCartWidgetState extends State<AddToCartWidget> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.product?.name ?? "",
+                        widget.product?.displayName ?? "",
                         style: TextStyle(fontWeight: FontWeight.w500),
                       ),
                       SizedBox(height: 4),

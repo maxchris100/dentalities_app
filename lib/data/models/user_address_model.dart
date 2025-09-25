@@ -117,7 +117,13 @@ class UserAddress {
 
   String getShippingAddress() {
     try {
-      String address = (this.address ?? "") +
+      String address = (this.label ?? "") +
+          ", " +
+          (this.fullName ?? "") +
+          ", " +
+          (this.phoneNumber ?? "") +
+          ", " +
+          (this.address ?? "") +
           ", " +
           (this.provinceName ?? "") +
           ", " +

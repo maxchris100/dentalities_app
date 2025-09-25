@@ -19,27 +19,28 @@ class ProductVariant {
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final Product? product;
+  final bool? isWishlisted;
 
-  ProductVariant({
-    this.id,
-    this.sku,
-    this.price,
-    this.priceBeforeDiscount,
-    this.discountPercentage,
-    this.quantity,
-    this.weight,
-    this.variantOneId,
-    this.variantOneName,
-    this.variantTwoId,
-    this.variantTwoName,
-    this.variantThreeId,
-    this.variantThreeName,
-    this.isDiscounted,
-    this.productId,
-    this.createdAt,
-    this.updatedAt,
-    this.product,
-  });
+  ProductVariant(
+      {this.id,
+      this.sku,
+      this.price,
+      this.priceBeforeDiscount,
+      this.discountPercentage,
+      this.quantity,
+      this.weight,
+      this.variantOneId,
+      this.variantOneName,
+      this.variantTwoId,
+      this.variantTwoName,
+      this.variantThreeId,
+      this.variantThreeName,
+      this.isDiscounted,
+      this.productId,
+      this.createdAt,
+      this.updatedAt,
+      this.product,
+      this.isWishlisted = false});
 
   factory ProductVariant.fromJson(Map<String, dynamic> json) {
     return ProductVariant(
@@ -72,6 +73,8 @@ class ProductVariant {
           : null,
       product:
           json['product'] != null ? Product.fromJson(json['product']) : null,
+      isWishlisted:
+          json['is_wishlisted'] != null ? json['is_wishlisted'] : false,
     );
   }
 
@@ -115,26 +118,27 @@ class ProductVariant {
     DateTime? createdAt,
     DateTime? updatedAt,
     Product? product,
+    bool? isWishlisted,
   }) {
     return ProductVariant(
-      id: id ?? this.id,
-      sku: sku ?? this.sku,
-      price: price ?? this.price,
-      priceBeforeDiscount: priceBeforeDiscount ?? this.priceBeforeDiscount,
-      discountPercentage: discountPercentage ?? this.discountPercentage,
-      quantity: quantity ?? this.quantity,
-      weight: weight ?? this.weight,
-      variantOneId: variantOneId ?? this.variantOneId,
-      variantOneName: variantOneName ?? this.variantOneName,
-      variantTwoId: variantTwoId ?? this.variantTwoId,
-      variantTwoName: variantTwoName ?? this.variantTwoName,
-      variantThreeId: variantThreeId ?? this.variantThreeId,
-      variantThreeName: variantThreeName ?? this.variantThreeName,
-      isDiscounted: isDiscounted ?? this.isDiscounted,
-      productId: productId ?? this.productId,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-      product: product ?? this.product,
-    );
+        id: id ?? this.id,
+        sku: sku ?? this.sku,
+        price: price ?? this.price,
+        priceBeforeDiscount: priceBeforeDiscount ?? this.priceBeforeDiscount,
+        discountPercentage: discountPercentage ?? this.discountPercentage,
+        quantity: quantity ?? this.quantity,
+        weight: weight ?? this.weight,
+        variantOneId: variantOneId ?? this.variantOneId,
+        variantOneName: variantOneName ?? this.variantOneName,
+        variantTwoId: variantTwoId ?? this.variantTwoId,
+        variantTwoName: variantTwoName ?? this.variantTwoName,
+        variantThreeId: variantThreeId ?? this.variantThreeId,
+        variantThreeName: variantThreeName ?? this.variantThreeName,
+        isDiscounted: isDiscounted ?? this.isDiscounted,
+        productId: productId ?? this.productId,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
+        product: product ?? this.product,
+        isWishlisted: isWishlisted ?? this.isWishlisted);
   }
 }

@@ -35,11 +35,14 @@ class _HomeBannerSectionState extends State<HomeBannerSection> {
                     builder: (BuildContext context) {
                       return GestureDetector(
                         onTap: () async {
-                          String url = path.image;
-                          if (!await launchUrl(Uri.parse(url))) {
-                            ToastUtil.showToastError(
-                                "", 'Could not launch $url');
-                          }
+                          String linkType = path.linkType ?? "";
+                          String url = path.linkValue ?? "";
+                          if (linkType == "web") {
+                            if (!await launchUrl(Uri.parse(url))) {
+                              ToastUtil.showToastError(
+                                  "", 'Could not launch $url');
+                            }
+                          } else if (linkType == "product") {}
                         },
                         child: AnimatedOpacity(
                           opacity: 1.0,

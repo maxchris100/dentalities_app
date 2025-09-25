@@ -206,109 +206,26 @@ class _ProfileTabState extends State<ProfileTab> {
                   height: 16,
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-                      "Version ${AppVersion.version}+${AppVersion.buildNumber}"),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: IconButton(
-                    onPressed: () {
-                      AuthCubit authCubit = context.read<AuthCubit>();
-                      authCubit.logout();
+                  padding: const EdgeInsets.only(left: 16, top: 8),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, AppRouter.settings);
                     },
-                    icon: Row(
+                    child: Row(
                       children: [
-                        const Icon(Icons.logout),
+                        const Icon(Icons.settings),
                         SizedBox(
-                          width: 16,
+                          width: 8,
                         ),
-                        Text("Logout")
+                        const Text(
+                          'Settings',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
                       ],
                     ),
                   ),
                 ),
-                // Row(
-                //   crossAxisAlignment: CrossAxisAlignment.center,
-                //   children: [
-                //     const CircleAvatar(
-                //       radius: 30,
-                //       backgroundColor: Colors.pinkAccent,
-                //       child:
-                //           Icon(Icons.person, color: Colors.white, size: 40),
-                //     ),
-                //     const SizedBox(width: 16),
-                //     Expanded(
-                //       child: Column(
-                //         crossAxisAlignment: CrossAxisAlignment.start,
-                //         children: const [
-                //           Text(
-                //             "Sunie Pham",
-                //             style: TextStyle(
-                //                 fontSize: 18, fontWeight: FontWeight.bold),
-                //           ),
-                //           Text(
-                //             "sunieux@gmail.com",
-                //             style: TextStyle(color: Colors.grey),
-                //           ),
-                //         ],
-                //       ),
-                //     ),
-                //     IconButton(
-                //       onPressed: () {},
-                //       icon: const Icon(Icons.settings),
-                //     ),
-                //   ],
-                // ),
-                // const SizedBox(height: 32),
-
-                // // Menu Cards
-                // Container(
-                //   decoration: BoxDecoration(
-                //     color: Colors.white,
-                //     borderRadius: BorderRadius.circular(16),
-                //     boxShadow: [
-                //       BoxShadow(
-                //         color: Colors.black12.withOpacity(0.05),
-                //         blurRadius: 8,
-                //         offset: const Offset(0, 4),
-                //       ),
-                //     ],
-                //   ),
-                //   child: Column(
-                //     children: [
-                //       _buildMenuItem(
-                //         icon: Icons.location_on_outlined,
-                //         title: "Address",
-                //         onTap: () {},
-                //       ),
-                //       _buildDivider(),
-                //       _buildMenuItem(
-                //         icon: Icons.account_balance_wallet_outlined,
-                //         title: "Payment method",
-                //         onTap: () {},
-                //       ),
-                //       _buildDivider(),
-                //       _buildMenuItem(
-                //         icon: Icons.favorite_border,
-                //         title: "My Wishlist",
-                //         onTap: () {},
-                //       ),
-                //       _buildDivider(),
-                //       _buildMenuItem(
-                //         icon: Icons.star_border,
-                //         title: "Rate this app",
-                //         onTap: () {},
-                //       ),
-                //       _buildDivider(),
-                //       _buildMenuItem(
-                //         icon: Icons.logout,
-                //         title: "Log out",
-                //         onTap: () {},
-                //       ),
-                //     ],
-                //   ),
-                // ),
               ],
             ),
           ),

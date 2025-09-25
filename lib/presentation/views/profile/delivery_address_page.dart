@@ -1,5 +1,6 @@
 import 'package:dentalities/core/constant/constant.dart';
 import 'package:dentalities/core/router/app_router.dart';
+import 'package:dentalities/core/util/toast_util.dart';
 import 'package:dentalities/domain/repositories/profile_repository.dart';
 import 'package:dentalities/presentation/blocs/cubit/home_cubit.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +33,15 @@ class _DeliveryAddressPageState extends State<DeliveryAddressPage> {
 
     HomeCubit homeCubit = context.read<HomeCubit>();
     await homeCubit.fetchProfile();
+    setState(() {});
+  }
+
+  Future onSelect(id) async {
+    var res = await ProfileRepository.updateDefaultAddress(userAddressId: id);
+
+    HomeCubit homeCubit = context.read<HomeCubit>();
+    await homeCubit.fetchProfile();
+    ToastUtil.showToast("", "Delivery Address Default Changed");
     setState(() {});
   }
 
@@ -98,36 +108,42 @@ class _DeliveryAddressPageState extends State<DeliveryAddressPage> {
                         .asMap()
                         .entries
                         .map((e) {
-              return _AddressCard(
-                id: e.value.id,
-                isSelected: e.key == 0,
-                icon: "assets/icons/address_office.svg",
-                title: e.value.label ?? "",
-                address: e.value.address,
-                phoneNumber: (e.value.phoneCode ?? "") +
-                    ((e.value.phoneNumber ?? "").startsWith("62")
-                        ? (e.value.phoneNumber ?? "").substring(2)
-                        : (e.value.phoneNumber ?? "")),
-                addressDetail: e.value.getShippingAddress(),
-                onEdit: () async {
-                  var res = await Navigator.pushNamed(
-                      context, AppRouter.deliveryAddressAdd,
-                      arguments: {"address": e.value});
-                  if (res is Map?) {
-                    if (res?["action"] == "delete") {
-                      onDelete(res?["id"]);
-                    }
+              return GestureDetector(
+                onTap: () async {},
+                child: _AddressCard(
+                  id: e.value.id,
+                  isSelected: e.key == 0,
+                  icon: "assets/icons/address_office.svg",
+                  title: e.value.label ?? "",
+                  address: e.value.address,
+                  phoneNumber: (e.value.phoneCode ?? "") +
+                      ((e.value.phoneNumber ?? "").startsWith("62")
+                          ? (e.value.phoneNumber ?? "").substring(2)
+                          : (e.value.phoneNumber ?? "")),
+                  addressDetail: e.value.getShippingAddress(),
+                  onEdit: () async {
+                    var res = await Navigator.pushNamed(
+                        context, AppRouter.deliveryAddressAdd,
+                        arguments: {"address": e.value});
+                    if (res is Map?) {
+                      if (res?["action"] == "delete") {
+                        onDelete(res?["id"]);
+                      }
 
-                    if (res?["refresh"] == 1) {
-                      HomeCubit homeCubit = context.read<HomeCubit>();
-                      await homeCubit.fetchProfile();
-                      setState(() {});
+                      if (res?["refresh"] == 1) {
+                        HomeCubit homeCubit = context.read<HomeCubit>();
+                        await homeCubit.fetchProfile();
+                        setState(() {});
+                      }
                     }
-                  }
-                },
-                onDelete: (id) {
-                  onDelete(id);
-                },
+                  },
+                  onDelete: (id) {
+                    onDelete(id);
+                  },
+                  onSelect: (id) {
+                    onSelect(id);
+                  },
+                ),
               );
             }).toList()),
           ),
@@ -150,6 +166,7 @@ class _AddressCard extends StatelessWidget {
   final String addressDetail;
   final VoidCallback onEdit;
   final Function(int id) onDelete;
+  final Function(int id) onSelect;
 
   const _AddressCard({
     required this.id,
@@ -161,6 +178,7 @@ class _AddressCard extends StatelessWidget {
     required this.addressDetail,
     required this.onEdit,
     required this.onDelete,
+    required this.onSelect,
   });
 
   @override
@@ -232,9 +250,16 @@ class _AddressCard extends StatelessWidget {
                 ],
               ),
             ),
-            Icon(
-              isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
-              color: Colors.blue,
+            GestureDetector(
+              onTap: () {
+                onSelect(id);
+              },
+              child: Icon(
+                isSelected
+                    ? Icons.radio_button_checked
+                    : Icons.radio_button_off,
+                color: Colors.blue,
+              ),
             ),
             // Column(
             //   crossAxisAlignment: CrossAxisAlignment.end,

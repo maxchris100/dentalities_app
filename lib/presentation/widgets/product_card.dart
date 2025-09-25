@@ -11,8 +11,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
-
-  const ProductCard({super.key, required this.product});
+  final bool isWishlist;
+  final VoidCallback? refreshWishlist;
+  const ProductCard(
+      {super.key,
+      required this.product,
+      this.isWishlist = false,
+      this.refreshWishlist});
 
   @override
   Widget build(BuildContext context) {
@@ -28,13 +33,16 @@ class ProductCard extends StatelessWidget {
     }
     return GestureDetector(
       onTap: () async {
-        ProductCubit productCubit = context.read<ProductCubit>();
+        ProductCubit productCubit = ProductCubit();
         Product? p = await productCubit.getProductDetail(product.slug ?? "");
-        Navigator.pushNamed(
+        var r = await Navigator.pushNamed(
           context,
           AppRouter.productDetail,
           arguments: {"item": p},
         );
+        if (isWishlist) {
+          refreshWishlist!();
+        }
       },
       child: Container(
         decoration: BoxDecoration(
@@ -178,7 +186,7 @@ class ProductCard extends StatelessWidget {
             OutlinedButton.icon(
               onPressed: () async {
                 try {
-                  ProductCubit productCubit = context.read<ProductCubit>();
+                  ProductCubit productCubit = ProductCubit();
                   Product? p =
                       await productCubit.getProductDetail(product.slug ?? "");
                   if (p != null) {

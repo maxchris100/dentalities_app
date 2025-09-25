@@ -110,9 +110,7 @@ class _OrderDetailPageState extends State<OrderDetailPage>
                     onTap: () {
                       Clipboard.setData(
                           ClipboardData(text: item?.invoiceNumber ?? ""));
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Copied to Clipboard')),
-                      );
+                      ToastUtil.showToast("", "Copied to Clipboard");
                     },
                     child: Row(
                       children: [
@@ -180,83 +178,84 @@ class _OrderDetailPageState extends State<OrderDetailPage>
                     "Products",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(
-                      width: double.infinity,
-                      child: Column(
-                        children: [
-                          ...(item?.transactionItems ?? []).map((p) {
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 12),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Image.network(
-                                    p.productVariant?.product
-                                            ?.featureImageUrl ??
-                                        "",
-                                    height: 40,
-                                    width: 40,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return Image.asset(
-                                        "assets/images/banner.png",
-                                        height: 40,
-                                        width: 40,
-                                      );
-                                    },
-                                  ),
-                                  SizedBox(
-                                    width: 12,
-                                  ),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          p.productName ?? "",
-                                          style: const TextStyle(fontSize: 16),
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        Row(
-                                          children: [
-                                            Text(
-                                              (p.variantOneName ?? "") +
-                                                  (p.variantTwoName != null
-                                                      ? ", ${p.variantOneName} "
-                                                      : ""),
-                                              style:
-                                                  TextStyle(color: Colors.grey),
-                                            ),
-                                            SizedBox(
-                                              width: 8,
-                                            ),
-                                            Text(
-                                              "(x ${p.quantity ?? 0})",
-                                              style: const TextStyle(
-                                                  color: Colors.grey),
-                                            ),
-                                            const SizedBox(width: 8),
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                  // Row(
-                                  //   children: [
-                                  //     Text(
-                                  //       StringUtil.formatMoney(p.price),
-                                  //       style: const TextStyle(
-                                  //           fontWeight: FontWeight.bold),
-                                  //     ),
-                                  //   ],
-                                  // ),
-                                ],
-                              ),
-                            );
-                          }),
-                        ],
-                      )),
+                  productItems(item?.transactionItems ?? []),
+                  // SizedBox(
+                  //     width: double.infinity,
+                  //     child: Column(
+                  //       children: [
+                  //         ...(item?.transactionItems ?? []).map((p) {
+                  //           return Padding(
+                  //             padding: const EdgeInsets.only(bottom: 12),
+                  //             child: Row(
+                  //               mainAxisAlignment:
+                  //                   MainAxisAlignment.spaceBetween,
+                  //               children: [
+                  //                 Image.network(
+                  //                   p.productVariant?.product
+                  //                           ?.featureImageUrl ??
+                  //                       "",
+                  //                   height: 40,
+                  //                   width: 40,
+                  //                   errorBuilder: (context, error, stackTrace) {
+                  //                     return Image.asset(
+                  //                       "assets/images/banner.png",
+                  //                       height: 40,
+                  //                       width: 40,
+                  //                     );
+                  //                   },
+                  //                 ),
+                  //                 SizedBox(
+                  //                   width: 12,
+                  //                 ),
+                  //                 Expanded(
+                  //                   child: Column(
+                  //                     crossAxisAlignment:
+                  //                         CrossAxisAlignment.start,
+                  //                     children: [
+                  //                       Text(
+                  //                         p.productName ?? "",
+                  //                         style: const TextStyle(fontSize: 16),
+                  //                         overflow: TextOverflow.ellipsis,
+                  //                       ),
+                  //                       Row(
+                  //                         children: [
+                  //                           Text(
+                  //                             (p.variantOneName ?? "") +
+                  //                                 (p.variantTwoName != null
+                  //                                     ? ", ${p.variantOneName} "
+                  //                                     : ""),
+                  //                             style:
+                  //                                 TextStyle(color: Colors.grey),
+                  //                           ),
+                  //                           SizedBox(
+                  //                             width: 8,
+                  //                           ),
+                  //                           Text(
+                  //                             "(x ${p.quantity ?? 0})",
+                  //                             style: const TextStyle(
+                  //                                 color: Colors.grey),
+                  //                           ),
+                  //                           const SizedBox(width: 8),
+                  //                         ],
+                  //                       )
+                  //                     ],
+                  //                   ),
+                  //                 ),
+                  //                 // Row(
+                  //                 //   children: [
+                  //                 //     Text(
+                  //                 //       StringUtil.formatMoney(p.price),
+                  //                 //       style: const TextStyle(
+                  //                 //           fontWeight: FontWeight.bold),
+                  //                 //     ),
+                  //                 //   ],
+                  //                 // ),
+                  //               ],
+                  //             ),
+                  //           );
+                  //         }),
+                  //       ],
+                  //     )),
                 ],
               ),
             ),
@@ -320,14 +319,16 @@ class _OrderDetailPageState extends State<OrderDetailPage>
                   _buildStep(
                       icon: "assets/icons/status_shipping.svg",
                       title: "Shipping",
-                      subtitle: "",
-                      isActive: false,
+                      subtitle: (item?.cnoteNo ?? "") != ""
+                          ? "Shipping Address \nReceipt: ${item?.cnoteNo ?? ""}"
+                          : "",
+                      isActive: item?.status == "on_delivery",
                       status: item?.status),
                   _buildStep(
                       icon: "assets/icons/status_done.svg",
                       title: "Done",
                       subtitle: "",
-                      isActive: false,
+                      isActive: item?.status == "done",
                       status: item?.status),
                 ],
               ),
@@ -534,6 +535,92 @@ class _OrderDetailPageState extends State<OrderDetailPage>
         ),
       ),
     );
+  }
+
+  Widget productItems(List<TransactionItem> products) {
+    bool expanded = false;
+    return StatefulBuilder(builder: (context, setState) {
+      List<TransactionItem> showItems = expanded
+          ? products
+          : products.take(3).toList(); // ambil max 3 kalau belum expand
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ...showItems.map((p) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Image.network(
+                    p.productVariant?.product?.featureImageUrl ?? "",
+                    height: 40,
+                    width: 40,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        "assets/images/banner.png",
+                        height: 40,
+                        width: 40,
+                      );
+                    },
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          p.productName ?? "",
+                          style: const TextStyle(fontSize: 16),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Row(
+                          children: [
+                            Text(
+                              (p.variantOneName ?? "") +
+                                  (p.variantTwoName != null
+                                      ? ", ${p.variantTwoName} "
+                                      : ""),
+                              style: const TextStyle(color: Colors.grey),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              "(x ${p.quantity ?? 0})",
+                              style: const TextStyle(color: Colors.grey),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+
+          // --- tombol view more / see less ---
+          if (products.length > 3)
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  expanded = !expanded;
+                });
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Text(
+                  expanded ? "See Less Products" : "View More Products",
+                  style: const TextStyle(
+                    color: Colors.blue,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+        ],
+      );
+    });
   }
 
   void _onItemTapped(int index) {

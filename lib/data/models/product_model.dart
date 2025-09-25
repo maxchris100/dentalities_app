@@ -8,6 +8,7 @@ class Product {
   final bool? isDiscounted;
   final int? id;
   final String? name;
+  final String? displayName;
   final String? slug;
   final bool? isPublish;
   final bool? isFeature;
@@ -37,6 +38,7 @@ class Product {
     this.isDiscounted,
     this.id,
     this.name,
+    this.displayName,
     this.slug,
     this.isPublish,
     this.isFeature,
@@ -60,6 +62,23 @@ class Product {
     this.productVariants,
   });
 
+  bool get isWishlisted {
+    if (productVariants == null || productVariants!.isEmpty) return false;
+    return productVariants!.any((v) => v.isWishlisted == true);
+  }
+
+  int? get isWishlistedProductVariantId {
+    if (productVariants == null || productVariants!.isEmpty) return null;
+
+    try {
+      final variant =
+          productVariants!.firstWhere((v) => v.isWishlisted == true);
+      return variant.id;
+    } catch (e) {
+      return null; // kalau ga ada yang wishlist, return null
+    }
+  }
+
   static List<Product> fromList(List<dynamic> list) {
     return list.map((item) => Product.fromJson(item)).toList();
   }
@@ -71,6 +90,7 @@ class Product {
       isDiscounted: json['is_discounted'] ?? false,
       id: json['id'],
       name: json['name'],
+      displayName: json['display_name'],
       slug: json['slug'],
       isPublish: json['is_publish'] != null ? json['is_publish'] : false,
       isFeature: json['is_feature'] != null ? json['is_feature'] : false,

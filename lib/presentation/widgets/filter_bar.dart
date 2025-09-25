@@ -48,7 +48,7 @@ class _FilterBarState extends State<FilterBar> {
     String? tempSelectedSort = selectedSort;
 
     final sortOptions = {
-      'latest': 'Relevance',
+      // 'latest': 'Relevance',
       'most_purchased': 'Most Purchased',
       'max_price': 'Highest Price',
       'min_price': 'Lowest Price',

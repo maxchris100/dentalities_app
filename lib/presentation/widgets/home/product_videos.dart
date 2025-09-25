@@ -14,52 +14,55 @@ class ProductVideosSection extends StatelessWidget {
       "assets/images/banner.png",
       "assets/images/banner.png"
     ];
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Header
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Product videos',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              GestureDetector(
-                onTap: () {},
-                child: const Text(
-                  'See All',
+    return Visibility(
+      visible: false,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Product videos',
                   style: TextStyle(
-                    color: Colors.blue,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
-            ],
+                GestureDetector(
+                  onTap: () {},
+                  child: const Text(
+                    'See All',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-        const SizedBox(height: 12),
+          const SizedBox(height: 12),
 
-        // Video thumbnails
-        SizedBox(
-          height: 180,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            itemCount: videoThumbnails.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 12),
-            itemBuilder: (context, index) {
-              final thumbnail = videoThumbnails[index];
-              return _VideoThumbnail(imageUrl: thumbnail);
-            },
+          // Video thumbnails
+          SizedBox(
+            height: 180,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              itemCount: videoThumbnails.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 12),
+              itemBuilder: (context, index) {
+                final thumbnail = videoThumbnails[index];
+                return _VideoThumbnail(imageUrl: thumbnail);
+              },
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

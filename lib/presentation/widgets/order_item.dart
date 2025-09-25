@@ -65,6 +65,13 @@ class OrderItem extends StatelessWidget {
                     e.value.productVariant?.product?.featureImageUrl ?? "",
                     height: 40,
                     width: 40,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        "assets/images/banner.png",
+                        height: 40,
+                        width: 40,
+                      );
+                    },
                   ),
                   SizedBox(
                     width: 12,
@@ -109,7 +116,7 @@ class OrderItem extends StatelessWidget {
                       Visibility(
                           visible: (item.transactionItems ?? []).length > 1,
                           child: Text(
-                              "+ ${(item.transactionItems ?? []).length} Produk lainnya"))
+                              "+ ${(item.transactionItems ?? []).length - 1} Produk lainnya"))
                     ],
                   )),
                 ],

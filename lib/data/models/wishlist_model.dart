@@ -38,11 +38,12 @@ class Wishlist {
     this.inStock,
   });
 
-  static List<Wishlist> fromList(List<Map<String, dynamic>> list) {
+  static List<Wishlist> fromList(List<dynamic> list) {
     return list.map((item) => Wishlist.fromJson(item)).toList();
   }
 
   factory Wishlist.fromJson(Map<String, dynamic> json) {
+    print("@");
     return Wishlist(
       id: json['id'] as int?,
       productId: json['product_id'] as int?,

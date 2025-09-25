@@ -182,14 +182,26 @@ class CartCubit extends Cubit<CartState> {
     }
   }
 
-  Future<void> getWishlist() async {
+  Future<List<Wishlist>> getWishlist(
+      {int? page = 1, int? limit = 20, bool loadMore = false}) async {
     try {
-      final datas = await CartRepository.getWishlist();
+      final datas = await CartRepository.getWishlist(
+        page: page,
+        limit: limit,
+      );
       List<Wishlist> p = Wishlist.fromList(datas.data["data"]);
-      data = data.copyWith(wishlistProduct: p);
+      if (loadMore) {
+        data = data.copyWith(
+          wishlistProduct: [...data.wishlistProduct, ...p],
+        );
+      } else {
+        data = data.copyWith(wishlistProduct: p);
+      }
       emit(CartLoaded(data));
+      return p;
     } catch (e) {
       emit(CartError('Failed to load wishlist: $e'));
+      return [];
     }
   }
 
@@ -214,6 +226,26 @@ class CartCubit extends Cubit<CartState> {
       await getWishlist();
     } catch (e) {
       emit(CartError('Failed to add to wishlist (variant): $e'));
+    }
+  }
+
+  Future<void> removeFromWishlistByProduct(int id) async {
+    try {
+      await CartRepository.removeFromWishlistByProduct(id: id);
+      // refresh data
+      await getWishlist();
+    } catch (e) {
+      emit(CartError('Failed to remove from wishlist: $e'));
+    }
+  }
+
+  Future<void> removeFromWishlistByProductVariant(int id) async {
+    try {
+      await CartRepository.removeFromWishlistByProductVariant(id: id);
+      // refresh data
+      await getWishlist();
+    } catch (e) {
+      emit(CartError('Failed to remove from wishlist: $e'));
     }
   }
 

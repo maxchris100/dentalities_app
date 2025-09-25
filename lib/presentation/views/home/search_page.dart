@@ -30,13 +30,58 @@ class _SearchPageState extends State<SearchPage> {
 
   Map<String, Category> initSelectedCategories = {};
   Map<String, Brand> initSelectedBrands = {};
+  String? selectedCategories;
+  String? selectedBrands;
+  String? selectedSort;
+  int? selectedNewArrival;
+  int? selectedOnPromo;
+  int? selectedReadyStock;
+
+  late ProductCubit productCubit;
+  late ScrollController _scrollController;
+
+  bool isLoadingMore = false;
+  int _currentPage = 1;
+  final int _limit = 20;
+  bool _hasMore = true;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     productCubit = ProductCubit();
-    // Tunggu sampai context ready
+
+    _scrollController = ScrollController();
+    _scrollController.addListener(() async {
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent - 200) {
+        if (!isLoadingMore && _hasMore) {
+          setState(() {
+            isLoadingMore = true;
+          });
+          _currentPage++;
+
+          final newProducts = await productCubit.getSearchProduct(
+              searchController.text.trim(),
+              categories: selectedCategories,
+              brands: selectedBrands,
+              sort: selectedSort,
+              newArrival: selectedNewArrival,
+              onPromo: selectedOnPromo,
+              readyStock: selectedReadyStock,
+              page: _currentPage,
+              limit: _limit,
+              loadMore: true);
+
+          if (newProducts.isEmpty) {
+            // Tidak ada produk baru
+            _hasMore = false;
+          }
+          setState(() {
+            isLoadingMore = false;
+          });
+        }
+      }
+    });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final args = ModalRoute.of(context)?.settings.arguments as Map?;
@@ -44,6 +89,11 @@ class _SearchPageState extends State<SearchPage> {
       Brand? brand = args?['brand'];
       Category? category = args?['category'];
       int? newArrival = args?['is_new'];
+
+      selectedNewArrival = newArrival;
+      selectedBrands = brand?.id.toString();
+      selectedCategories = category?.id.toString();
+
       if (brand != null) {
         initSelectedBrands[brand.id.toString()] = brand;
       }
@@ -51,7 +101,7 @@ class _SearchPageState extends State<SearchPage> {
         initSelectedCategories[category.id.toString()] = category;
       }
       productCubit.getProductByCategorySlug(slug);
-      productCubit.getSearchProduct('',
+      productCubit.getSearchProduct(searchController.text.trim(),
           brands: brand?.id.toString(),
           categories: category?.id.toString(),
           newArrival: newArrival);
@@ -98,7 +148,11 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
-  late ProductCubit productCubit;
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -210,11 +264,17 @@ class _SearchPageState extends State<SearchPage> {
                             FilterBar(
                               initSelectedCategories: initSelectedCategories,
                               initSelectedBrands: initSelectedBrands,
-                              onFilterChanged: (p0, p1,
+                              onFilterChanged: (String p0, String p1,
                                   {String? sort,
                                   int? newArrival,
                                   int? onPromo,
                                   int? readyStock}) {
+                                selectedCategories = p0;
+                                selectedBrands = p1;
+                                selectedSort = sort;
+                                selectedNewArrival = newArrival;
+                                selectedOnPromo = onPromo;
+                                selectedReadyStock = readyStock;
                                 productCubit.getSearchProduct(
                                     searchController.text.trim(),
                                     categories: p0,
@@ -234,22 +294,36 @@ class _SearchPageState extends State<SearchPage> {
                                         child: CircularProgressIndicator(),
                                       )
                                     : SingleChildScrollView(
-                                        child: GridView.count(
-                                          crossAxisCount: 2,
-                                          padding: const EdgeInsets.all(12),
-                                          crossAxisSpacing: 12,
-                                          mainAxisSpacing: 16,
-                                          childAspectRatio:
-                                              0.6, // sesuaikan tinggi/lebarnya
-                                          shrinkWrap: true,
-                                          physics:
-                                              NeverScrollableScrollPhysics(), // kalau sudah dalam scroll view
-                                          children: productCubit
-                                              .data.listProduct
-                                              .map((product) {
-                                            return ProductCard(
-                                                product: product);
-                                          }).toList(),
+                                        controller: _scrollController,
+                                        child: Column(
+                                          children: [
+                                            GridView.count(
+                                              crossAxisCount: 2,
+                                              padding: const EdgeInsets.all(12),
+                                              crossAxisSpacing: 12,
+                                              mainAxisSpacing: 16,
+                                              childAspectRatio:
+                                                  0.6, // sesuaikan tinggi/lebarnya
+                                              shrinkWrap: true,
+                                              physics:
+                                                  NeverScrollableScrollPhysics(), // kalau sudah dalam scroll view
+                                              children: productCubit
+                                                  .data.listProduct
+                                                  .map((product) {
+                                                return ProductCard(
+                                                    product: product);
+                                              }).toList(),
+                                            ),
+                                            if (isLoadingMore)
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 16),
+                                                child: Center(
+                                                    child:
+                                                        CircularProgressIndicator()),
+                                              ),
+                                          ],
                                         ),
                                       )),
                           ],

@@ -5,63 +5,66 @@ class TodaysDiscountSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: const Color(0xFFFFE9EF), // pink background
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Today's discount",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
+    return Visibility(
+      visible: false,
+      child: Container(
+        color: const Color(0xFFFFE9EF), // pink background
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Today's discount",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
                     ),
-                  ),
-                  Text(
-                    "Up to 50% off",
-                    style: TextStyle(
-                      color: Color(0xff546E7A),
-                      fontWeight: FontWeight.w500,
+                    Text(
+                      "Up to 50% off",
+                      style: TextStyle(
+                        color: Color(0xff546E7A),
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
+                  ],
+                ),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                ],
-              ),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Text(
-                  "23:30:59",
-                  style: TextStyle(color: Colors.white),
-                ),
-              )
-            ],
-          ),
-          const SizedBox(height: 12),
-          // Horizontal list
-          SizedBox(
-            height: 250,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: 5,
-              separatorBuilder: (_, __) => const SizedBox(width: 12),
-              itemBuilder: (context, index) {
-                return const DiscountProductCard();
-              },
+                  child: const Text(
+                    "23:30:59",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                )
+              ],
             ),
-          )
-        ],
+            const SizedBox(height: 12),
+            // Horizontal list
+            SizedBox(
+              height: 250,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: 5,
+                separatorBuilder: (_, __) => const SizedBox(width: 12),
+                itemBuilder: (context, index) {
+                  return const DiscountProductCard();
+                },
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

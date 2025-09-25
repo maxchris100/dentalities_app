@@ -17,6 +17,7 @@ class ProfileChangePasswordPage extends StatefulWidget {
 class _ProfileChangePasswordPageState extends State<ProfileChangePasswordPage> {
   final _formKey = GlobalKey<FormState>();
 
+  TextEditingController fullNameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
   TextEditingController passController = TextEditingController();
@@ -37,6 +38,8 @@ class _ProfileChangePasswordPageState extends State<ProfileChangePasswordPage> {
       if (args != null) {
         profileCubit = args["profileCubit"];
       }
+      fullNameController.text =
+          Constant.userLocalDataSource.userData?.fullName ?? "";
       emailController.text = Constant.userLocalDataSource.userData?.email ?? "";
       phoneController.text = Constant.userLocalDataSource.userData?.phone ?? "";
       setState(() {});
@@ -89,6 +92,25 @@ class _ProfileChangePasswordPageState extends State<ProfileChangePasswordPage> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
+
+              // Full Name
+              const Text("Full Name"),
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: fullNameController,
+                decoration: InputDecoration(
+                  hintText: 'Full Name',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Full Name is required';
+                  }
+                  return null;
+                },
+              ),
 
               const Text("Email"),
               const SizedBox(height: 8),

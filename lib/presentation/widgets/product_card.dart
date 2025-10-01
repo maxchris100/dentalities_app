@@ -166,19 +166,22 @@ class ProductCard extends StatelessWidget {
             const SizedBox(height: 4),
 
             // --- BRAND ---
-            Row(
-              children: [
-                SvgPicture.asset("assets/icons/purple_checklist.svg",
-                    width: 12),
-                const SizedBox(width: 4),
-                Expanded(
-                  child: Text(
-                    brandName,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 11),
+            Visibility(
+              visible: !isWishlist,
+              child: Row(
+                children: [
+                  SvgPicture.asset("assets/icons/purple_checklist.svg",
+                      width: 12),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      brandName,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 11),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             const SizedBox(height: 8),
 

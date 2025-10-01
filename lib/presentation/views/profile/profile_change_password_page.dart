@@ -54,6 +54,14 @@ class _ProfileChangePasswordPageState extends State<ProfileChangePasswordPage> {
   Future onSave() async {
     setState(() => onSubmit = true);
     if (_formKey.currentState!.validate()) {
+      String name = fullNameController.text.trim();
+      var resProfile = await profileCubit?.updateProfileData(
+        email: Constant.userLocalDataSource.userData!.email!,
+        name: name,
+        phoneCode: '62',
+        phoneNumber: Constant.userLocalDataSource.userData!.phone ?? "",
+      );
+
       var res = await profileCubit?.updatePassword(
         oldPass: passController.text,
         newPass: newPassController.text,

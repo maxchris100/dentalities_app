@@ -133,9 +133,16 @@ class ProductCubit extends Cubit<ProductState> {
     }
   }
 
+  void setProduct(List<Product> datas) {
+    data = data.copyWith(product: null, listProduct: datas, relatedProduct: []);
+    emit(ProductLoaded(data));
+  }
+
   Future<List<Product>> getSearchProduct(String? keyword,
       {String? brands,
       String? categories,
+      String? countries,
+      String? specialization_slug,
       int? newArrival,
       int? readyStock,
       int? onPromo,
@@ -150,6 +157,8 @@ class ProductCubit extends Cubit<ProductState> {
           keyword: keyword,
           brands: brands,
           categories: categories,
+          specialization_slug: specialization_slug,
+          countries: countries,
           newArrival: newArrival,
           readyStock: readyStock,
           onPromo: onPromo,

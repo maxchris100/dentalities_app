@@ -231,7 +231,7 @@ class CartCubit extends Cubit<CartState> {
 
   Future<void> removeFromWishlistByProduct(int id) async {
     try {
-      await CartRepository.removeFromWishlistByProduct(id: id);
+      var res = await CartRepository.removeFromWishlistByProduct(id: id);
       // refresh data
       await getWishlist();
     } catch (e) {
@@ -241,7 +241,7 @@ class CartCubit extends Cubit<CartState> {
 
   Future<void> removeFromWishlistByProductVariant(int id) async {
     try {
-      await CartRepository.removeFromWishlistByProductVariant(id: id);
+      var res = await CartRepository.removeFromWishlistByProductVariant(id: id);
       // refresh data
       await getWishlist();
     } catch (e) {
@@ -251,7 +251,7 @@ class CartCubit extends Cubit<CartState> {
 
   Future<void> removeFromWishlist(int id) async {
     try {
-      await CartRepository.removeFromWishlist(id: id);
+      var res = await CartRepository.removeFromWishlist(id: id);
       // refresh data
       await getWishlist();
     } catch (e) {
@@ -259,18 +259,21 @@ class CartCubit extends Cubit<CartState> {
     }
   }
 
-  Future<bool> checkWishlistStatus(int productId,
+  Future<Map> checkWishlistStatus(int productId,
       {int? productVariantId}) async {
     try {
       final res = await CartRepository.checkWishlistStatus(
         productId: productId,
         productVariantId: productVariantId,
       );
-
-      final isInWishlist = res.data["in_wishlist"] == true;
-      return isInWishlist;
+      // 0 =
+      // "is_in_wishlist" -> true
+      // 1 =
+      // "wishlist_id" -> 13
+      final isInWishlist = res.data["data"]["is_in_wishlist"] == true;
+      return res.data["data"];
     } catch (e) {
-      return false;
+      return {};
     }
   }
 }

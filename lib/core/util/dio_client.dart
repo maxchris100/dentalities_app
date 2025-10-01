@@ -31,7 +31,7 @@ class DioClient {
     };
     _dio.interceptors.add(_defaultInterceptor());
     if (Constant.getQAEnvironment()) {
-      _dio.interceptors.add(Constant.alice!.getDioInterceptor());
+      // _dio.interceptors.add(Constant.alice!.getDioInterceptor());
     }
     return _dio;
   }

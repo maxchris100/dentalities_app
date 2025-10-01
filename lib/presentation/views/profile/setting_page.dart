@@ -50,123 +50,123 @@ class _SettingPageState extends State<SettingPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 0, vertical: 16),
-                      child: GestureDetector(
-                        onTap: () {
-                          showModalBottomSheet(
-                            context: context,
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(20)),
-                            ),
-                            builder: (_) {
-                              return StatefulBuilder(
-                                builder: (context, setState) {
-                                  return Padding(
-                                    padding: const EdgeInsets.all(16),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        GestureDetector(
-                                          onTap: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: Icon(
-                                            Icons.close,
-                                            size: 32,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 10,
-                                        ),
-                                        const Text(
-                                          "Log Out?",
-                                          style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        const SizedBox(height: 12),
-                                        Text(
-                                            "You’ll be signed out and can log back in anytime."),
-                                        const SizedBox(height: 12),
-                                        SizedBox(
-                                          width: double.infinity,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.blue,
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 8),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(30),
-                                              ),
-                                            ),
-                                            child: const Text(
-                                              'Stay Sign In',
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(height: 12),
-                                        SizedBox(
-                                          width: double.infinity,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                              AuthCubit authCubit =
-                                                  context.read<AuthCubit>();
-                                              authCubit.logout();
-                                              Navigator.pop(context);
-                                            },
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.white,
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 8),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(30),
-                                              ),
-                                            ),
-                                            child: const Text(
-                                              'Log Out',
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  color: Colors.blue,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
-                              );
-                            },
-                          );
-                        },
-                        child: Row(
-                          children: [
-                            const Icon(Icons.logout),
-                            SizedBox(
-                              width: 16,
-                            ),
-                            Text("Log out")
-                          ],
-                        ),
-                      ),
-                    ),
+                    // Padding(
+                    //   padding: const EdgeInsets.symmetric(
+                    //       horizontal: 0, vertical: 16),
+                    //   child: GestureDetector(
+                    //     onTap: () {
+                    //       showModalBottomSheet(
+                    //         context: context,
+                    //         shape: const RoundedRectangleBorder(
+                    //           borderRadius: BorderRadius.vertical(
+                    //               top: Radius.circular(20)),
+                    //         ),
+                    //         builder: (_) {
+                    //           return StatefulBuilder(
+                    //             builder: (context, setState) {
+                    //               return Padding(
+                    //                 padding: const EdgeInsets.all(16),
+                    //                 child: Column(
+                    //                   mainAxisSize: MainAxisSize.min,
+                    //                   crossAxisAlignment:
+                    //                       CrossAxisAlignment.start,
+                    //                   children: [
+                    //                     GestureDetector(
+                    //                       onTap: () {
+                    //                         Navigator.pop(context);
+                    //                       },
+                    //                       child: Icon(
+                    //                         Icons.close,
+                    //                         size: 32,
+                    //                       ),
+                    //                     ),
+                    //                     SizedBox(
+                    //                       height: 10,
+                    //                     ),
+                    //                     const Text(
+                    //                       "Log Out?",
+                    //                       style: TextStyle(
+                    //                           fontSize: 18,
+                    //                           fontWeight: FontWeight.bold),
+                    //                     ),
+                    //                     const SizedBox(height: 12),
+                    //                     Text(
+                    //                         "You’ll be signed out and can log back in anytime."),
+                    //                     const SizedBox(height: 12),
+                    //                     SizedBox(
+                    //                       width: double.infinity,
+                    //                       child: ElevatedButton(
+                    //                         onPressed: () {
+                    //                           Navigator.pop(context);
+                    //                         },
+                    //                         style: ElevatedButton.styleFrom(
+                    //                           backgroundColor: Colors.blue,
+                    //                           padding:
+                    //                               const EdgeInsets.symmetric(
+                    //                                   vertical: 8),
+                    //                           shape: RoundedRectangleBorder(
+                    //                             borderRadius:
+                    //                                 BorderRadius.circular(30),
+                    //                           ),
+                    //                         ),
+                    //                         child: const Text(
+                    //                           'Stay Sign In',
+                    //                           style: TextStyle(
+                    //                               fontSize: 16,
+                    //                               color: Colors.white,
+                    //                               fontWeight: FontWeight.bold),
+                    //                         ),
+                    //                       ),
+                    //                     ),
+                    //                     const SizedBox(height: 12),
+                    //                     SizedBox(
+                    //                       width: double.infinity,
+                    //                       child: ElevatedButton(
+                    //                         onPressed: () {
+                    //                           Navigator.pop(context);
+                    //                           AuthCubit authCubit =
+                    //                               context.read<AuthCubit>();
+                    //                           authCubit.logout();
+                    //                           Navigator.pop(context);
+                    //                         },
+                    //                         style: ElevatedButton.styleFrom(
+                    //                           backgroundColor: Colors.white,
+                    //                           padding:
+                    //                               const EdgeInsets.symmetric(
+                    //                                   vertical: 8),
+                    //                           shape: RoundedRectangleBorder(
+                    //                             borderRadius:
+                    //                                 BorderRadius.circular(30),
+                    //                           ),
+                    //                         ),
+                    //                         child: const Text(
+                    //                           'Log Out',
+                    //                           style: TextStyle(
+                    //                               fontSize: 16,
+                    //                               color: Colors.blue,
+                    //                               fontWeight: FontWeight.bold),
+                    //                         ),
+                    //                       ),
+                    //                     ),
+                    //                   ],
+                    //                 ),
+                    //               );
+                    //             },
+                    //           );
+                    //         },
+                    //       );
+                    //     },
+                    //     child: Row(
+                    //       children: [
+                    //         const Icon(Icons.logout),
+                    //         SizedBox(
+                    //           width: 16,
+                    //         ),
+                    //         Text("Log out")
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 0, vertical: 16),
@@ -278,7 +278,9 @@ class _SettingPageState extends State<SettingPage> {
                             SizedBox(
                               width: 16,
                             ),
-                            Text("Delete account")
+                            Text("Delete account",
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold))
                           ],
                         ),
                       ),

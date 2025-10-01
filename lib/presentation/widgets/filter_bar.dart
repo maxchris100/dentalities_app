@@ -8,14 +8,16 @@ import 'package:flutter/material.dart';
 class FilterBar extends StatefulWidget {
   Map<String, Category> initSelectedCategories = {};
   Map<String, Brand> initSelectedBrands = {};
+  Map<String, Country> initSelectedCountries = {};
 
-  Function(String, String, {String? sort, int readyStock, int onPromo})
-      onFilterChanged;
+  Function(String?, String?, String?,
+      {String? sort, int readyStock, int onPromo}) onFilterChanged;
   FilterBar(
       {Key? key,
       required this.onFilterChanged,
       required this.initSelectedCategories,
-      required this.initSelectedBrands})
+      required this.initSelectedBrands,
+      required this.initSelectedCountries})
       : super(key: key);
 
   @override
@@ -132,6 +134,7 @@ class _FilterBarState extends State<FilterBar> {
                         widget.onFilterChanged(
                           selectedCategories.keys.toList().join(','),
                           selectedBrands.keys.toList().join(','),
+                          selectedCountry.keys.toList().join(','),
                           sort: selectedSort,
                           readyStock: readyStock ? 1 : 0,
                           onPromo: onPromo ? 1 : 0,
@@ -157,6 +160,7 @@ class _FilterBarState extends State<FilterBar> {
     widget.onFilterChanged(
       selectedCategories.keys.toList().join(','),
       selectedBrands.keys.toList().join(','),
+      selectedCountry.keys.toList().join(','),
       sort: selectedSort,
       readyStock: readyStock ? 1 : 0,
       onPromo: onPromo ? 1 : 0,
@@ -183,6 +187,7 @@ class _FilterBarState extends State<FilterBar> {
     widget.onFilterChanged(
       selectedCategories.keys.toList().join(','),
       selectedBrands.keys.toList().join(','),
+      selectedCountry.keys.toList().join(','),
       sort: selectedSort,
       readyStock: readyStock ? 1 : 0,
       onPromo: onPromo ? 1 : 0,
@@ -221,6 +226,7 @@ class _FilterBarState extends State<FilterBar> {
         widget.onFilterChanged(
           selectedCategories.keys.toList().join(','),
           selectedBrands.keys.toList().join(','),
+          selectedCountry.keys.toList().join(','),
           sort: selectedSort,
           readyStock: readyStock ? 1 : 0,
           onPromo: onPromo ? 1 : 0,
@@ -233,14 +239,19 @@ class _FilterBarState extends State<FilterBar> {
     var result = await showModalBottomSheet(
         context: context,
         builder: (_) {
-          return FilterBrand(selectedBrands: selectedBrands);
+          return FilterBrand(
+            selectedBrands: selectedBrands,
+            selectedCountries: selectedCountry,
+          );
         });
     if (result != null) {
       setState(() {
         selectedBrands = (result['selectedBrands'] as Map<String, Brand>);
+        selectedCountry = (result['selectedCountries'] as Map<String, Country>);
         widget.onFilterChanged(
           selectedCategories.keys.toList().join(','),
           selectedBrands.keys.toList().join(','),
+          selectedCountry.keys.toList().join(','),
           sort: selectedSort,
           readyStock: readyStock ? 1 : 0,
           onPromo: onPromo ? 1 : 0,
@@ -256,9 +267,12 @@ class _FilterBarState extends State<FilterBar> {
       readyStock = false;
       selectedCategories.clear();
       selectedBrands.clear();
-
-      widget.onFilterChanged(selectedCategories.keys.toList().join(','),
-          selectedBrands.keys.toList().join(','));
+      selectedCountry.clear();
+      widget.onFilterChanged(
+        selectedCategories.keys.toList().join(','),
+        selectedBrands.keys.toList().join(','),
+        selectedCountry.keys.toList().join(','),
+      );
     });
   }
 
@@ -275,6 +289,7 @@ class _FilterBarState extends State<FilterBar> {
               visible: selectedSort != null && onPromo ||
                   readyStock ||
                   selectedBrands.isNotEmpty ||
+                  selectedCountry.isNotEmpty ||
                   selectedCategories.isNotEmpty,
               child: OutlinedButton.icon(
                 onPressed: _clearFilters,
@@ -382,9 +397,10 @@ class _FilterBarState extends State<FilterBar> {
               child: Row(
                 children: [
                   Text(
-                    'Brand${selectedBrands.isNotEmpty ? ' (${selectedBrands.length})' : ''}',
+                    'Brand${selectedBrands.isNotEmpty || selectedCountry.isNotEmpty ? ' (${selectedBrands.length + selectedCountry.length})' : ''}',
                     style: TextStyle(
-                        color: selectedBrands.isNotEmpty
+                        color: selectedBrands.isNotEmpty ||
+                                selectedCountry.isNotEmpty
                             ? Colors.blue
                             : Colors.grey),
                   ),

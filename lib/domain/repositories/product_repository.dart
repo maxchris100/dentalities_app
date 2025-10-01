@@ -38,8 +38,10 @@ class ProductRepository {
     int? limit = 20,
     String? sort = 'latest',
     String? keyword,
+    String? countries,
     String? brands,
     String? categories,
+    String? specialization_slug,
     int? newArrival,
     int? readyStock,
     int? onPromo,
@@ -55,6 +57,10 @@ class ProductRepository {
     if (categories != null && categories != "") {
       // queryParams['categories'] = categories;
       queryParams['category'] = categories;
+    }
+    if (specialization_slug != null && specialization_slug != "") {
+      queryParams['specialization_slug'] = specialization_slug;
+      queryParams['aggregate'] = 'category';
     }
     if (keyword != null) {
       queryParams['keyword'] = keyword;

@@ -50,19 +50,19 @@ class _ProfileTabState extends State<ProfileTab> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    Navigator.pushNamed(context, AppRouter.userProfile,
-                        arguments: {"profileCubit": profileCubit});
+                    // Navigator.pushNamed(context, AppRouter.userProfile,
+                    //     arguments: {"profileCubit": profileCubit});
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Row(
                       children: [
-                        const CircleAvatar(
-                          radius: 28,
-                          backgroundImage:
-                              AssetImage('assets/images/banner.png'),
-                        ),
-                        const SizedBox(width: 12),
+                        // const CircleAvatar(
+                        //   radius: 28,
+                        //   backgroundImage:
+                        //       AssetImage('assets/images/banner.png'),
+                        // ),
+                        // const SizedBox(width: 12),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,7 +87,7 @@ class _ProfileTabState extends State<ProfileTab> {
                             ],
                           ),
                         ),
-                        const Icon(Icons.chevron_right),
+                        // const Icon(Icons.chevron_right),
                       ],
                     ),
                   ),
@@ -198,6 +198,123 @@ class _ProfileTabState extends State<ProfileTab> {
                                 ],
                               )
                             : Text("")
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 16,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16, top: 8),
+                  child: GestureDetector(
+                    onTap: () {
+                      showModalBottomSheet(
+                        context: context,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.vertical(top: Radius.circular(20)),
+                        ),
+                        builder: (_) {
+                          return StatefulBuilder(
+                            builder: (context, setState) {
+                              return Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: Icon(
+                                        Icons.close,
+                                        size: 32,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    const Text(
+                                      "Log Out?",
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    Text(
+                                        "You’ll be signed out and can log back in anytime."),
+                                    const SizedBox(height: 12),
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.blue,
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 8),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(30),
+                                          ),
+                                        ),
+                                        child: const Text(
+                                          'Stay Sign In',
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                          AuthCubit authCubit =
+                                              context.read<AuthCubit>();
+                                          authCubit.logout();
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.white,
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 8),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(30),
+                                          ),
+                                        ),
+                                        child: const Text(
+                                          'Log Out',
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.blue,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      );
+                    },
+                    child: Row(
+                      children: [
+                        const Icon(Icons.logout),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        Text("Log out",
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold))
                       ],
                     ),
                   ),

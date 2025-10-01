@@ -47,7 +47,7 @@ class HomeRepository {
     CancelToken? cancelToken,
   }) async {
     return await DioClient.instance.get(
-      "/api/v2/home/tutorial?limit=$limit&page=$page&order_by=title&sort=asc",
+      "/api/v2/tutorial?limit=$limit",
       cancelToken: cancelToken,
     );
   }
@@ -58,7 +58,7 @@ class HomeRepository {
     CancelToken? cancelToken,
   }) async {
     return await DioClient.instance.get(
-      "/api/v2/home/testimonial?limit=$limit&page=$page&order_by=title&sort=asc",
+      "/api/v2/testimonial?limit=$limit",
       cancelToken: cancelToken,
     );
   }

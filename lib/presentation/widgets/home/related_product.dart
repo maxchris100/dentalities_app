@@ -32,7 +32,10 @@ class RelatedProductSection extends StatelessWidget {
             ),
             itemBuilder: (context, index) {
               final product = products[index];
-              return ProductCard(product: product);
+              return ProductCard(
+                product: product,
+                isWishlist: true,
+              );
             },
           ),
         ],
@@ -51,8 +54,10 @@ class RelatedProductSection extends StatelessWidget {
                   const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
           GestureDetector(
               onTap: () {
-                Navigator.pushNamed(context, AppRouter.productDetail,
-                    arguments: {"title": "Feature Product"});
+                Navigator.pushNamed(context, AppRouter.search, arguments: {
+                  "title": "Feature Product",
+                  "related_products": products
+                });
               },
               child: const Text("See All",
                   style: TextStyle(

@@ -30,21 +30,29 @@ class ProductDetailPage extends StatefulWidget {
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
   HomeCubit? homeCubit;
+  Product? p;
   @override
   void initState() {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      var args = ModalRoute.of(context)?.settings.arguments as Map?;
+      p = args?["item"];
+
       // var args = ModalRoute.of(context)?.settings.arguments as Map?;
       // String slug = args?["slug"] ?? "";
       // productCubit.getProductDetail(slug);
       homeCubit = context.read<HomeCubit>();
       // setState(() {});
       cartCubit = context.read<CartCubit>();
+      var ress = await cartCubit?.checkWishlistStatus(p?.id ?? 0);
+      wishlistId = ress?["wishlist_id"];
+      setState(() {});
     });
   }
 
   bool isInWishlist = false;
+  int? wishlistId;
   CartCubit? cartCubit;
   ProductCubit productCubit = ProductCubit();
 
@@ -184,51 +192,54 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           ),
           body: Column(
             children: [
-              Container(
-                height: 60,
-                color: Colors.grey.shade200,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: homeCubit?.data.featureCategories.length,
-                  itemBuilder: (context, index) {
-                    final category = homeCubit?.data.featureCategories[index];
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 4, vertical: 8),
-                      child: GestureDetector(
-                        onTap: () {
-                          // Navigator.pushNamed(context, routeName);
-                        },
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 8),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(50),
-                            border: Border.all(
-                              color: Colors.grey[300]!, // warna
+              Visibility(
+                visible: false,
+                child: Container(
+                  height: 60,
+                  color: Colors.grey.shade200,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: homeCubit?.data.featureCategories.length,
+                    itemBuilder: (context, index) {
+                      final category = homeCubit?.data.featureCategories[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 4, vertical: 8),
+                        child: GestureDetector(
+                          onTap: () {
+                            // Navigator.pushNamed(context, routeName);
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(50),
+                              border: Border.all(
+                                color: Colors.grey[300]!, // warna
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                ClipOval(
+                                  child: Image.network(
+                                    category?.featureImageThumbUrl ??
+                                        "", // ganti field gambar kategori
+                                    width: 32,
+                                    height: 32,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 12,
+                                ),
+                                Text(category?.name ?? "")
+                              ],
                             ),
                           ),
-                          child: Row(
-                            children: [
-                              ClipOval(
-                                child: Image.network(
-                                  category?.featureImageThumbUrl ??
-                                      "", // ganti field gambar kategori
-                                  width: 32,
-                                  height: 32,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 12,
-                              ),
-                              Text(category?.name ?? "")
-                            ],
-                          ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               ),
               Expanded(
@@ -377,24 +388,31 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                 width: 8,
                               ),
                               GestureDetector(
-                                onTap: () {
+                                onTap: () async {
                                   // final isInWishlist =
                                   //     productCubit.data.productDetailWishlist;
-                                  int? wishlistVariantId =
-                                      product?.isWishlistedProductVariantId;
-                                  if (wishlistVariantId != null) {
-                                    cartCubit?.removeFromWishlistByProduct(
-                                        productCubit.data.product?.id ?? 0);
+                                  // int? wishlistVariantId =
+                                  //     product?.isWishlistedProductVariantId;
+                                  if (wishlistId != null) {
+                                    await cartCubit
+                                        ?.removeFromWishlist(wishlistId!);
                                   } else {
-                                    cartCubit?.addToWishlist(
+                                    await cartCubit?.addToWishlist(
                                         productCubit.data.product?.id ?? 0);
                                   }
+                                  var ress = await cartCubit
+                                      ?.checkWishlistStatus(p?.id ?? 0);
+                                  wishlistId = ress?["wishlist_id"];
+                                  setState(() {});
                                 },
                                 child: Icon(
-                                  productCubit.data.productDetailWishlist
+                                  wishlistId !=
+                                          null // productCubit.data.productDetailWishlist
                                       ? Icons.favorite
                                       : Icons.favorite_border_outlined,
-                                  color: true ? Colors.red : Colors.transparent,
+                                  color: wishlistId != null
+                                      ? Colors.red
+                                      : Colors.red,
                                 ),
                               )
                             ],
@@ -421,10 +439,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           const SizedBox(height: 8),
                           _buildKeyValue('Specialization',
                               product?.categories?.first.name ?? ""),
-                          _buildKeyValue('Treatment', 'Cracked Tooth'),
-                          _buildKeyValue(
-                              'Product Type', 'Digital Impression Scanners'),
-                          const SizedBox(height: 24),
+                          // _buildKeyValue('Treatment', 'Cracked Tooth'),
+                          // _buildKeyValue(
+                          //     'Product Type', 'Digital Impression Scanners'),
+                          const SizedBox(height: 12),
                         ],
                       ),
                     ),

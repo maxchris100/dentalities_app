@@ -25,6 +25,7 @@ class HomeData {
   final List<Country> countries;
   final List<Brand> brands;
   final List<Category> categories;
+  final List<Category> specializations;
 
   HomeData(
       {this.selectedIndex = 0,
@@ -36,7 +37,8 @@ class HomeData {
       required this.newArrival,
       required this.countries,
       required this.brands,
-      required this.categories});
+      required this.categories,
+      required this.specializations});
 
   HomeData copyWith({
     int? selectedIndex,
@@ -49,6 +51,7 @@ class HomeData {
     List<Brand>? brands,
     List<Country>? countries,
     List<Category>? categories,
+    List<Category>? specializations,
   }) {
     return HomeData(
         selectedIndex: selectedIndex ?? 0,
@@ -60,7 +63,8 @@ class HomeData {
         newArrival: newArrival ?? this.newArrival,
         brands: brands ?? this.brands,
         countries: countries ?? this.countries,
-        categories: categories ?? this.categories);
+        categories: categories ?? this.categories,
+        specializations: specializations ?? this.specializations);
   }
 }
 
@@ -90,6 +94,7 @@ class HomeCubit extends Cubit<HomeState> {
       newArrival: [],
       topDoctors: [],
       categories: [],
+      specializations: [],
       brands: [],
       countries: []);
   HomeCubit() : super(HomeInitial());
@@ -113,11 +118,17 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> fetchMenuList() async {
     try {
       final datas = await HomeRepository.getListMenu();
-      // List<Brand> brands = Brand.fromList(datas.data["data"]["brands"]);
+      List<Brand> brands = Brand.fromList(datas.data["data"]["brands"]);
       List<Category> categories =
           Category.fromList(datas.data["data"]["categories"]);
       List<Country> countries = Country.fromList(datas.data["data"]["origins"]);
-      data = data.copyWith(categories: categories, countries: countries);
+      List<Category> specialization =
+          Category.fromList(datas.data["data"]["specializations"]);
+      data = data.copyWith(
+          // brands: brands,
+          categories: categories,
+          countries: countries,
+          specializations: specialization);
       emit(HomeLoaded(data));
     } catch (e) {
       emit(HomeError('Failed to load banners: $e'));

@@ -65,6 +65,12 @@ class CartItemWidget extends StatelessWidget {
                               width: 48,
                               height: 48,
                               fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => Image.asset(
+                                "assets/images/banner.png",
+                                width: 48,
+                                height: 48,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
                           SizedBox(
@@ -95,10 +101,10 @@ class CartItemWidget extends StatelessWidget {
                                     Visibility(
                                       visible: priceAfterDiscount != price,
                                       child: Padding(
-                                        padding: const EdgeInsets.only(left: 8),
+                                        padding: const EdgeInsets.only(left: 0),
                                         child: Text(price ?? "",
                                             style: TextStyle(
-                                                color: Colors.black,
+                                                color: Colors.blue,
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 16,
                                                 decoration: TextDecoration

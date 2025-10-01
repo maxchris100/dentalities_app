@@ -46,7 +46,7 @@ class _FilterCategoryState extends State<FilterCategory> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final args = ModalRoute.of(context)?.settings.arguments as Map?;
       HomeCubit homeCubit = context.read<HomeCubit>();
-      specializations = homeCubit.data.categories;
+      specializations = homeCubit.data.specializations;
       if (widget.selectedCategories != null) {
         selectedCategories.addAll(widget.selectedCategories!);
       }
@@ -165,6 +165,7 @@ class _FilterCategoryState extends State<FilterCategory> {
                           style: TextStyle(
                               fontSize: 16, fontWeight: FontWeight.bold),
                         ),
+                        initiallyExpanded: true,
                         dense: true,
                         shape: const RoundedRectangleBorder(
                           side: BorderSide.none,
@@ -177,53 +178,53 @@ class _FilterCategoryState extends State<FilterCategory> {
                       ),
 
                       /// TREATMENT
-                      ExpansionTile(
-                        tilePadding: EdgeInsets.all(0),
-                        title: const Text(
-                          "Treatment",
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                        dense: true,
-                        shape: const RoundedRectangleBorder(
-                          side: BorderSide.none,
-                        ),
-                        children: [
-                          buildChipSelector(
-                            options: treatments,
-                            selectedValue: selectedTreatment,
-                            onSelected: (val) {
-                              setState(() => selectedTreatment = val);
-                            },
-                          )
-                        ],
-                      ),
+                      // ExpansionTile(
+                      //   tilePadding: EdgeInsets.all(0),
+                      //   title: const Text(
+                      //     "Treatment",
+                      //     style: TextStyle(
+                      //         fontSize: 16, fontWeight: FontWeight.bold),
+                      //   ),
+                      //   dense: true,
+                      //   shape: const RoundedRectangleBorder(
+                      //     side: BorderSide.none,
+                      //   ),
+                      //   children: [
+                      //     buildChipSelector(
+                      //       options: treatments,
+                      //       selectedValue: selectedTreatment,
+                      //       onSelected: (val) {
+                      //         setState(() => selectedTreatment = val);
+                      //       },
+                      //     )
+                      //   ],
+                      // ),
 
-                      /// PRODUCT TYPE
-                      ExpansionTile(
-                        tilePadding: EdgeInsets.all(0),
-                        title: const Text(
-                          "Product Type",
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                        dense: true,
-                        shape: const RoundedRectangleBorder(
-                          side: BorderSide.none,
-                        ),
-                        children: [
-                          buildChipSelector(
-                            options: productTypes,
-                            selectedValue: selectedProductType,
-                            onSelected: (val) {
-                              setState(() => selectedProductType = val);
-                            },
-                          )
-                        ],
-                      ),
+                      // /// PRODUCT TYPE
+                      // ExpansionTile(
+                      //   tilePadding: EdgeInsets.all(0),
+                      //   title: const Text(
+                      //     "Product Type",
+                      //     style: TextStyle(
+                      //         fontSize: 16, fontWeight: FontWeight.bold),
+                      //   ),
+                      //   dense: true,
+                      //   shape: const RoundedRectangleBorder(
+                      //     side: BorderSide.none,
+                      //   ),
+                      //   children: [
+                      //     buildChipSelector(
+                      //       options: productTypes,
+                      //       selectedValue: selectedProductType,
+                      //       onSelected: (val) {
+                      //         setState(() => selectedProductType = val);
+                      //       },
+                      //     )
+                      //   ],
+                      // ),
 
                       const SizedBox(
-                          height: 100), // Kasih jarak biar gak ketutupan tombol
+                          height: 12), // Kasih jarak biar gak ketutupan tombol
                     ],
                   ),
                 ),

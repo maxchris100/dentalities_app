@@ -2,6 +2,7 @@ import 'package:dentalities/core/constant/constant.dart';
 import 'package:dentalities/core/util/toast_util.dart';
 import 'package:dentalities/data/models/brand_model.dart';
 import 'package:dentalities/data/models/category_model.dart';
+import 'package:dentalities/data/models/country_model.dart';
 import 'package:dentalities/data/models/product_model.dart';
 import 'package:dentalities/data/models/recent_search.dart';
 import 'package:dentalities/presentation/blocs/cubit/home_cubit.dart';
@@ -30,7 +31,9 @@ class _SearchPageState extends State<SearchPage> {
 
   Map<String, Category> initSelectedCategories = {};
   Map<String, Brand> initSelectedBrands = {};
+  Map<String, Country> initSelectedCountries = {};
   String? selectedCategories;
+  String? selectedCountries;
   String? selectedBrands;
   String? selectedSort;
   int? selectedNewArrival;
@@ -45,6 +48,7 @@ class _SearchPageState extends State<SearchPage> {
   final int _limit = 20;
   bool _hasMore = true;
 
+  bool isRelatedProducts = false;
   @override
   void initState() {
     super.initState();
@@ -64,6 +68,7 @@ class _SearchPageState extends State<SearchPage> {
               searchController.text.trim(),
               categories: selectedCategories,
               brands: selectedBrands,
+              countries: selectedCountries,
               sort: selectedSort,
               newArrival: selectedNewArrival,
               onPromo: selectedOnPromo,
@@ -90,6 +95,13 @@ class _SearchPageState extends State<SearchPage> {
       Category? category = args?['category'];
       int? newArrival = args?['is_new'];
 
+      if (args?["related_products"] != null) {
+        List<Product> relatedProducts = args?["related_products"];
+        productCubit.setProduct(relatedProducts);
+        isRelatedProducts = true;
+        return;
+      }
+
       selectedNewArrival = newArrival;
       selectedBrands = brand?.id.toString();
       selectedCategories = category?.id.toString();
@@ -99,11 +111,15 @@ class _SearchPageState extends State<SearchPage> {
       }
       if (category != null) {
         initSelectedCategories[category.id.toString()] = category;
+        if (slug == "") {
+          slug = category.slug ?? "";
+        }
       }
       productCubit.getProductByCategorySlug(slug);
       productCubit.getSearchProduct(searchController.text.trim(),
           brands: brand?.id.toString(),
           categories: category?.id.toString(),
+          specialization_slug: slug,
           newArrival: newArrival);
 
       if (args != null) {
@@ -264,13 +280,16 @@ class _SearchPageState extends State<SearchPage> {
                             FilterBar(
                               initSelectedCategories: initSelectedCategories,
                               initSelectedBrands: initSelectedBrands,
-                              onFilterChanged: (String p0, String p1,
-                                  {String? sort,
-                                  int? newArrival,
-                                  int? onPromo,
-                                  int? readyStock}) {
+                              initSelectedCountries: initSelectedCountries,
+                              onFilterChanged:
+                                  (String? p0, String? p1, String? p2,
+                                      {String? sort,
+                                      int? newArrival,
+                                      int? onPromo,
+                                      int? readyStock}) {
                                 selectedCategories = p0;
                                 selectedBrands = p1;
+                                selectedCountries = p2;
                                 selectedSort = sort;
                                 selectedNewArrival = newArrival;
                                 selectedOnPromo = onPromo;
@@ -303,6 +322,7 @@ class _SearchPageState extends State<SearchPage> {
                                                   categories:
                                                       selectedCategories,
                                                   brands: selectedBrands,
+                                                  countries: selectedCountries,
                                                   sort: selectedSort,
                                                   newArrival:
                                                       selectedNewArrival,
@@ -344,7 +364,10 @@ class _SearchPageState extends State<SearchPage> {
                                                           .data.listProduct
                                                           .map((product) {
                                                         return ProductCard(
-                                                            product: product);
+                                                          product: product,
+                                                          isWishlist:
+                                                              isRelatedProducts,
+                                                        );
                                                       }).toList(),
                                                     ),
                                                     if (isLoadingMore)

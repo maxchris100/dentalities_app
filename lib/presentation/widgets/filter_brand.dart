@@ -6,7 +6,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FilterBrand extends StatefulWidget {
   Map<String, Brand>? selectedBrands = {};
-  FilterBrand({super.key, this.selectedBrands});
+  Map<String, Country>? selectedCountries = {};
+  FilterBrand({super.key, this.selectedBrands, this.selectedCountries});
 
   @override
   _FilterBrandState createState() => _FilterBrandState();
@@ -45,6 +46,9 @@ class _FilterBrandState extends State<FilterBrand> {
       if (widget.selectedBrands != null) {
         selectedBrands.addAll(widget.selectedBrands!);
       }
+      if (widget.selectedCountries != null) {
+        selectedCountries.addAll(widget.selectedCountries!);
+      }
       setState(() {});
     });
   }
@@ -71,38 +75,63 @@ class _FilterBrandState extends State<FilterBrand> {
           const SizedBox(height: 12),
 
           // Horizontal scrollable country chips
-          // SingleChildScrollView(
-          //   scrollDirection: Axis.horizontal,
-          //   child: Row(
-          //     children: countries.map((country) {
-          //       final isSelected =
-          //           selectedCountries[country.id.toString()] != null;
-          //       return Padding(
-          //         padding: const EdgeInsets.only(right: 8.0),
-          //         child: ChoiceChip(
-          //           label: Text(country.name),
-          //           selected: isSelected,
-          //           onSelected: (_) {
-          //             setState(() {
-          //               isSelected
-          //                   ? selectedCountries.remove(country.id.toString())
-          //                   : selectedCountries.putIfAbsent(
-          //                       country.id.toString(), () => country);
-          //             });
-          //           },
-          //           selectedColor: Colors.blue.shade100,
-          //           shape: StadiumBorder(
-          //             side: BorderSide(
-          //               color: isSelected ? Colors.blue : Colors.grey.shade300,
-          //             ),
-          //           ),
-          //         ),
-          //       );
-          //     }).toList(),
-          //   ),
-          // ),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: countries.map((country) {
+                final isSelected =
+                    selectedCountries[country.id.toString()] != null;
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: ChoiceChip(
+                    label: Row(
+                      children: [
+                        Visibility(
+                          visible: country.featureImageUrl != null,
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: Image.network(
+                              country.featureImageUrl ?? "",
+                              width: 25,
+                              height: 12,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Image.asset(
+                                  "assets/images/banner.png",
+                                  width: 25,
+                                  height: 12,
+                                  fit: BoxFit.cover,
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                        Text(country.name),
+                      ],
+                    ),
+                    selected: isSelected,
+                    showCheckmark: false,
+                    onSelected: (_) {
+                      setState(() {
+                        isSelected
+                            ? selectedCountries.remove(country.id.toString())
+                            : selectedCountries.putIfAbsent(
+                                country.id.toString(), () => country);
+                      });
+                    },
+                    selectedColor: Colors.blue.shade100,
+                    shape: StadiumBorder(
+                      side: BorderSide(
+                        color: isSelected ? Colors.blue : Colors.grey.shade300,
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
 
-          // const SizedBox(height: 24),
+          const SizedBox(height: 24),
 
           // Brand Grid
           Expanded(

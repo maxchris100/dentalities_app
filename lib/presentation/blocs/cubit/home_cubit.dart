@@ -204,13 +204,38 @@ class HomeCubit extends Cubit<HomeState> {
       final datas = await ProfileRepository.getProfile();
       UserModel data = UserModel.fromMap(datas.data["data"]);
 
+      // Constant.userLocalDataSource.saveUser(data);
+
+      // final defaultAddress = await ProfileRepository.getDefaultAddress();
+      // UserAddress userAddress =
+      //     UserAddress.fromJson(defaultAddress.data["data"]);
+      // Constant.userLocalDataSource.setDefaultAddress(userAddress);
+      final addressResponse = await ProfileRepository.getUserAddress();
+
+// parse default address
+      UserAddress defaultAddress = UserAddress.fromJson(
+        addressResponse.data["data"]["default_user_address"],
+      );
+
+// parse user addresses list
+      List<UserAddress> userAddresses = UserAddress.fromList(
+        addressResponse.data["data"]["user_addresses"],
+      );
+
+// filter duplikat (buang yang sama id dengan default)
+      List<UserAddress> filteredAddresses =
+          userAddresses.where((addr) => addr.id != defaultAddress.id).toList();
+
+// gabung: defaultAddress di index 0
+      List<UserAddress> mergedAddresses = [
+        defaultAddress,
+        ...filteredAddresses
+      ];
+
+// simpan ke local / state
+      data.userAddresses = mergedAddresses;
+      Constant.userLocalDataSource.setDefaultAddress(defaultAddress);
       Constant.userLocalDataSource.saveUser(data);
-
-      final defaultAddress = await ProfileRepository.getDefaultAddress();
-      UserAddress userAddress =
-          UserAddress.fromJson(defaultAddress.data["data"]);
-      Constant.userLocalDataSource.setDefaultAddress(userAddress);
-
       // emit(HomeLoaded(data));
     } catch (e) {
       emit(HomeError('Failed to load profile: $e'));

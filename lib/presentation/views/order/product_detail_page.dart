@@ -449,30 +449,30 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     Divider(),
                     const SizedBox(height: 12),
                     // ===== Advantages =====
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: const _ExpandableSection(
-                        title: 'Advantages',
-                        icon: "assets/icons/product_detail_advantage.svg",
-                        content: '• Mess-free restorations ',
-                      ),
-                    ),
+                    // Padding(
+                    //   padding: const EdgeInsets.symmetric(horizontal: 12),
+                    //   child: const _ExpandableSection(
+                    //     title: 'Advantages',
+                    //     icon: "assets/icons/product_detail_advantage.svg",
+                    //     content: '• Mess-free restorations ',
+                    //   ),
+                    // ),
 
-                    const SizedBox(height: 12),
+                    // const SizedBox(height: 12),
 
-                    // ===== Indications =====
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: const _ExpandableSection(
-                        title: 'Indications',
-                        icon: "assets/icons/product_detail_indication.svg",
-                        content: '• Mess-free restorations ',
-                      ),
-                    ),
+                    // // ===== Indications =====
+                    // Padding(
+                    //   padding: const EdgeInsets.symmetric(horizontal: 12),
+                    //   child: const _ExpandableSection(
+                    //     title: 'Indications',
+                    //     icon: "assets/icons/product_detail_indication.svg",
+                    //     content: '• Mess-free restorations ',
+                    //   ),
+                    // ),
 
-                    const SizedBox(height: 12),
-                    Divider(),
-                    const SizedBox(height: 12),
+                    // const SizedBox(height: 12),
+                    // Divider(),
+                    // const SizedBox(height: 12),
                     VariantSection(
                       varian1LabelName: product?.variantOne ?? "",
                       varian2LabelName: product?.variantTwo ?? "",
@@ -507,27 +507,27 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     // const SizedBox(height: 12),
                     // Divider(),
 
-                    const SizedBox(height: 12),
-                    DoctorReviewCard(
-                      name: "drg. Fajar Pratama, Sp.Pros",
-                      date: "10 July 2025",
-                      comment:
-                          "Easy to use with great consistency. The automix system saves time and reduces mess. Cures well and bonds strongly—perfect for core build-ups. Will definitely reorder!",
-                      imageUrl:
-                          "https://mydentalshop.s3.ap-southeast-3.amazonaws.com/category/v3pkGkkVixPnrNTVToS8I5kU3MQeX6yUtUMIHn8L.jpeg",
-                    ),
-                    const SizedBox(height: 12),
-                    // Divider(),
+                    // const SizedBox(height: 12),
+                    // DoctorReviewCard(
+                    //   name: "drg. Fajar Pratama, Sp.Pros",
+                    //   date: "10 July 2025",
+                    //   comment:
+                    //       "Easy to use with great consistency. The automix system saves time and reduces mess. Cures well and bonds strongly—perfect for core build-ups. Will definitely reorder!",
+                    //   imageUrl:
+                    //       "https://mydentalshop.s3.ap-southeast-3.amazonaws.com/category/v3pkGkkVixPnrNTVToS8I5kU3MQeX6yUtUMIHn8L.jpeg",
+                    // ),
+                    // const SizedBox(height: 12),
+                    // // Divider(),
 
-                    const SizedBox(height: 12),
-                    HowToUseSection(
-                      videoThumbnailUrl:
-                          "https://mydentalshop.s3.ap-southeast-3.amazonaws.com/category/v3pkGkkVixPnrNTVToS8I5kU3MQeX6yUtUMIHn8L.jpeg",
-                      videoDuration: "12:00",
-                      onSeeMore: () {},
-                    ),
-                    const SizedBox(height: 12),
-                    Divider(),
+                    // const SizedBox(height: 12),
+                    // HowToUseSection(
+                    //   videoThumbnailUrl:
+                    //       "https://mydentalshop.s3.ap-southeast-3.amazonaws.com/category/v3pkGkkVixPnrNTVToS8I5kU3MQeX6yUtUMIHn8L.jpeg",
+                    //   videoDuration: "12:00",
+                    //   onSeeMore: () {},
+                    // ),
+                    // const SizedBox(height: 12),
+                    // Divider(),
                     // const SizedBox(height: 12),
                     // BundlingProductSection(title: "Buy with Supplementaries"),
                     const SizedBox(height: 12),

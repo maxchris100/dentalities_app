@@ -185,7 +185,7 @@ class CartCubit extends Cubit<CartState> {
   Future<List<Wishlist>> getWishlist(
       {int? page = 1, int? limit = 20, bool loadMore = false}) async {
     try {
-      final datas = await CartRepository.getWishlist(
+      final datas = await CartRepository.getWishlistByProducts(
         page: page,
         limit: limit,
       );

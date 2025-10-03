@@ -97,6 +97,21 @@ class CartRepository {
     );
   }
 
+  static Future<Response> getWishlistByProducts({
+    int? page = 1,
+    int? limit = 20,
+    CancelToken? cancelToken,
+  }) async {
+    final queryParams = <String, dynamic>{};
+    if (page != null) queryParams['page'] = page;
+    if (limit != null) queryParams['limit'] = limit;
+    return await DioClient.instance.get(
+      "/api/v2/wishlist/by-products",
+      queryParameters: queryParams,
+      cancelToken: cancelToken,
+    );
+  }
+
   /// Add to wishlist (with variant)
   static Future<Response> addToWishlistWithVariant({
     required int productId,

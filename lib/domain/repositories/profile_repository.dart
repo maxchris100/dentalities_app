@@ -52,6 +52,15 @@ class ProfileRepository {
     );
   }
 
+  static Future<Response> getUserAddress({
+    CancelToken? cancelToken,
+  }) async {
+    return await DioClient.instance.get(
+      "/api/v2/account/user-addresses",
+      cancelToken: cancelToken,
+    );
+  }
+
   static Future<Response> getDefaultAddress({
     CancelToken? cancelToken,
   }) async {

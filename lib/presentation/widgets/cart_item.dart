@@ -90,14 +90,17 @@ class CartItemWidget extends StatelessWidget {
                                 ),
                                 Row(
                                   children: [
-                                    Text(priceAfterDiscount ?? "",
-                                        style: TextStyle(
-                                          color: price == 'FREE'
-                                              ? Colors.red
-                                              : Colors.blue,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                        )),
+                                    Padding(
+                                      padding: EdgeInsets.only(right: 8),
+                                      child: Text(priceAfterDiscount ?? "",
+                                          style: TextStyle(
+                                            color: price == 'FREE'
+                                                ? Colors.red
+                                                : Colors.blue,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                          )),
+                                    ),
                                     Visibility(
                                       visible: priceAfterDiscount != price,
                                       child: Padding(

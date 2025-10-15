@@ -66,6 +66,14 @@ class ProductCard extends StatelessWidget {
                     height: 100,
                     width: double.infinity,
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        "assets/images/banner.png",
+                        height: 100,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      );
+                    },
                   ),
                 ),
                 if (isNewArrival)
@@ -134,7 +142,7 @@ class ProductCard extends StatelessWidget {
             SizedBox(
               height: 40,
               child: Text(
-                product.name ?? "",
+                product.displayName ?? "",
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(fontWeight: FontWeight.w500),

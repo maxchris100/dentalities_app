@@ -185,18 +185,42 @@ class CartCubit extends Cubit<CartState> {
   Future<List<Wishlist>> getWishlist(
       {int? page = 1, int? limit = 20, bool loadMore = false}) async {
     try {
-      final datas = await CartRepository.getWishlistByProducts(
+      final datas = await CartRepository.getWishlist(
         page: page,
         limit: limit,
       );
       List<Wishlist> p = Wishlist.fromList(datas.data["data"]);
       if (loadMore) {
-        data = data.copyWith(
-          wishlistProduct: [...data.wishlistProduct, ...p],
-        );
+        // gabung data lama + baru
+        final merged = [...data.wishlistProduct, ...p];
+
+        // filter biar productId unik
+        final Set<int?> seen = {};
+        final uniqueList = merged.where((item) {
+          final isNew = !seen.contains(item.product?.id);
+          if (isNew) seen.add(item.product?.id);
+          return isNew;
+        }).toList();
+
+        data = data.copyWith(wishlistProduct: uniqueList);
       } else {
-        data = data.copyWith(wishlistProduct: p);
+        // replace dengan data baru, sekalian filter unique
+        final Set<int?> seen = {};
+        final uniqueList = p.where((item) {
+          final isNew = !seen.contains(item.product?.id);
+          if (isNew) seen.add(item.product?.id);
+          return isNew;
+        }).toList();
+
+        data = data.copyWith(wishlistProduct: uniqueList);
       }
+      // if (loadMore) {
+      //   data = data.copyWith(
+      //     wishlistProduct: [...data.wishlistProduct, ...p],
+      //   );
+      // } else {
+      //   data = data.copyWith(wishlistProduct: p);
+      // }
       emit(CartLoaded(data));
       return p;
     } catch (e) {

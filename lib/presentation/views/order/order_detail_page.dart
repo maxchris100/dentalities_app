@@ -44,8 +44,11 @@ class _OrderDetailPageState extends State<OrderDetailPage>
         item = args["item"];
         try {
           totalItem = item!.transactionItems!.length;
-          totalPrice = item!.totalCost ?? "0";
-          grandTotalPrice = item!.grandTotal ?? "0";
+          totalPrice = item!.productCost ?? "0";
+          totalDiscount = StringUtil.castToString(
+              double.parse(item!.productCost ?? "0") -
+                  double.parse(item!.totalAfterDiscount ?? "0"));
+          grandTotalPrice = StringUtil.formatMoney(item!.grandTotal ?? "0");
           shipmentPrice = item!.shippingCost ?? "0";
           grandGrandTotalPrice = StringUtil.formatMoney(
               double.parse(grandTotalPrice) + double.parse(shipmentPrice));
@@ -380,7 +383,7 @@ class _OrderDetailPageState extends State<OrderDetailPage>
                       Text('Total',
                           style: TextStyle(
                               fontSize: 16, fontWeight: FontWeight.bold)),
-                      Text(grandGrandTotalPrice,
+                      Text(grandTotalPrice,
                           style: TextStyle(
                               fontSize: 16, fontWeight: FontWeight.bold))
                     ],

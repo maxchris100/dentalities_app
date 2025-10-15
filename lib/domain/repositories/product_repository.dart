@@ -56,7 +56,8 @@ class ProductRepository {
     }
     if (categories != null && categories != "") {
       // queryParams['categories'] = categories;
-      queryParams['category'] = categories;
+      // queryParams['category'] = categories;
+      queryParams['specialization'] = categories;
     }
     if (specialization_slug != null && specialization_slug != "") {
       queryParams['specialization_slug'] = specialization_slug;
@@ -75,7 +76,7 @@ class ProductRepository {
       queryParams['in_stock'] = true;
     }
     if (onPromo == 1) {
-      // queryParams['on_sale'] = true;
+      queryParams['on_sale'] = true;
     }
     return await DioClient.instance.get(
       "/api/v2/product",

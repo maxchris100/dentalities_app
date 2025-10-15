@@ -22,7 +22,7 @@ class _WishlistTabState extends State<WishlistTab> {
 
   bool isLoadingMore = false;
   int _currentPage = 1;
-  final int _limit = 20;
+  final int _limit = 50;
   bool _hasMore = true;
 
   late ScrollController _scrollController;

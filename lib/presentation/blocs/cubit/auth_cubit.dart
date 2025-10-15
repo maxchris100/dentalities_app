@@ -26,8 +26,9 @@ class AuthAuthenticated<T> extends AuthState {
 
 class AuthError extends AuthState {
   final String message;
+  final String errorMessage;
 
-  AuthError(this.message);
+  AuthError(this.message, this.errorMessage);
 }
 
 class AuthCubit extends Cubit<AuthState> {
@@ -101,15 +102,16 @@ class AuthCubit extends Cubit<AuthState> {
 
   Future<void> login(BuildContext context, String email, String password,
       {String loginType = 'manual'}) async {
+    dynamic response;
     try {
       String accessToken = '';
-      var response = await AuthRepository.signIn(
+      response = await AuthRepository.signIn(
           emailOrPhone: email,
           password: password,
           loginType: loginType,
           accessToken: accessToken);
 
-      var responseLogin = AuthResponseModel.fromJson(response.data["data"]);
+      var responseLogin = AuthResponseModel.fromJson(response?.data["data"]);
       debugPrint('responseLogin.token: ${responseLogin.token}');
 
       Map<String, dynamic> decodedToken =
@@ -121,7 +123,9 @@ class AuthCubit extends Cubit<AuthState> {
 
       emit(AuthAuthenticated(user));
     } catch (e) {
-      debugPrint('Refresh Token error: $e');
+      debugPrint('Login error: $e');
+      emit(AuthError(response?.data["errors"]["email"][0],
+          response?.data["message"] ?? ""));
     }
   }
 

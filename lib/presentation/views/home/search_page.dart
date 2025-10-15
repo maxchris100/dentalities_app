@@ -336,6 +336,9 @@ class _SearchPageState extends State<SearchPage> {
                                         child: productCubit
                                                 .data.listProduct.isEmpty
                                             ? ListView(
+                                                physics:
+                                                    const AlwaysScrollableScrollPhysics(), // <— dan ini juga
+
                                                 // perlu ListView biar RefreshIndicator bisa jalan
                                                 children: const [
                                                   SizedBox(height: 200),
@@ -346,6 +349,9 @@ class _SearchPageState extends State<SearchPage> {
                                               )
                                             : SingleChildScrollView(
                                                 controller: _scrollController,
+                                                physics:
+                                                    const AlwaysScrollableScrollPhysics(), // <— dan ini juga
+
                                                 child: Column(
                                                   children: [
                                                     GridView.count(

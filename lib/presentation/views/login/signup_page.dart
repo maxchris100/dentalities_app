@@ -597,165 +597,159 @@ class _SignUpPageState extends State<SignUpPage> {
 
   @override
   Widget build(BuildContext contextPage) {
-    return PopScope(
-        onPopInvokedWithResult: (didPop, result) {
-          // print("POP");
-          Navigator.pop(contextPage);
-        },
-        child: BlocBuilder<SignUpCubit, SignUpState>(
-            bloc: signUpCubit,
-            builder: (context, state) {
-              return Scaffold(
-                body: SafeArea(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: SingleChildScrollView(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 24, vertical: 32),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+    return BlocBuilder<SignUpCubit, SignUpState>(
+        bloc: signUpCubit,
+        builder: (context, state) {
+          return Scaffold(
+            body: SafeArea(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 32),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text("Registration",
+                              style: TextStyle(
+                                  fontSize: 24, fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 4),
+                          const Text(
+                              "Complete the informations to create your account"),
+                          const SizedBox(height: 20),
+
+                          // Step Indicator
+                          Row(
                             children: [
-                              const Text("Registration",
-                                  style: TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold)),
-                              const SizedBox(height: 4),
-                              const Text(
-                                  "Complete the informations to create your account"),
-                              const SizedBox(height: 20),
-
-                              // Step Indicator
-                              Row(
-                                children: [
-                                  _stepIndicator("Account", 0),
-                                  // Expanded(
-                                  //   child: Padding(
-                                  //     padding:
-                                  //         EdgeInsets.symmetric(horizontal: 8),
-                                  //     child: Divider(
-                                  //       color: Colors.grey,
-                                  //       thickness: 1,
-                                  //     ),
-                                  //   ),
-                                  // ),
-                                  // _stepIndicator("Personal", 1),
-                                  // Expanded(
-                                  //   child: Padding(
-                                  //     padding:
-                                  //         EdgeInsets.symmetric(horizontal: 8),
-                                  //     child: Divider(
-                                  //       color: Colors.grey,
-                                  //       thickness: 1,
-                                  //     ),
-                                  //   ),
-                                  // ),
-                                  // _stepIndicator("Address", 2),
-                                ],
-                              ),
-                              const SizedBox(height: 24),
-
-                              // Dynamic Step Content
-                              _buildStepContent(),
-                              const SizedBox(height: 30),
+                              _stepIndicator("Account", 0),
+                              // Expanded(
+                              //   child: Padding(
+                              //     padding:
+                              //         EdgeInsets.symmetric(horizontal: 8),
+                              //     child: Divider(
+                              //       color: Colors.grey,
+                              //       thickness: 1,
+                              //     ),
+                              //   ),
+                              // ),
+                              // _stepIndicator("Personal", 1),
+                              // Expanded(
+                              //   child: Padding(
+                              //     padding:
+                              //         EdgeInsets.symmetric(horizontal: 8),
+                              //     child: Divider(
+                              //       color: Colors.grey,
+                              //       thickness: 1,
+                              //     ),
+                              //   ),
+                              // ),
+                              // _stepIndicator("Address", 2),
                             ],
                           ),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
+                          const SizedBox(height: 24),
 
-                      // Action Buttons
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: Row(
-                          children: [
-                            // Expanded(
-                            //   child: ElevatedButton(
-                            //     onPressed: _currentStep > 0 ? _prevStep : null,
-                            //     style: ElevatedButton.styleFrom(
-                            //       padding:
-                            //           const EdgeInsets.symmetric(vertical: 12),
-                            //       backgroundColor: Colors.white,
-                            //       shape: RoundedRectangleBorder(
-                            //           borderRadius: BorderRadius.circular(12)),
-                            //     ),
-                            //     child: Text(
-                            //       "Previous",
-                            //       style: TextStyle(color: Colors.black),
-                            //     ),
-                            //   ),
-                            // ),
-                            // const SizedBox(width: 12),
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed:
-                                    _currentStep == 0 ? _register : _nextStep,
-                                style: ElevatedButton.styleFrom(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 12),
-                                    backgroundColor: _currentStep == 0
-                                        ? Colors.blue
-                                        : Colors.white,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                        side: BorderSide(
-                                            color: _currentStep == 0
-                                                ? Colors.blue
-                                                : Colors.white)),
-                                    side: BorderSide(
-                                        color: _currentStep == 0
-                                            ? Colors.white
-                                            : Colors.blue)),
-                                child: isSubmiting
-                                    ? SizedBox(
-                                        height: 20,
-                                        width: 20,
-                                        child: Center(
-                                          child: CircularProgressIndicator(
-                                            color: Colors.white,
-                                            padding: EdgeInsets.zero,
-                                          ),
-                                        ),
-                                      )
-                                    : Text(
-                                        _currentStep == 0 ? "Register" : "Next",
-                                        style: TextStyle(
-                                            color: _currentStep == 0
-                                                ? Colors.white
-                                                : Colors.blue),
-                                      ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text("Already have an account? "),
-                          GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamedAndRemoveUntil(
-                                  context,
-                                  "/",
-                                  (route) => false,
-                                );
-                              },
-                              child: Text(
-                                "Login",
-                                style: TextStyle(
-                                    color: Colors.blue,
-                                    fontWeight: FontWeight.bold),
-                              ))
+                          // Dynamic Step Content
+                          _buildStepContent(),
+                          const SizedBox(height: 30),
                         ],
                       ),
-                      const SizedBox(height: 20),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  // Action Buttons
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Row(
+                      children: [
+                        // Expanded(
+                        //   child: ElevatedButton(
+                        //     onPressed: _currentStep > 0 ? _prevStep : null,
+                        //     style: ElevatedButton.styleFrom(
+                        //       padding:
+                        //           const EdgeInsets.symmetric(vertical: 12),
+                        //       backgroundColor: Colors.white,
+                        //       shape: RoundedRectangleBorder(
+                        //           borderRadius: BorderRadius.circular(12)),
+                        //     ),
+                        //     child: Text(
+                        //       "Previous",
+                        //       style: TextStyle(color: Colors.black),
+                        //     ),
+                        //   ),
+                        // ),
+                        // const SizedBox(width: 12),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed:
+                                _currentStep == 0 ? _register : _nextStep,
+                            style: ElevatedButton.styleFrom(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 12),
+                                backgroundColor: _currentStep == 0
+                                    ? Colors.blue
+                                    : Colors.white,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    side: BorderSide(
+                                        color: _currentStep == 0
+                                            ? Colors.blue
+                                            : Colors.white)),
+                                side: BorderSide(
+                                    color: _currentStep == 0
+                                        ? Colors.white
+                                        : Colors.blue)),
+                            child: isSubmiting
+                                ? SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: Center(
+                                      child: CircularProgressIndicator(
+                                        color: Colors.white,
+                                        padding: EdgeInsets.zero,
+                                      ),
+                                    ),
+                                  )
+                                : Text(
+                                    _currentStep == 0 ? "Register" : "Next",
+                                    style: TextStyle(
+                                        color: _currentStep == 0
+                                            ? Colors.white
+                                            : Colors.blue),
+                                  ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("Already have an account? "),
+                      GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamedAndRemoveUntil(
+                              context,
+                              "/",
+                              (route) => false,
+                            );
+                          },
+                          child: Text(
+                            "Login",
+                            style: TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold),
+                          ))
                     ],
                   ),
-                ),
-              );
-            }));
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ),
+          );
+        });
   }
 }

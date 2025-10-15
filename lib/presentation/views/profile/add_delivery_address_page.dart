@@ -302,7 +302,6 @@ class _AddEditDeliveryAddressPageState
                             const SizedBox(height: 8),
                             TextFormField(
                               controller: labelCtrl,
-                              maxLength: 8,
                               decoration: InputDecoration(
                                   hintText: 'Address Label',
                                   border: OutlineInputBorder(
@@ -320,7 +319,6 @@ class _AddEditDeliveryAddressPageState
                             const SizedBox(height: 8),
                             TextFormField(
                               controller: fullNameCtrl,
-                              maxLength: 8,
                               decoration: InputDecoration(
                                   hintText: 'Full Name',
                                   border: OutlineInputBorder(

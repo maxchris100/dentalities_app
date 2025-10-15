@@ -81,7 +81,8 @@ class OrderItem extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        child: Text(e.value.productName ?? ""),
+                        child: Text(
+                            e.value.productVariant?.product?.displayName ?? ""),
                       ),
                       SizedBox(
                         height: 8,
@@ -96,7 +97,8 @@ class OrderItem extends StatelessWidget {
                                 style: TextStyle(),
                               ),
                               Text(
-                                StringUtil.formatMoney(e.value.price),
+                                StringUtil.formatMoney(
+                                    e.value.priceAfterDiscount),
                                 style: TextStyle(),
                               ),
                               SizedBox(
@@ -105,7 +107,10 @@ class OrderItem extends StatelessWidget {
                             ],
                           ),
                           Text(
-                            StringUtil.formatMoney(e.value.subtotal),
+                            StringUtil.formatMoney(item.grandTotal),
+                            // StringUtil.formatMoney(
+                            //     double.parse(item.grandTotal ?? "0") +
+                            //         double.parse(item.shippingCost ?? "0")),
                             style: TextStyle(color: Colors.blue),
                           )
                         ],

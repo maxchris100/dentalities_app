@@ -66,35 +66,32 @@ class _HomeTabState extends State<HomeTab> {
                 builder: (context, state) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Container(
-                      height: 170,
-                      child: GridView.count(
-                          crossAxisCount: 4,
-                          scrollDirection: Axis.vertical,
-                          shrinkWrap: true,
-                          mainAxisSpacing: 0,
-                          crossAxisSpacing: 0,
-                          childAspectRatio: 1.1,
-                          children: homeCubit.data.featureCategories
-                              .where((e) => e.name != "Testing Category")
-                              .toList()
-                              .map((e) {
-                            // print(e.name);
-                            return GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context, AppRouter.search,
-                                    arguments: {
-                                      "category": e,
-                                      "search_focus": 0
-                                    });
-                              },
-                              child: _CategoryItem(
-                                  e.featureImageThumbUrl ??
-                                      'assets/icons/home_icon.svg',
-                                  e?.name ?? ""),
-                            );
-                          }).toList()),
-                    ),
+                    child: GridView.count(
+                        crossAxisCount: 4,
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        mainAxisSpacing: 0,
+                        crossAxisSpacing: 0,
+                        childAspectRatio: 1.1,
+                        children: homeCubit.data.featureCategories
+                            .where((e) => e.name != "Testing Category")
+                            .toList()
+                            .map((e) {
+                          // print(e.name);
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(context, AppRouter.search,
+                                  arguments: {
+                                    "category": e,
+                                    "search_focus": 0
+                                  });
+                            },
+                            child: _CategoryItem(
+                                e.featureImageThumbUrl ??
+                                    'assets/icons/home_icon.svg',
+                                e?.name ?? ""),
+                          );
+                        }).toList()),
                   );
                 }),
             // const SizedBox(height: 4),
@@ -151,7 +148,9 @@ class _HomeTabState extends State<HomeTab> {
             BlocBuilder(
                 bloc: cartCubit,
                 builder: (context, state) {
-                  return FeatureProductSection();
+                  return FeatureProductSection(
+                    categories: homeCubit.data.carouselFeatureCategories,
+                  );
                 }),
             // SizedBox(
             //   height: 20,

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dentalities/core/constant/constant.dart';
 import 'package:dentalities/core/util/toast_util.dart';
 import 'package:dentalities/data/models/brand_model.dart';
@@ -27,6 +29,7 @@ class _SearchPageState extends State<SearchPage> {
   TextEditingController searchController = TextEditingController();
 
   bool isSearched = false;
+  bool isLoading = true;
   HomeCubit? homeCubit;
 
   Map<String, Category> initSelectedCategories = {};
@@ -42,13 +45,14 @@ class _SearchPageState extends State<SearchPage> {
 
   late ProductCubit productCubit;
   late ScrollController _scrollController;
-
+  late ScrollController recentSearchController;
   bool isLoadingMore = false;
   int _currentPage = 1;
   final int _limit = 20;
   bool _hasMore = true;
 
   bool isRelatedProducts = false;
+
   @override
   void initState() {
     super.initState();
@@ -88,6 +92,7 @@ class _SearchPageState extends State<SearchPage> {
       }
     });
 
+    recentSearchController = ScrollController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final args = ModalRoute.of(context)?.settings.arguments as Map?;
       String slug = args?['categoryslug'] ?? "";
@@ -167,13 +172,37 @@ class _SearchPageState extends State<SearchPage> {
   @override
   void dispose() {
     _scrollController.dispose();
+    recentSearchController.dispose();
     super.dispose();
+  }
+
+  double getHeight(List filteredRecentSearch) {
+    log("@GET ${filteredRecentSearch.length}");
+    return filteredRecentSearch.length > 4
+        ? 200
+        : filteredRecentSearch.length == 4
+            ? 200
+            : filteredRecentSearch.length == 3
+                ? 140
+                : filteredRecentSearch.length == 2
+                    ? 90
+                    : filteredRecentSearch.length == 1
+                        ? 40
+                        : 0;
   }
 
   @override
   Widget build(BuildContext context) {
     // var args = ModalRoute.of(context)?.settings.arguments as Map?;
     // String slug = args?['categoryslug'] ?? "";
+
+    final query = searchController.text.trim().toLowerCase();
+
+    // Filter recent search berdasarkan teks yang diketik
+    final filteredRecentSearch = recentSearchProducts
+        .where((item) => item.toLowerCase().contains(query))
+        .toList();
+
     return MultiBlocProvider(
       providers: [
         BlocProvider<ProductCubit>(
@@ -223,9 +252,13 @@ class _SearchPageState extends State<SearchPage> {
                               isSearched = true;
                             });
                           }
+                          recentSearchController.animateTo(0,
+                              duration: Duration(milliseconds: 200),
+                              curve: Curves.easeInBack);
                         },
                         onSubmitted: (value) async {
-                          print("@value");
+                          log("@search: $value");
+                          value = value.trim();
                           setState(() {
                             isSearched = true;
                           });
@@ -233,9 +266,27 @@ class _SearchPageState extends State<SearchPage> {
                               name: value,
                               type: RecentSearchType.product.toString());
                           await Constant.saveRecentSearch(p);
-                          recentSearchProducts.add(p.name);
-                          recentSearch.add(p);
-                          productCubit.getSearchProduct(value.trim());
+                          if (recentSearchProducts.contains(p.name)) {
+                            recentSearchProducts.remove(
+                                p.name); // hapus dulu biar nanti urutan update
+                          }
+                          recentSearchProducts.insert(0, p.name);
+                          // recentSearch.insert(0, p);
+                          // productCubit.getSearchProduct(value.trim());
+
+                          _currentPage = 1;
+                          _hasMore = true;
+                          final newProducts =
+                              await productCubit.getSearchProduct(value.trim(),
+                                  categories: selectedCategories,
+                                  brands: selectedBrands,
+                                  countries: selectedCountries,
+                                  sort: selectedSort,
+                                  newArrival: selectedNewArrival,
+                                  onPromo: selectedOnPromo,
+                                  readyStock: selectedReadyStock,
+                                  page: _currentPage);
+
                           setState(() {});
                           //search
                         },
@@ -264,157 +315,168 @@ class _SearchPageState extends State<SearchPage> {
               body: SafeArea(
                   child: Stack(
                 children: [
-                  state is ProductLoading
-                      ? Center(
-                          child: CircularProgressIndicator(),
-                        )
-                      : Column(
-                          children: [
-                            Visibility(
-                                visible: searchFocus.hasFocus &&
-                                    !isSearched &&
-                                    searchController.text.isNotEmpty,
-                                child: SizedBox(
-                                  height: 200,
-                                )),
-                            FilterBar(
-                              initSelectedCategories: initSelectedCategories,
-                              initSelectedBrands: initSelectedBrands,
-                              initSelectedCountries: initSelectedCountries,
-                              onFilterChanged:
-                                  (String? p0, String? p1, String? p2,
-                                      {String? sort,
-                                      int? newArrival,
-                                      int? onPromo,
-                                      int? readyStock}) {
-                                selectedCategories = p0;
-                                selectedBrands = p1;
-                                selectedCountries = p2;
-                                selectedSort = sort;
-                                selectedNewArrival = newArrival;
-                                selectedOnPromo = onPromo;
-                                selectedReadyStock = readyStock;
-                                productCubit.getSearchProduct(
-                                    searchController.text.trim(),
-                                    categories: p0,
-                                    brands: p1,
-                                    sort: sort,
-                                    newArrival: newArrival,
-                                    onPromo: onPromo,
-                                    readyStock: readyStock);
-                              },
-                            ),
-                            SizedBox(
-                              height: 8,
-                            ),
-                            Expanded(
-                                child: state is ProductError
-                                    ? Center(
-                                        child: CircularProgressIndicator(),
-                                      )
-                                    : RefreshIndicator(
-                                        onRefresh: () async {
-                                          _currentPage = 1;
-                                          _hasMore = true;
-                                          final newProducts = await productCubit
-                                              .getSearchProduct(
-                                                  searchController.text.trim(),
-                                                  categories:
-                                                      selectedCategories,
-                                                  brands: selectedBrands,
-                                                  countries: selectedCountries,
-                                                  sort: selectedSort,
-                                                  newArrival:
-                                                      selectedNewArrival,
-                                                  onPromo: selectedOnPromo,
-                                                  readyStock:
-                                                      selectedReadyStock,
-                                                  page: _currentPage,
-                                                  limit: _limit,
-                                                  loadMore: false);
-                                        },
-                                        child: productCubit
-                                                .data.listProduct.isEmpty
-                                            ? ListView(
-                                                physics:
-                                                    const AlwaysScrollableScrollPhysics(), // <— dan ini juga
+                  Column(
+                    children: [
+                      Visibility(
+                          visible: searchFocus.hasFocus &&
+                              !isSearched &&
+                              searchController.text.isNotEmpty,
+                          child: SizedBox(
+                            height: getHeight(filteredRecentSearch),
+                          )),
+                      FilterBar(
+                        initSelectedCategories: initSelectedCategories,
+                        initSelectedBrands: initSelectedBrands,
+                        initSelectedCountries: initSelectedCountries,
+                        onFilterChanged: (String? p0, String? p1, String? p2,
+                            {String? sort,
+                            int? newArrival,
+                            int? onPromo,
+                            int? readyStock}) {
+                          selectedCategories = p0;
+                          selectedBrands = p1;
+                          selectedCountries = p2;
+                          selectedSort = sort;
+                          selectedNewArrival = newArrival;
+                          selectedOnPromo = onPromo;
+                          selectedReadyStock = readyStock;
+                          _currentPage = 1;
+                          _hasMore = true;
+                          productCubit.getSearchProduct(
+                              searchController.text.trim(),
+                              categories: p0,
+                              brands: p1,
+                              countries: p2,
+                              sort: sort,
+                              newArrival: newArrival,
+                              onPromo: onPromo,
+                              readyStock: readyStock,
+                              page: _currentPage);
 
-                                                // perlu ListView biar RefreshIndicator bisa jalan
-                                                children: const [
-                                                  SizedBox(height: 200),
-                                                  Center(
-                                                      child: Text(
-                                                          "No Product found")),
-                                                ],
-                                              )
-                                            : SingleChildScrollView(
-                                                controller: _scrollController,
-                                                physics:
-                                                    const AlwaysScrollableScrollPhysics(), // <— dan ini juga
+                          setState(() {});
+                        },
+                      ),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      Expanded(
+                          child: state is ProductLoading
+                              ? Center(
+                                  child: CircularProgressIndicator(),
+                                )
+                              : RefreshIndicator(
+                                  onRefresh: () async {
+                                    _currentPage = 1;
+                                    _hasMore = true;
+                                    final newProducts =
+                                        await productCubit.getSearchProduct(
+                                            searchController.text.trim(),
+                                            categories: selectedCategories,
+                                            brands: selectedBrands,
+                                            countries: selectedCountries,
+                                            sort: selectedSort,
+                                            newArrival: selectedNewArrival,
+                                            onPromo: selectedOnPromo,
+                                            readyStock: selectedReadyStock,
+                                            page: _currentPage,
+                                            limit: _limit,
+                                            loadMore: false);
+                                  },
+                                  child: productCubit.data.listProduct.isEmpty
+                                      ? ListView(
+                                          physics:
+                                              const AlwaysScrollableScrollPhysics(), // <— dan ini juga
 
-                                                child: Column(
-                                                  children: [
-                                                    GridView.count(
-                                                      crossAxisCount: 2,
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              12),
-                                                      crossAxisSpacing: 12,
-                                                      mainAxisSpacing: 16,
-                                                      childAspectRatio:
-                                                          0.6, // sesuaikan tinggi/lebarnya
-                                                      shrinkWrap: true,
-                                                      physics:
-                                                          NeverScrollableScrollPhysics(), // kalau sudah dalam scroll view
-                                                      children: productCubit
-                                                          .data.listProduct
-                                                          .map((product) {
-                                                        return ProductCard(
-                                                          product: product,
-                                                          isWishlist:
-                                                              isRelatedProducts,
-                                                        );
-                                                      }).toList(),
-                                                    ),
-                                                    if (isLoadingMore)
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .symmetric(
-                                                                vertical: 16),
-                                                        child: Center(
-                                                            child:
-                                                                CircularProgressIndicator()),
-                                                      ),
-                                                  ],
-                                                ),
+                                          // perlu ListView biar RefreshIndicator bisa jalan
+                                          children: const [
+                                            SizedBox(height: 200),
+                                            Center(
+                                                child:
+                                                    Text("No Product found")),
+                                          ],
+                                        )
+                                      : SingleChildScrollView(
+                                          controller: _scrollController,
+                                          physics:
+                                              const AlwaysScrollableScrollPhysics(), // <— dan ini juga
+
+                                          child: Column(
+                                            children: [
+                                              GridView.count(
+                                                crossAxisCount: 2,
+                                                padding:
+                                                    const EdgeInsets.all(12),
+                                                crossAxisSpacing: 12,
+                                                mainAxisSpacing: 16,
+                                                childAspectRatio:
+                                                    0.6, // sesuaikan tinggi/lebarnya
+                                                shrinkWrap: true,
+                                                physics:
+                                                    NeverScrollableScrollPhysics(), // kalau sudah dalam scroll view
+                                                children: productCubit
+                                                    .data.listProduct
+                                                    .map((product) {
+                                                  return ProductCard(
+                                                    product: product,
+                                                    isWishlist:
+                                                        isRelatedProducts,
+                                                  );
+                                                }).toList(),
                                               ),
-                                      )),
-                          ],
-                        ),
+                                              if (isLoadingMore)
+                                                Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(vertical: 16),
+                                                  child: Center(
+                                                      child:
+                                                          CircularProgressIndicator()),
+                                                ),
+                                            ],
+                                          ),
+                                        ),
+                                )),
+                    ],
+                  ),
                   Visibility(
                     visible: searchFocus.hasFocus &&
                         !isSearched &&
                         searchController.text.isNotEmpty,
                     child: Container(
-                      height: 200,
+                      height: getHeight(filteredRecentSearch),
                       color: Colors.white,
                       child: ListView.separated(
-                        itemCount: recentSearchProducts.length,
+                        // reverse: true,
+                        itemCount: filteredRecentSearch.length,
                         separatorBuilder: (_, __) => const Divider(),
+                        controller: recentSearchController,
                         itemBuilder: (context, index) {
-                          final productSearched = recentSearchProducts[index];
+                          final productSearched = filteredRecentSearch[index];
                           final isHistory = index >= 4;
 
                           return Padding(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 5),
                             child: GestureDetector(
-                              onTap: () {
+                              onTap: () async {
                                 searchController.text = productSearched;
-                                productCubit.getSearchProduct(null);
+                                // productCubit.getSearchProduct(null);
+
+                                _currentPage = 1;
+                                _hasMore = true;
                                 searchFocus.unfocus();
                                 setState(() {});
+                                final newProducts =
+                                    await productCubit.getSearchProduct(
+                                  productSearched,
+                                  categories: selectedCategories,
+                                  brands: selectedBrands,
+                                  countries: selectedCountries,
+                                  sort: selectedSort,
+                                  newArrival: selectedNewArrival,
+                                  onPromo: selectedOnPromo,
+                                  readyStock: selectedReadyStock,
+                                  page: _currentPage,
+                                );
                               },
                               child: Row(
                                 children: [
@@ -439,6 +501,7 @@ class _SearchPageState extends State<SearchPage> {
                                       );
                                       await Constant.removeRecentSearch(recent);
                                       recentSearchProducts.removeAt(index);
+                                      setState(() {});
                                     },
                                     child: const Icon(Icons.close,
                                         color: Colors.grey),

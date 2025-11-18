@@ -37,9 +37,9 @@ class _LoginPageState extends State<LoginPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (dotenv.env["ENV"] != "production") {
         isDev = true;
-        _emailController.text = "demo@dentalities.shop";
-        _passController.text = "pass1234";
-        setState(() {});
+        // _emailController.text = "demo@dentalities.shop";
+        // _passController.text = "pass1234";
+        // setState(() {});
         //   _emailController.text = "123@yopmail.com";
         //   _passController.text = "123123123";
       }

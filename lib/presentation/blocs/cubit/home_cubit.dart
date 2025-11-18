@@ -19,6 +19,8 @@ class HomeData {
   final List<Category> featureCategories;
   final List<dynamic> topDoctors;
   final List<Banner> banners;
+  final List<Category> carouselFeatureCategories;
+
   final List<Testimony> testimonies;
   final List<Product> recommendedProducts;
   final List<Product> newArrival;
@@ -32,6 +34,7 @@ class HomeData {
       required this.featureCategories,
       required this.topDoctors,
       required this.banners,
+      required this.carouselFeatureCategories,
       required this.testimonies,
       required this.recommendedProducts,
       required this.newArrival,
@@ -44,6 +47,7 @@ class HomeData {
     int? selectedIndex,
     List<Category>? featureCategories,
     List<Banner>? banners,
+    List<Category>? carouselFeatureCategories,
     List<Testimony>? testimonies,
     List<dynamic>? topDoctors,
     List<Product>? recommendedProducts,
@@ -57,6 +61,8 @@ class HomeData {
         selectedIndex: selectedIndex ?? 0,
         featureCategories: featureCategories ?? this.featureCategories,
         banners: banners ?? this.banners,
+        carouselFeatureCategories:
+            carouselFeatureCategories ?? this.carouselFeatureCategories,
         testimonies: testimonies ?? this.testimonies,
         topDoctors: topDoctors ?? this.topDoctors,
         recommendedProducts: recommendedProducts ?? this.recommendedProducts,
@@ -89,6 +95,7 @@ class HomeCubit extends Cubit<HomeState> {
   HomeData data = HomeData(
       featureCategories: [],
       banners: [],
+      carouselFeatureCategories: [],
       testimonies: [],
       recommendedProducts: [],
       newArrival: [],
@@ -143,6 +150,18 @@ class HomeCubit extends Cubit<HomeState> {
       emit(HomeLoaded(data));
     } catch (e) {
       emit(HomeError('Failed to load banners: $e'));
+    }
+  }
+
+  Future<void> fetchCarouselFeatureCategories() async {
+    try {
+      final banners = await HomeRepository.getCarouselFeaturedCategories();
+      List<Category> list =
+          Category.fromList(banners.data["data"]['categories']);
+      data = data.copyWith(carouselFeatureCategories: list);
+      emit(HomeLoaded(data));
+    } catch (e) {
+      emit(HomeError('Failed to load carouselFeatureCategories: $e'));
     }
   }
 
@@ -243,7 +262,8 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   init() {
-    fetchFeatureCategories();
+    // fetchFeatureCategories();
+    fetchCarouselFeatureCategories();
     fetchMenuList();
     fetchBanners();
     fetchBrands();

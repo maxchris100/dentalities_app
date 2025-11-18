@@ -32,6 +32,15 @@ class HomeRepository {
     );
   }
 
+  static Future<Response> getCarouselFeaturedCategories({
+    CancelToken? cancelToken,
+  }) async {
+    return await DioClient.instance.get(
+      "/api/v2/home/carousel-featured-categories",
+      cancelToken: cancelToken,
+    );
+  }
+
   static Future<Response> getBrands({
     CancelToken? cancelToken,
   }) async {

@@ -165,7 +165,7 @@ class MyApp extends StatelessWidget {
                 highlightColor: Colors.transparent,
                 scaffoldBackgroundColor: Colors.white,
                 cardColor: Colors.white, // khusus Card
-                cardTheme: CardTheme(
+                cardTheme: CardThemeData(
                   color: Colors.white,
                   surfaceTintColor: Colors.transparent, // 👈 this is the key
                 ),

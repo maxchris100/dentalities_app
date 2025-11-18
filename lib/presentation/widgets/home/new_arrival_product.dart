@@ -35,28 +35,31 @@ class NewArrivalProductSection extends StatelessWidget {
     //   ),
     // ];
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildHeader(context, "New Arrival"),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: products.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2, // 2 kolom
-              mainAxisSpacing: 16, // jarak vertikal
-              crossAxisSpacing: 12, // jarak horizontal
-              mainAxisExtent: 270, // tinggi fix sesuai card-mu
+    return Visibility(
+      visible: products.isNotEmpty,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(context, "New Arrival"),
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: products.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2, // 2 kolom
+                mainAxisSpacing: 16, // jarak vertikal
+                crossAxisSpacing: 12, // jarak horizontal
+                mainAxisExtent: 270, // tinggi fix sesuai card-mu
+              ),
+              itemBuilder: (context, index) {
+                final product = products[index];
+                return ProductCard(product: product);
+              },
             ),
-            itemBuilder: (context, index) {
-              final product = products[index];
-              return ProductCard(product: product);
-            },
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

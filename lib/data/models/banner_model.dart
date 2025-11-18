@@ -1,3 +1,5 @@
+import 'package:dentalities/data/models/product_model.dart';
+
 class Banner {
   final int id;
   final String imageUrl;
@@ -8,6 +10,7 @@ class Banner {
   final DateTime? updatedAt;
   final String? linkType;
   final String? linkValue;
+  final List<Product?> products;
 
   Banner(
       {required this.id,
@@ -18,7 +21,8 @@ class Banner {
       this.createdAt,
       this.updatedAt,
       this.linkType,
-      this.linkValue});
+      this.linkValue,
+      this.products = const []});
 
   static List<Banner> fromList(List<dynamic> list) {
     return list.map((item) => Banner.fromJson(item)).toList();
@@ -34,6 +38,8 @@ class Banner {
       sortOrder: json['sort_order'],
       linkType: json['link_type'],
       linkValue: json['link_value'],
+      products:
+          json['products'] != null ? Product.fromList(json['products']) : [],
       // createdAt: DateTime.parse(json['createdAt'] ?? json['created_at']),
       // updatedAt: DateTime.parse(json['updatedAt'] ?? json['updated_at']),
     );

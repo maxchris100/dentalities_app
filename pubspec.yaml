@@ -4,7 +4,7 @@ description: "A new Flutter project."
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.8.8+8
+version: 2.0.0+10
 
 environment:
   sdk: ^3.6.2
@@ -18,7 +18,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_localizations:
     sdk: flutter
-  intl: ^0.19.0  
+  intl: ^0.20.2 #^0.19.0
   fluttertoast: ^8.2.12
   # app_links: ^6.4.0
   webview_flutter: ^4.13.0
@@ -47,6 +47,7 @@ dependencies:
   carousel_slider:
   flutter_html:
   url_launcher:
+  flutter_tanstack_query:
 
 dev_dependencies:
   flutter_test:

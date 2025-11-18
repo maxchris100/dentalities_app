@@ -199,9 +199,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   color: Colors.grey.shade200,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    itemCount: homeCubit?.data.featureCategories.length,
+                    itemCount: homeCubit?.data.carouselFeatureCategories.length,
                     itemBuilder: (context, index) {
-                      final category = homeCubit?.data.featureCategories[index];
+                      final category =
+                          homeCubit?.data.carouselFeatureCategories[index];
                       return Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 4, vertical: 8),

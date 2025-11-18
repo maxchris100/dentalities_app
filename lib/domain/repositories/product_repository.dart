@@ -65,6 +65,7 @@ class ProductRepository {
     }
     if (keyword != null) {
       queryParams['keyword'] = keyword;
+      queryParams['search'] = keyword;
     }
     if (sort != null) {
       queryParams['sort'] = sort;

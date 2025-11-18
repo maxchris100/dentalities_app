@@ -34,6 +34,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       res = await AuthRepository.forgotPassword(email: email);
 
       if (res.data["status"] == true) {
+        _emailController.text = "";
+        setState(() {});
+
         ToastUtil.showToast("", StringUtil.castToString(res.data["message"]));
         // Navigator.pop(context);
         Navigator.pushNamed(context, AppRouter.resetPassSentLink);
@@ -53,8 +56,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (dotenv.env["ENV"] != "production") {
-        _emailController.text = "demo@dentalities.shop";
-        setState(() {});
+        // _emailController.text = "demo@dentalities.shop";
+        // setState(() {});
       }
     });
   }

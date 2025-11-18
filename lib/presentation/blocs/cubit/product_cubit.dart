@@ -151,6 +151,9 @@ class ProductCubit extends Cubit<ProductState> {
       int limit = 20,
       bool loadMore = false}) async {
     try {
+      if (!loadMore) {
+        emit(ProductLoading());
+      }
       final datas = await ProductRepository.searchProducts(
           page: page,
           limit: limit,

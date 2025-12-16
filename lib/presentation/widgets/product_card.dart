@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dentalities/core/constant/colors.dart';
 import 'package:dentalities/core/router/app_router.dart';
 import 'package:dentalities/core/util/string_util.dart';
@@ -30,6 +32,9 @@ class ProductCard extends StatelessWidget {
     String brandName = product.brand?.name ?? "";
     if (brandName == "") {
       brandName = product.brandName ?? "";
+    }
+    if ((product.testimonies ?? []).isNotEmpty) {
+      log("${product.name} has testimony ${product.testimonies?.length}");
     }
     return GestureDetector(
       onTap: () async {
@@ -175,7 +180,7 @@ class ProductCard extends StatelessWidget {
 
             // --- BRAND ---
             Visibility(
-              visible: !isWishlist,
+              visible: !isWishlist && brandName != "",
               child: Row(
                 children: [
                   SvgPicture.asset("assets/icons/purple_checklist.svg",

@@ -201,7 +201,9 @@ class _HomeTabState extends State<HomeTab> {
             SizedBox(
               height: 10,
             ),
-            HomeTestimonialSection(),
+            HomeTestimonialSection(
+              testimonies: homeCubit.data.testimonies.take(5).toList(),
+            ),
             SizedBox(
               height: 14,
             ),

@@ -345,13 +345,17 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          Html(
-                            data: product?.description ?? "",
-                          ),
                           // Text(
                           //   product?.description ?? "",
                           //   style: TextStyle(fontSize: 12),
                           // ),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          Text(
+                            "SKU: ${product?.sku ?? ""}",
+                            style: TextStyle(fontSize: 12, color: Colors.grey),
+                          ),
                           SizedBox(
                             height: 8,
                           ),
@@ -447,6 +451,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         ],
                       ),
                     ),
+                    ExpandableHtml(
+                      html: product?.description ?? "",
+                    ),
                     Divider(),
                     const SizedBox(height: 12),
                     // ===== Advantages =====
@@ -494,6 +501,80 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         log("@Selected variant ID: ${selectedVariant?.id}");
                         setState(() {});
                       },
+                    ),
+                    Divider(),
+                    Visibility(
+                      visible: (product?.testimonies ?? []).isNotEmpty,
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Text(
+                              "What doctor said",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 18),
+                            ),
+                          ),
+                          PageView.builder(
+                            itemCount: product?.testimonies?.length ?? 0,
+                            itemBuilder: (context, index) {
+                              final testimony = product?.testimonies?[index];
+                              return Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Image.network(
+                                          testimony?.pictureUrl ?? "",
+                                          fit: BoxFit.cover,
+                                          errorBuilder:
+                                              (context, error, stackTrace) {
+                                            return Image.asset(
+                                                "assets/images/banner.png");
+                                          },
+                                        ),
+                                        SizedBox(width: 8),
+                                        Expanded(
+                                            child: Text(
+                                          testimony?.name ?? "",
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                          ),
+                                        ))
+                                      ],
+                                    ),
+                                    SizedBox(height: 12),
+                                    Html(
+                                      data: testimony?.title ?? "",
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                          // Html(data: product?.what_doctor_said ?? ""),
+                          Divider(),
+                        ],
+                      ),
+                    ),
+                    Visibility(
+                      visible: (product?.how_to_use ?? "").isNotEmpty,
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Text(
+                              "How to Use",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 18),
+                            ),
+                          ),
+                          Html(data: product?.how_to_use ?? ""),
+                          Divider(),
+                        ],
+                      ),
                     ),
                     // Visibility(
                     //   visible: selectedVariant == null,
@@ -709,7 +790,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             width: 140,
             child: Text(
               key,
-              style: const TextStyle(fontWeight: FontWeight.w500),
+              style: const TextStyle(
+                  fontWeight: FontWeight.w500, color: Colors.grey),
             ),
           ),
           Expanded(
@@ -1077,4 +1159,51 @@ class HowToUseSection extends StatelessWidget {
   //     ),
   //   );
   // }
+}
+
+class ExpandableHtml extends StatefulWidget {
+  final String html;
+
+  const ExpandableHtml({super.key, required this.html});
+
+  @override
+  State<ExpandableHtml> createState() => _ExpandableHtmlState();
+}
+
+class _ExpandableHtmlState extends State<ExpandableHtml> {
+  bool expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final content = widget.html;
+    final isLong = content.length > 80;
+
+    final visibleText = expanded
+        ? content
+        : (isLong ? content.substring(0, 80) + "..." : content);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 3, right: 3),
+          child: Html(data: visibleText),
+        ),
+        if (isLong)
+          Padding(
+            padding: const EdgeInsets.only(left: 12),
+            child: GestureDetector(
+              onTap: () => setState(() => expanded = !expanded),
+              child: Text(
+                expanded ? "See less" : "See more",
+                style: const TextStyle(
+                  color: Colors.blue,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          )
+      ],
+    );
+  }
 }

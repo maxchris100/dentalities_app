@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:html/parser.dart' as html_parser;
 
 class StringUtil {
   static String castToString(dynamic val) {
@@ -6,6 +7,11 @@ class StringUtil {
       return val.toString();
     }
     return "";
+  }
+
+  static String parseHtmlToText(String htmlString) {
+    final document = html_parser.parse(htmlString);
+    return document.body?.text ?? '';
   }
 
   static String formatMoney(dynamic val,

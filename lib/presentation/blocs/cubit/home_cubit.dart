@@ -187,14 +187,15 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
-  Future<void> fetchTestimonial() async {
+  Future<void> fetchTestimonial({bool refresh = false}) async {
     try {
-      final datas = await HomeRepository.getTestimonial();
-      List<Testimony> list = Testimony.fromList(datas.data["data"]);
+      final datas = await HomeRepository.getTestimony();
+      List<Testimony> list =
+          Testimony.fromList(datas.data["data"]["testimonies"]);
       data = data.copyWith(testimonies: list);
       emit(HomeLoaded(data));
     } catch (e) {
-      emit(HomeError('Failed to load banners: $e'));
+      emit(HomeError('Failed to load testimony: $e'));
     }
   }
 

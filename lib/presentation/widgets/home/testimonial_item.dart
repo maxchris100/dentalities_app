@@ -1,4 +1,6 @@
+import 'package:dentalities/core/util/string_util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 
 class TestimonialItem extends StatelessWidget {
   final String avatar;
@@ -34,15 +36,23 @@ class TestimonialItem extends StatelessWidget {
                   style: const TextStyle(
                       fontWeight: FontWeight.bold, fontSize: 16),
                 ),
-                Text(
-                  'Bought $bought products',
-                  style: const TextStyle(color: Colors.blueGrey),
+                Visibility(
+                  visible: bought > 0,
+                  child: Text(
+                    'Bought $bought products',
+                    style: const TextStyle(color: Colors.blueGrey),
+                  ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 2),
                 Text(
-                  '"$testimonial"',
+                  StringUtil.parseHtmlToText(testimonial),
                   style: const TextStyle(fontStyle: FontStyle.italic),
-                ),
+                )
+                // Html(
+                //   shrinkWrap: true,
+                //   data: "${testimonial.trim().replaceAll('\n', ' ')}",
+                //   // style: const TextStyle(fontStyle: FontStyle.italic),
+                // ),
               ],
             ),
           ),

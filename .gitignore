@@ -49,3 +49,6 @@ app.*.map.json
 android/app/.cxx/
 pubspec.lock
 pubspec.lock
+
+# Snyk Security Extension - AI Rules (auto-generated)
+.github/instructions/snyk_rules.instructions.md

@@ -2,6 +2,7 @@ import 'package:dentalities/data/models/brand_model.dart';
 import 'package:dentalities/data/models/category_model.dart';
 import 'package:dentalities/data/models/product_media_model.dart';
 import 'package:dentalities/data/models/product_variant_model.dart';
+import 'package:dentalities/data/models/testimony_model.dart';
 
 class Product {
   final String? featureImageUrl;
@@ -14,6 +15,10 @@ class Product {
   final bool? isFeature;
   final bool? isNew;
   final String? sku;
+  final String? what_doctor_said;
+  final String? how_to_use;
+  final String? advantages;
+  final String? indications;
   final String? description;
   final String? variantOne;
   final String? variantTwo;
@@ -32,6 +37,8 @@ class Product {
   final List<Category>? categories;
   final List<ProductMedia>? productMedia;
   final List<ProductVariant>? productVariants;
+  final List<Product>? relatedProducts;
+  final List<Testimony>? testimonies;
 
   Product({
     this.featureImageUrl,
@@ -44,6 +51,10 @@ class Product {
     this.isFeature,
     this.isNew,
     this.sku,
+    this.what_doctor_said,
+    this.how_to_use,
+    this.advantages,
+    this.indications,
     this.description,
     this.variantOne,
     this.variantTwo,
@@ -60,6 +71,8 @@ class Product {
     this.categories,
     this.productMedia,
     this.productVariants,
+    this.relatedProducts,
+    this.testimonies,
   });
 
   bool get isWishlisted {
@@ -96,6 +109,10 @@ class Product {
       isFeature: json['is_feature'] != null ? json['is_feature'] : false,
       isNew: json['is_new'] != null ? json['is_new'] : false,
       sku: json['sku'],
+      what_doctor_said: json['what_doctor_said'] ?? '',
+      how_to_use: json['how_to_use'] ?? '',
+      advantages: json['advantages'] ?? '',
+      indications: json['indications'] ?? '',
       description: json['description'] ?? '',
       variantOne: json['variant_one'],
       variantTwo: json['variant_two'],
@@ -125,6 +142,18 @@ class Product {
               ?.map((e) => ProductVariant.fromJson(e))
               .toList() ??
           [],
+      relatedProducts: json['related_products'] != null
+          ? (json['related_products'] as List<dynamic>?)
+                  ?.map((e) => Product.fromJson(e))
+                  .toList() ??
+              []
+          : [],
+      testimonies: json['testimonies'] != null
+          ? (json['testimonies'] as List<dynamic>?)
+                  ?.map((e) => Testimony.fromJson(e))
+                  .toList() ??
+              []
+          : [],
     );
   }
 

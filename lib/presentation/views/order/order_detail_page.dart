@@ -7,6 +7,7 @@ import 'package:dentalities/data/models/transaction_response_model.dart';
 import 'package:dentalities/presentation/blocs/cubit/cart_cubit.dart';
 import 'package:dentalities/presentation/blocs/cubit/home_cubit.dart';
 import 'package:dentalities/presentation/views/order/webview_payment_page.dart';
+import 'package:dentalities/presentation/widgets/bundle_toogle_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -551,13 +552,24 @@ class _OrderDetailPageState extends State<OrderDetailPage>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ...showItems.map((p) {
+            String displayName = "";
+            String imageUrl = "";
+            if (p.isBundle == true) {
+              displayName = p.bundleName ?? "";
+              imageUrl = p.productFeatureImageUrl ?? "";
+            } else {
+              displayName = p.productVariant?.product?.displayName ?? "";
+              imageUrl = p.productVariant?.product?.featureImageUrl ?? "";
+            }
+
             return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.only(bottom: 12, top: 4),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Image.network(
-                    p.productVariant?.product?.featureImageUrl ?? "",
+                    imageUrl,
                     height: 40,
                     width: 40,
                     errorBuilder: (context, error, stackTrace) {
@@ -573,31 +585,73 @@ class _OrderDetailPageState extends State<OrderDetailPage>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          p.productName ?? "",
-                          style: const TextStyle(fontSize: 16),
-                          overflow: TextOverflow.ellipsis,
-                        ),
                         Row(
                           children: [
+                            Visibility(
+                              visible: p.isBundle == true,
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 4),
+                                child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue,
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    child: Text("Bundle",
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 10))),
+                              ),
+                            ),
                             Expanded(
                               child: Text(
-                                (p.variantOneName ?? "") +
-                                    (p.variantTwoName != null
-                                        ? ", ${p.variantTwoName} "
-                                        : "") +
-                                    "  (x ${p.quantity ?? 0})",
-                                style: const TextStyle(color: Colors.grey),
+                                displayName,
+                                style: const TextStyle(fontSize: 16),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                            // const SizedBox(width: 8),
-                            // Text(
-                            //   "(x ${p.quantity ?? 0})",
-                            //   style: const TextStyle(color: Colors.grey),
-                            //   overflow: TextOverflow.ellipsis,
-                            // ),
                           ],
+                        ),
+                        Visibility(
+                          visible: p.isBundle != true,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  (p.variantOneName ?? "") +
+                                      (p.variantTwoName != null
+                                          ? ", ${p.variantTwoName} "
+                                          : ""),
+                                  style: const TextStyle(color: Colors.blue),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              // const SizedBox(width: 8),
+                              Text(
+                                "x ${p.quantity ?? 0}",
+                                style: const TextStyle(color: Colors.blue),
+                              ),
+                            ],
+                          ),
+                          replacement: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                StringUtil.formatMoney(p.priceAfterDiscount),
+                                style: const TextStyle(color: Colors.blue),
+                              ),
+                              Text(
+                                "x ${p.quantity ?? 0}",
+                                style: const TextStyle(color: Colors.blue),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Visibility(
+                          visible: p.isBundle == true,
+                          child: BundleContentToggle(
+                              itemBundle: p.bundleItemsSnapshot),
                         )
                       ],
                     ),

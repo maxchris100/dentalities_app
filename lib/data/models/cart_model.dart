@@ -1,3 +1,4 @@
+import 'package:dentalities/data/models/product_bundle.dart';
 import 'package:dentalities/data/models/product_variant_model.dart';
 
 class CartItem {
@@ -23,30 +24,35 @@ class CartItem {
   String? variantTwoName;
   String? variantThreeName;
   ProductVariant? productVariant;
+  ProductBundle? productBundle;
+  bool isBundle = false;
 
-  CartItem(
-      {this.id,
-      this.sku,
-      this.price,
-      this.price_after_discount,
-      this.total,
-      this.weight,
-      this.discount,
-      this.quantity,
-      this.subtotal,
-      this.productName,
-      this.productSlug,
-      this.productImage,
-      this.productImagePath,
-      this.productVariantId,
-      this.variantOneId,
-      this.variantTwoId,
-      this.variantThreeId,
-      this.variantOneName,
-      this.variantTwoName,
-      this.variantThreeName,
-      this.productVariant,
-      this.is_discounted = false});
+  CartItem({
+    this.id,
+    this.sku,
+    this.price,
+    this.price_after_discount,
+    this.total,
+    this.weight,
+    this.discount,
+    this.quantity,
+    this.subtotal,
+    this.productName,
+    this.productSlug,
+    this.productImage,
+    this.productImagePath,
+    this.productVariantId,
+    this.variantOneId,
+    this.variantTwoId,
+    this.variantThreeId,
+    this.variantOneName,
+    this.variantTwoName,
+    this.variantThreeName,
+    this.productVariant,
+    this.is_discounted = false,
+    this.isBundle = false,
+    this.productBundle,
+  });
 
   factory CartItem.fromJson(Map<String, dynamic> json) {
     print("@Cartitem");
@@ -79,7 +85,13 @@ class CartItem {
       variantOneName: json['variant_one_name'],
       variantTwoName: json['variant_two_name'],
       variantThreeName: json['variant_three_name'],
-      productVariant: ProductVariant.fromJson(json['product_variant']),
+      productVariant: json['product_variant'] != null
+          ? ProductVariant.fromJson(json['product_variant'])
+          : null,
+      isBundle: json['is_bundle'] ?? false,
+      productBundle: json['product_bundle'] != null
+          ? ProductBundle.fromJson(json['product_bundle'])
+          : null,
     );
   }
 

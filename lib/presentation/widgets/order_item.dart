@@ -17,6 +17,7 @@ class OrderItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // log("@ORDER: ${item.status}");
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
@@ -59,17 +60,29 @@ class OrderItem extends StatelessWidget {
                 .asMap()
                 .entries
                 .map((e) {
+              String displayName = "";
+              String imageUrl = "";
+              if (e.value.isBundle == true) {
+                displayName = e.value.bundleName ?? "";
+                imageUrl = e.value.productFeatureImageUrl ?? "";
+              } else {
+                displayName =
+                    e.value.productVariant?.product?.displayName ?? "";
+                imageUrl =
+                    e.value.productVariant?.product?.featureImageUrl ?? "";
+              }
               return Row(
+                // crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Image.network(
-                    e.value.productVariant?.product?.featureImageUrl ?? "",
-                    height: 40,
-                    width: 40,
+                    imageUrl,
+                    height: 50,
+                    width: 50,
                     errorBuilder: (context, error, stackTrace) {
                       return Image.asset(
                         "assets/images/banner.png",
-                        height: 40,
-                        width: 40,
+                        height: 50,
+                        width: 50,
                       );
                     },
                   ),
@@ -82,10 +95,12 @@ class OrderItem extends StatelessWidget {
                     children: [
                       Container(
                         child: Text(
-                            e.value.productVariant?.product?.displayName ?? ""),
+                          displayName,
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                       ),
                       SizedBox(
-                        height: 8,
+                        height: 4,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -94,12 +109,12 @@ class OrderItem extends StatelessWidget {
                             children: [
                               Text(
                                 "${e.value.quantity}x ",
-                                style: TextStyle(),
+                                style: TextStyle(color: Colors.blue),
                               ),
                               Text(
                                 StringUtil.formatMoney(
                                     e.value.priceAfterDiscount),
-                                style: TextStyle(),
+                                style: TextStyle(color: Colors.blue),
                               ),
                               SizedBox(
                                 width: 12,
@@ -116,7 +131,7 @@ class OrderItem extends StatelessWidget {
                         ],
                       ),
                       SizedBox(
-                        height: 8,
+                        height: 4,
                       ),
                       Visibility(
                           visible: (item.transactionItems ?? []).length > 1,

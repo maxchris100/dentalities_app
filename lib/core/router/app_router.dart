@@ -5,6 +5,7 @@ import 'package:dentalities/presentation/views/login/account_oncheck_page.dart';
 import 'package:dentalities/presentation/views/login/reset_password_linksent_page.dart';
 import 'package:dentalities/presentation/views/order/checkout1_page.dart';
 import 'package:dentalities/presentation/views/order/payment_complete.dart';
+import 'package:dentalities/presentation/views/order/product_bundle_detail_page.dart';
 import 'package:dentalities/presentation/views/profile/add_delivery_address_page.dart';
 import 'package:dentalities/presentation/views/profile/delivery_address_page.dart';
 import 'package:dentalities/presentation/views/profile/profile_change_password_page.dart';
@@ -43,6 +44,8 @@ class AppRouter {
   //products
   static const String search = '/search';
   static const String productDetail = '/product-detail';
+  static const String productBundleDetail = '/product-bundle-detail';
+  static const String productBundleList = '/product-bundle';
   //other
   static const String userProfile = '/user-profile';
   static const String userProfileNewPassword = '/change-password';
@@ -97,6 +100,8 @@ class AppRouter {
       "/support": (context) => SupportPage(),
       "/notification": (context) => NotificationPage(),
       settings: (context) => SettingPage(),
+      productBundleDetail: (context) => ProductBundleDetailPage(),
+      // productBundleList: (context) => ProductBundleListPage(),
     };
   }
 }

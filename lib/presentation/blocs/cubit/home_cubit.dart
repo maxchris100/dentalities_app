@@ -3,6 +3,7 @@ import 'package:dentalities/data/models/banner_model.dart';
 import 'package:dentalities/data/models/brand_model.dart';
 import 'package:dentalities/data/models/category_model.dart';
 import 'package:dentalities/data/models/country_model.dart';
+import 'package:dentalities/data/models/feature_product_bundle.dart';
 import 'package:dentalities/data/models/product_model.dart';
 import 'package:dentalities/data/models/testimony_model.dart';
 import 'package:dentalities/data/models/user_address_model.dart';
@@ -10,7 +11,6 @@ import 'package:dentalities/data/models/user_model.dart';
 import 'package:dentalities/domain/repositories/home_repository.dart';
 import 'package:dentalities/domain/repositories/product_repository.dart';
 import 'package:dentalities/domain/repositories/profile_repository.dart';
-import 'package:dio/src/response.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
 
@@ -28,6 +28,7 @@ class HomeData {
   final List<Brand> brands;
   final List<Category> categories;
   final List<Category> specializations;
+  final List<FeaturedBundle> featuredBundles;
 
   HomeData(
       {this.selectedIndex = 0,
@@ -41,7 +42,8 @@ class HomeData {
       required this.countries,
       required this.brands,
       required this.categories,
-      required this.specializations});
+      required this.specializations,
+      required this.featuredBundles});
 
   HomeData copyWith({
     int? selectedIndex,
@@ -56,6 +58,7 @@ class HomeData {
     List<Country>? countries,
     List<Category>? categories,
     List<Category>? specializations,
+    List<FeaturedBundle>? featuredBundles,
   }) {
     return HomeData(
         selectedIndex: selectedIndex ?? 0,
@@ -70,7 +73,8 @@ class HomeData {
         brands: brands ?? this.brands,
         countries: countries ?? this.countries,
         categories: categories ?? this.categories,
-        specializations: specializations ?? this.specializations);
+        specializations: specializations ?? this.specializations,
+        featuredBundles: featuredBundles ?? this.featuredBundles);
   }
 }
 
@@ -103,7 +107,8 @@ class HomeCubit extends Cubit<HomeState> {
       categories: [],
       specializations: [],
       brands: [],
-      countries: []);
+      countries: [],
+      featuredBundles: []);
   HomeCubit() : super(HomeInitial());
   void setIndex(int index) {
     data = data.copyWith(selectedIndex: index);
@@ -262,6 +267,18 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
+  Future<void> fetchFeaturedBundles({bool refresh = false}) async {
+    try {
+      final datas = await HomeRepository.getFeaturedBundle();
+      List<FeaturedBundle> list =
+          FeaturedBundle.fromList(datas.data["data"]["featured_bundles"]);
+      data = data.copyWith(featuredBundles: list);
+      emit(HomeLoaded(data));
+    } catch (e) {
+      emit(HomeError('Failed to load featured bundles: $e'));
+    }
+  }
+
   init() {
     // fetchFeatureCategories();
     fetchCarouselFeatureCategories();
@@ -271,5 +288,6 @@ class HomeCubit extends Cubit<HomeState> {
     fetchTestimonial();
     fetchProfile();
     fetchNewArrival();
+    fetchFeaturedBundles();
   }
 }

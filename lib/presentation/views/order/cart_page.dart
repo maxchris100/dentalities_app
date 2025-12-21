@@ -6,6 +6,7 @@ import 'package:dentalities/core/util/string_util.dart';
 import 'package:dentalities/data/models/cart_model.dart';
 import 'package:dentalities/presentation/blocs/cubit/cart_cubit.dart';
 import 'package:dentalities/presentation/widgets/cart_item.dart';
+import 'package:dentalities/presentation/widgets/cart_item_bundle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -43,6 +44,11 @@ class _CartPageState extends State<CartPage> {
           selected.putIfAbsent(item.productVariantId!, () => true);
           quantity.putIfAbsent(
               item.productVariantId!, () => item.quantity ?? 1);
+        }
+        if (item.isBundle && item.productBundle?.id != null) {
+          selected.putIfAbsent(item.productBundle!.id!, () => true);
+          quantity.putIfAbsent(
+              item.productBundle!.id!, () => item.quantity ?? 1);
         }
       }
       setState(() {});
@@ -112,9 +118,29 @@ class _CartPageState extends State<CartPage> {
                       itemCount: items.length,
                       itemBuilder: (context, index) {
                         final item = items[index];
-                        final id = item.productVariantId;
-                        if (id == null) return const SizedBox.shrink();
-
+                        // if (id == null) return const SizedBox.shrink();
+                        if (item.isBundle) {
+                          final id = item.productBundle?.id ?? 0;
+                          return CartItemBundleWidget(
+                            isSelected: selected[id] ?? false,
+                            imageUrl: item.productBundle?.featureImageUrl ?? "",
+                            name: item.productBundle?.name ?? "",
+                            slug: item.productBundle?.slug ?? "",
+                            variant: "",
+                            price: StringUtil.formatMoney(
+                                item.productBundle?.originalTotalPrice ?? 0),
+                            priceAfterDiscount: StringUtil.formatMoney(
+                                item.productBundle?.bundlePrice ?? 0),
+                            quantity: quantity[id] ?? 0,
+                            onAdd: () => _changeQty(id, 1, item.isBundle),
+                            onRemove: () => _changeQty(id, -1, item.isBundle),
+                            onDelete: () => _removeCart(id, 0, item.isBundle),
+                            onChecked: (val) => _toggleItem(id, val),
+                            isGrid: isGrid,
+                            itemBundle: item.productBundle?.bundleItems ?? [],
+                          );
+                        }
+                        final id = item.productVariantId ?? 0;
                         return CartItemWidget(
                           isSelected: selected[id] ?? false,
                           imageUrl:
@@ -165,7 +191,7 @@ class _CartPageState extends State<CartPage> {
     });
   }
 
-  void _changeQty(int id, int delta) {
+  void _changeQty(int id, int delta, [bool isBundle = false]) {
     setState(() {
       quantity[id] = (quantity[id]! + delta).clamp(1, 99);
     });
@@ -174,17 +200,28 @@ class _CartPageState extends State<CartPage> {
 
     // Start debounce baru
     debounceTimers[id] = Timer(const Duration(milliseconds: 500), () {
-      cartCubit.addToCartVariant(id, quantity[id]!);
+      if (isBundle) {
+        cartCubit.updateToCartBundle(id, quantity[id]!);
+        return;
+      }
+      cartCubit.updateToCartBundle(id, quantity[id]!);
     });
   }
 
-  void _removeCart(int id, int delta) {
+  void _removeCart(int id, int delta, [bool isBundle = false]) {
     quantity[id] = 0;
     // Cancel timer kalau sebelumnya ada
     debounceTimers[id]?.cancel();
 
     // Start debounce baru
     debounceTimers[id] = Timer(const Duration(milliseconds: 500), () {
+      if (isBundle) {
+        cartCubit.updateToCartBundle(id, 0).then((res) {
+          selected.remove(id);
+          quantity.remove(id);
+        });
+        return;
+      }
       cartCubit.addToCartVariant(id, 0).then((res) {
         selected.remove(id);
         quantity.remove(id);
@@ -206,12 +243,16 @@ class _CartPageState extends State<CartPage> {
     selected.forEach((id, isSelected) {
       if (isSelected) {
         final qty = quantity[id] ?? 1;
-        final price = ((cartCubit.state as CartLoaded)
+        var price = ((cartCubit.state as CartLoaded)
                 .data
                 .cart
                 ?.cartItems
-                ?.firstWhere((e) => e.productVariantId == id)
-                .price ??
+                ?.firstWhere((e) {
+              if (e.isBundle && e.productBundle?.id == id) {
+                return e.productBundle?.id == id;
+              }
+              return e.productVariantId == id;
+            }).price ??
             0);
         total += (cartCubit.state is CartLoaded) ? price * qty : 0;
       }
@@ -251,7 +292,10 @@ class _CartPageState extends State<CartPage> {
                     final listCart = cartCubit.data.cart?.cartItems ?? [];
                     selectedCartItem = {
                       for (var item in listCart)
-                        if (selected[item.productVariantId] == true)
+                        if (item.isBundle &&
+                            selected[item.productBundle?.id] == true)
+                          item.productBundle!.id!: item
+                        else if (selected[item.productVariantId] == true)
                           item.productVariantId!: item
                     };
                     Navigator.pushNamed(context, AppRouter.orderCheckout,

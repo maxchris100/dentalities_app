@@ -112,6 +112,38 @@ class CartCubit extends Cubit<CartState> {
     }
   }
 
+  Future<void> addToCartBundle(int? productBundleId, int quantity) async {
+    log("@CART: ADD TO CART PRODUCT BUNDLE: $productBundleId $quantity");
+    try {
+      final res = await CartRepository.addCartBundle(
+          productBundleId: productBundleId, quantity: quantity);
+      if (quantity == 0) {
+        await fetchCart();
+      } else {
+        emit(CartLoaded(data));
+      }
+      // ToastUtil.showToast("", "Cart updated");
+    } catch (e) {
+      emit(CartError('Failed to load carts: $e'));
+    }
+  }
+
+  Future<void> updateToCartBundle(int? productBundleId, int quantity) async {
+    log("@CART: ADD TO CART PRODUCT BUNDLE: $productBundleId $quantity");
+    try {
+      final res = await CartRepository.updateCartBundle(
+          productBundleId: productBundleId, quantity: quantity);
+      if (quantity == 0) {
+        await fetchCart();
+      } else {
+        emit(CartLoaded(data));
+      }
+      // ToastUtil.showToast("", "Cart updated");
+    } catch (e) {
+      emit(CartError('Failed to load carts: $e'));
+    }
+  }
+
   Future<void> getProductDetail(String slug) async {
     try {
       final product = await ProductRepository.getProductBySlug(slug);

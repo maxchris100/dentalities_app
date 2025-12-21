@@ -94,6 +94,11 @@ class _HomeTabState extends State<HomeTab> {
                         }).toList()),
                   );
                 }),
+            BundlingProductSection(
+                title: "Deals", bundles: homeCubit.data.featuredBundles),
+            SizedBox(
+              height: 20,
+            ),
             // const SizedBox(height: 4),
             // Padding(
             //   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -158,15 +163,9 @@ class _HomeTabState extends State<HomeTab> {
             ProductVideosSection(),
             // const SizedBox(height: 24),
             TodaysDiscountSection(),
-            // SizedBox(
-            //   height: 20,
-            // ),
-            // BundlingProductSection(
-            //   title: "Save more with bundling",
-            // ),
-            // SizedBox(
-            //   height: 20,
-            // ),
+            SizedBox(
+              height: 20,
+            ),
 
             BlocBuilder(
                 bloc: homeCubit,

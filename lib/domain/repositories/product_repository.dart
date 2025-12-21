@@ -13,6 +13,16 @@ class ProductRepository {
     );
   }
 
+  static Future<Response> getProductBundleBySlug(
+    String slug, {
+    CancelToken? cancelToken,
+  }) async {
+    return await DioClient.instance.get(
+      "/api/v2/bundles/$slug",
+      cancelToken: cancelToken,
+    );
+  }
+
   //category
   static Future<Response> getCategoryProducts({
     required String slug,
@@ -102,5 +112,17 @@ class ProductRepository {
       },
       cancelToken: cancelToken,
     );
+  }
+
+  static Future<Response> getBundles({
+    int limit = 10,
+    int page = 0,
+    CancelToken? cancelToken,
+  }) async {
+    final queryParams = <String, dynamic>{};
+    queryParams['page'] = page;
+    queryParams['limit'] = limit;
+    return await DioClient.instance.get("/api/v2/bundles",
+        cancelToken: cancelToken, queryParameters: queryParams);
   }
 }

@@ -35,6 +35,28 @@ class CartRepository {
     );
   }
 
+  static Future<Response> addCartBundle({
+    int? productBundleId,
+    int? quantity,
+    CancelToken? cancelToken,
+  }) async {
+    return await DioClient.instance.post("/api/v2/cart/add-bundle", data: {
+      "product_bundle_id": productBundleId,
+      "quantity": quantity,
+    });
+  }
+
+  static Future<Response> updateCartBundle({
+    int? productBundleId,
+    int? quantity,
+    CancelToken? cancelToken,
+  }) async {
+    return await DioClient.instance.post("/api/v2/cart/update-bundle", data: {
+      "product_bundle_id": productBundleId,
+      "quantity": quantity,
+    });
+  }
+
   static Future<Response> getDeliveryMethod({
     int? userAddressId,
     CancelToken? cancelToken,

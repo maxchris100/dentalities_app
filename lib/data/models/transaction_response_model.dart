@@ -1,4 +1,5 @@
 import 'package:dentalities/core/util/string_util.dart';
+import 'package:dentalities/data/models/product_bundle.dart';
 import 'package:dentalities/data/models/product_variant_model.dart';
 import 'package:dentalities/data/models/user_address_model.dart';
 
@@ -233,12 +234,16 @@ class TransactionItem {
   String? productName;
   String? productSlug;
   String? productFeatureImage;
+  String? productFeatureImageUrl;
   String? variantOneId;
   String? variantOneName;
   String? variantTwoId;
   String? variantTwoName;
   int? weight;
   ProductVariant? productVariant;
+  String? bundleName;
+  bool? isBundle;
+  List<BundleItem> bundleItemsSnapshot;
 
   TransactionItem({
     this.isDiscounted,
@@ -254,12 +259,16 @@ class TransactionItem {
     this.productName,
     this.productSlug,
     this.productFeatureImage,
+    this.productFeatureImageUrl,
     this.variantOneId,
     this.variantOneName,
     this.variantTwoId,
     this.variantTwoName,
     this.weight,
     this.productVariant,
+    this.bundleName,
+    this.isBundle = false,
+    this.bundleItemsSnapshot = const [],
   });
 
   factory TransactionItem.fromJson(Map<String, dynamic> json) {
@@ -278,6 +287,7 @@ class TransactionItem {
       productName: json['product_name'],
       productSlug: json['product_slug'],
       productFeatureImage: json['product_feature_image'],
+      productFeatureImageUrl: json['product_feature_image_url'],
       variantOneId: json['variant_one_id'],
       variantOneName: json['variant_one_name'],
       variantTwoId: json['variant_two_id'],
@@ -286,6 +296,12 @@ class TransactionItem {
       productVariant: json['product_variant'] != null
           ? ProductVariant.fromJson(json['product_variant'])
           : null,
+      bundleName: json['bundle_name'],
+      isBundle: json['is_bundle'] ?? false,
+      bundleItemsSnapshot: (json['bundle_items_snapshot'] as List?)
+              ?.map((e) => BundleItem.fromJson(e))
+              .toList() ??
+          [],
     );
   }
 

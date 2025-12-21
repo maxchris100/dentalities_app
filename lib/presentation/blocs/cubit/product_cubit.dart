@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:dentalities/core/util/toast_util.dart';
 import 'package:dentalities/data/models/cart_model.dart';
+import 'package:dentalities/data/models/product_bundle.dart';
 import 'package:dentalities/data/models/product_model.dart';
 import 'package:dentalities/data/models/product_model.dart';
 import 'package:dentalities/data/models/product_variant_model.dart';
@@ -16,11 +17,13 @@ import '../../../domain/repositories/cart_repository.dart';
 class ProductData {
   final bool productDetailWishlist;
   final Product? product;
+  final ProductBundle? productBundle;
   final List<Product> listProduct;
   final List<Product> relatedProduct;
 
   ProductData({
     this.product,
+    this.productBundle,
     this.listProduct = const [],
     this.relatedProduct = const [],
     this.productDetailWishlist = false, // ✅ default false
@@ -29,6 +32,7 @@ class ProductData {
   ProductData copyWith({
     bool? productDetailWishlist,
     Product? product,
+    ProductBundle? productBundle,
     List<Product>? listProduct,
     List<Product>? relatedProduct,
   }) {
@@ -36,6 +40,7 @@ class ProductData {
       productDetailWishlist:
           productDetailWishlist ?? this.productDetailWishlist,
       product: product ?? this.product,
+      productBundle: productBundle ?? this.productBundle,
       listProduct: listProduct ?? this.listProduct,
       relatedProduct: relatedProduct ?? this.relatedProduct,
     );
@@ -92,6 +97,34 @@ class ProductCubit extends Cubit<ProductState> {
     try {
       final res = await CartRepository.addUpdateCart(
           productVariantId: productVariantId, quantity: quantity);
+      CartCubit cartCubit = context.read<CartCubit>();
+      await cartCubit.fetchCart();
+      return "Cart Updated";
+      // return res.data["message"] ?? "";
+    } catch (e) {}
+    return "Error Adding to cart";
+  }
+
+  Future<String> addToCartBundle(
+      BuildContext context, int? productBundleId, int quantity) async {
+    log("@PRODUCT: ADD TO CART PRODUCT BUndle: ${productBundleId} $quantity");
+    try {
+      final res = await CartRepository.addCartBundle(
+          productBundleId: productBundleId, quantity: quantity);
+      CartCubit cartCubit = context.read<CartCubit>();
+      await cartCubit.fetchCart();
+      return "Cart Updated";
+      // return res.data["message"] ?? "";
+    } catch (e) {}
+    return "Error Adding to cart";
+  }
+
+  Future<String> updateCartBundle(
+      BuildContext context, int? productBundleId, int quantity) async {
+    log("@PRODUCT: Update CART PRODUCT BUndle: ${productBundleId} $quantity");
+    try {
+      final res = await CartRepository.updateCartBundle(
+          productBundleId: productBundleId, quantity: quantity);
       CartCubit cartCubit = context.read<CartCubit>();
       await cartCubit.fetchCart();
       return "Cart Updated";
@@ -193,6 +226,23 @@ class ProductCubit extends Cubit<ProductState> {
     } catch (e) {
       emit(ProductError('Failed to load list product: $e'));
       return [];
+    }
+  }
+
+  Future<ProductBundle?> getProductBundleDetail(String slug) async {
+    try {
+      final product = await ProductRepository.getProductBundleBySlug(slug);
+      ProductBundle p = ProductBundle.fromJson(product.data["data"]);
+
+      // var res = await checkWishlistStatus(p.id);
+      data = data.copyWith(
+        productBundle: p,
+      );
+      emit(ProductLoaded(data));
+      return p;
+    } catch (e) {
+      emit(ProductError('Failed to load product: $e'));
+      return null;
     }
   }
 }

@@ -24,6 +24,7 @@ class OrderDetailPage extends StatefulWidget {
 class _OrderDetailPageState extends State<OrderDetailPage>
     with WidgetsBindingObserver {
   Transaction? item;
+  String subtotalPrice = '0';
   String totalPrice = '0';
   String shipmentPrice = '0';
   String grandGrandTotalPrice = '0';
@@ -39,27 +40,34 @@ class _OrderDetailPageState extends State<OrderDetailPage>
     super.initState();
 
     WidgetsBinding.instance.addObserver(this);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       var args = ModalRoute.of(context)?.settings.arguments as Map?;
       if (args != null) {
         item = args["item"];
         try {
           totalItem = item!.transactionItems!.length;
-          totalPrice = item!.productCost ?? "0";
+          subtotalPrice = item!.productCost ?? "0";
           totalDiscount = StringUtil.castToString(
               double.parse(item!.productCost ?? "0") -
                   double.parse(item!.totalAfterDiscount ?? "0"));
+          totalPrice = StringUtil.castToString(
+              double.parse(item!.productCost ?? "0") -
+                  double.parse(totalDiscount));
           grandTotalPrice = StringUtil.formatMoney(item!.grandTotal ?? "0");
           shipmentPrice = item!.shippingCost ?? "0";
           grandGrandTotalPrice = StringUtil.formatMoney(
               double.parse(grandTotalPrice) + double.parse(shipmentPrice));
         } catch (e) {}
       }
-      setState(() {});
-
       homeCubit = context.read<HomeCubit>();
       cartCubit = context.read<CartCubit>();
+      await cartCubit?.getOrderDetail(item?.uuid);
+
+      item = cartCubit?.data.transactionDetail;
+
       cartCubit?.getOrderTracking(item?.uuid);
+
+      setState(() {});
     });
   }
 
@@ -100,366 +108,399 @@ class _OrderDetailPageState extends State<OrderDetailPage>
       appBar: AppBar(
         title: const Text('Transaction Detail'),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Info Card
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+      body: BlocBuilder<CartCubit, CartState>(
+          bloc: cartCubit,
+          builder: (context, state) {
+            return SingleChildScrollView(
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  GestureDetector(
-                    onTap: () {
-                      Clipboard.setData(
-                          ClipboardData(text: item?.invoiceNumber ?? ""));
-                      ToastUtil.showToast("", "Copied to Clipboard");
-                    },
-                    child: Row(
+                  // Info Card
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
                       children: [
-                        Expanded(
-                            child: Text("Order Number",
-                                style: const TextStyle(color: Colors.grey))),
+                        GestureDetector(
+                          onTap: () {
+                            Clipboard.setData(
+                                ClipboardData(text: item?.invoiceNumber ?? ""));
+                            ToastUtil.showToast("", "Copied to Clipboard");
+                          },
+                          child: Row(
+                            children: [
+                              Expanded(
+                                  child: Text("Order Number",
+                                      style:
+                                          const TextStyle(color: Colors.grey))),
+                              Row(
+                                children: [
+                                  Text(item?.invoiceNumber ?? "",
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.w500)),
+                                  SizedBox(
+                                    width: 4,
+                                  ),
+                                  Icon(
+                                    Icons.copy,
+                                    color: Colors.blue,
+                                    size: 18,
+                                  )
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 8),
                         Row(
                           children: [
-                            Text(item?.invoiceNumber ?? "",
+                            Expanded(
+                                child: Text("Order Date",
+                                    style:
+                                        const TextStyle(color: Colors.grey))),
+                            Text(
+                                StringUtil.dateFormat(item?.createdAt ?? "",
+                                    format: "dd MMMM yyyy, HH:mm WIB"),
                                 style: const TextStyle(
                                     fontWeight: FontWeight.w500)),
-                            SizedBox(
-                              width: 4,
+                          ],
+                        ),
+                        SizedBox(height: 8),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                                width: 150,
+                                child: Text("Shipping Address",
+                                    style:
+                                        const TextStyle(color: Colors.grey))),
+                            Expanded(
+                              child: Text(
+                                  item?.shippingAddress?.getShippingAddress() ??
+                                      "",
+                                  textAlign: TextAlign.end,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w500)),
                             ),
-                            Icon(
-                              Icons.copy,
-                              color: Colors.blue,
-                              size: 18,
-                            )
                           ],
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Expanded(
-                          child: Text("Order Date",
-                              style: const TextStyle(color: Colors.grey))),
-                      Text(
-                          StringUtil.dateFormat(item?.createdAt ?? "",
-                              format: "dd MMMM yyyy, HH:mm WIB"),
-                          style: const TextStyle(fontWeight: FontWeight.w500)),
-                    ],
-                  ),
-                  SizedBox(height: 8),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                          width: 150,
-                          child: Text("Shipping Address",
-                              style: const TextStyle(color: Colors.grey))),
-                      Expanded(
-                        child: Text(
-                            item?.shippingAddress?.getShippingAddress() ?? "",
-                            textAlign: TextAlign.end,
-                            style:
-                                const TextStyle(fontWeight: FontWeight.w500)),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Products",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  productItems(item?.transactionItems ?? []),
-                  // SizedBox(
-                  //     width: double.infinity,
-                  //     child: Column(
-                  //       children: [
-                  //         ...(item?.transactionItems ?? []).map((p) {
-                  //           return Padding(
-                  //             padding: const EdgeInsets.only(bottom: 12),
-                  //             child: Row(
-                  //               mainAxisAlignment:
-                  //                   MainAxisAlignment.spaceBetween,
-                  //               children: [
-                  //                 Image.network(
-                  //                   p.productVariant?.product
-                  //                           ?.featureImageUrl ??
-                  //                       "",
-                  //                   height: 40,
-                  //                   width: 40,
-                  //                   errorBuilder: (context, error, stackTrace) {
-                  //                     return Image.asset(
-                  //                       "assets/images/banner.png",
-                  //                       height: 40,
-                  //                       width: 40,
-                  //                     );
-                  //                   },
-                  //                 ),
-                  //                 SizedBox(
-                  //                   width: 12,
-                  //                 ),
-                  //                 Expanded(
-                  //                   child: Column(
-                  //                     crossAxisAlignment:
-                  //                         CrossAxisAlignment.start,
-                  //                     children: [
-                  //                       Text(
-                  //                         p.productName ?? "",
-                  //                         style: const TextStyle(fontSize: 16),
-                  //                         overflow: TextOverflow.ellipsis,
-                  //                       ),
-                  //                       Row(
-                  //                         children: [
-                  //                           Text(
-                  //                             (p.variantOneName ?? "") +
-                  //                                 (p.variantTwoName != null
-                  //                                     ? ", ${p.variantOneName} "
-                  //                                     : ""),
-                  //                             style:
-                  //                                 TextStyle(color: Colors.grey),
-                  //                           ),
-                  //                           SizedBox(
-                  //                             width: 8,
-                  //                           ),
-                  //                           Text(
-                  //                             "(x ${p.quantity ?? 0})",
-                  //                             style: const TextStyle(
-                  //                                 color: Colors.grey),
-                  //                           ),
-                  //                           const SizedBox(width: 8),
-                  //                         ],
-                  //                       )
-                  //                     ],
-                  //                   ),
-                  //                 ),
-                  //                 // Row(
-                  //                 //   children: [
-                  //                 //     Text(
-                  //                 //       StringUtil.formatMoney(p.price),
-                  //                 //       style: const TextStyle(
-                  //                 //           fontWeight: FontWeight.bold),
-                  //                 //     ),
-                  //                 //   ],
-                  //                 // ),
-                  //               ],
-                  //             ),
-                  //           );
-                  //         }),
-                  //       ],
-                  //     )),
-                ],
-              ),
-            ),
-            const Divider(),
-            const SizedBox(height: 8),
-
-            // Stepper custom
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        "Order Status",
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                            color: item?.status == "done"
-                                ? Color(0xffE8F5E9)
-                                : Color(0xffFFF3E0),
-                            borderRadius: BorderRadius.circular(12)),
-                        child: Text(
-                          item?.getStatusText() ?? "",
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Products",
                           style: TextStyle(
-                              color: item?.status == "done"
-                                  ? Colors.green
-                                  : Color(0xffE65100),
-                              fontWeight: FontWeight.bold),
+                              fontSize: 18, fontWeight: FontWeight.bold),
                         ),
-                      ),
-                    ],
+                        productItems(item?.transactionItems ?? []),
+                        // SizedBox(
+                        //     width: double.infinity,
+                        //     child: Column(
+                        //       children: [
+                        //         ...(item?.transactionItems ?? []).map((p) {
+                        //           return Padding(
+                        //             padding: const EdgeInsets.only(bottom: 12),
+                        //             child: Row(
+                        //               mainAxisAlignment:
+                        //                   MainAxisAlignment.spaceBetween,
+                        //               children: [
+                        //                 Image.network(
+                        //                   p.productVariant?.product
+                        //                           ?.featureImageUrl ??
+                        //                       "",
+                        //                   height: 40,
+                        //                   width: 40,
+                        //                   errorBuilder: (context, error, stackTrace) {
+                        //                     return Image.asset(
+                        //                       "assets/images/banner.png",
+                        //                       height: 40,
+                        //                       width: 40,
+                        //                     );
+                        //                   },
+                        //                 ),
+                        //                 SizedBox(
+                        //                   width: 12,
+                        //                 ),
+                        //                 Expanded(
+                        //                   child: Column(
+                        //                     crossAxisAlignment:
+                        //                         CrossAxisAlignment.start,
+                        //                     children: [
+                        //                       Text(
+                        //                         p.productName ?? "",
+                        //                         style: const TextStyle(fontSize: 16),
+                        //                         overflow: TextOverflow.ellipsis,
+                        //                       ),
+                        //                       Row(
+                        //                         children: [
+                        //                           Text(
+                        //                             (p.variantOneName ?? "") +
+                        //                                 (p.variantTwoName != null
+                        //                                     ? ", ${p.variantOneName} "
+                        //                                     : ""),
+                        //                             style:
+                        //                                 TextStyle(color: Colors.grey),
+                        //                           ),
+                        //                           SizedBox(
+                        //                             width: 8,
+                        //                           ),
+                        //                           Text(
+                        //                             "(x ${p.quantity ?? 0})",
+                        //                             style: const TextStyle(
+                        //                                 color: Colors.grey),
+                        //                           ),
+                        //                           const SizedBox(width: 8),
+                        //                         ],
+                        //                       )
+                        //                     ],
+                        //                   ),
+                        //                 ),
+                        //                 // Row(
+                        //                 //   children: [
+                        //                 //     Text(
+                        //                 //       StringUtil.formatMoney(p.price),
+                        //                 //       style: const TextStyle(
+                        //                 //           fontWeight: FontWeight.bold),
+                        //                 //     ),
+                        //                 //   ],
+                        //                 // ),
+                        //               ],
+                        //             ),
+                        //           );
+                        //         }),
+                        //       ],
+                        //     )),
+                      ],
+                    ),
                   ),
-                  SizedBox(
-                    height: 12,
-                  ),
-                  _buildStep(
-                      icon: "assets/icons/status_waiting_payment.svg",
-                      title: "Waiting for payment",
-                      subtitle:
-                          "${item?.status == "unpaid" ? "Paid before" : "Paid at"} ${StringUtil.dateFormat(item?.expiredAt, format: "dd MMM yyyy HH:mm:ss")}",
-                      isActive: item?.status == "unpaid",
-                      status: item?.status),
-                  _buildStep(
-                      icon: "assets/icons/status_processing_payment.svg",
-                      title: "Processing payment",
-                      subtitle: "Start validating at 15 July 2025, 20:49",
-                      isActive: item?.status == "paid",
-                      status: item?.status),
-                  _buildStep(
-                      icon: "assets/icons/status_preparing_order.svg",
-                      title: "Preparing order",
-                      subtitle: "",
-                      isActive: false,
-                      status: item?.status),
-                  _buildStep(
-                      icon: "assets/icons/status_shipping.svg",
-                      title: "Shipping",
-                      subtitle: (item?.cnoteNo ?? "") != ""
-                          ? "Shipping Address \nReceipt: ${item?.cnoteNo ?? ""}"
-                          : "",
-                      isActive: item?.status == "on_delivery",
-                      status: item?.status),
-                  _buildStep(
-                      icon: "assets/icons/status_done.svg",
-                      title: "Done",
-                      subtitle: "",
-                      isActive: item?.status == "done",
-                      status: item?.status),
-                ],
-              ),
-            ),
+                  const Divider(),
+                  const SizedBox(height: 8),
 
-            const SizedBox(height: 4),
-            Divider(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Payment Summary',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                  const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                          'Product ($totalItem ${totalItem > 1 ? "items" : "item"})'),
-                      Text(StringUtil.formatMoney(totalPrice))
-                    ],
+                  // Stepper custom
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              "Order Status",
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                            Container(
+                              padding: EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                  color: item?.status == "done"
+                                      ? Color(0xffE8F5E9)
+                                      : Color(0xffFFF3E0),
+                                  borderRadius: BorderRadius.circular(12)),
+                              child: Text(
+                                item?.getStatusText() ?? "",
+                                style: TextStyle(
+                                    color: item?.status == "done"
+                                        ? Colors.green
+                                        : Color(0xffE65100),
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 12,
+                        ),
+                        _buildStep(
+                            icon: "assets/icons/status_waiting_payment.svg",
+                            title: "Waiting for payment",
+                            subtitle:
+                                "${item?.status == "unpaid" ? "Paid before" : "Paid at"} ${StringUtil.dateFormat(item?.expiredAt, format: "dd MMM yyyy HH:mm:ss")}",
+                            isActive: item?.status == "unpaid",
+                            status: item?.status),
+                        _buildStep(
+                            icon: "assets/icons/status_processing_payment.svg",
+                            title: "Processing payment",
+                            subtitle: "Start validating at 15 July 2025, 20:49",
+                            isActive: item?.status == "paid",
+                            status: item?.status),
+                        _buildStep(
+                            icon: "assets/icons/status_preparing_order.svg",
+                            title: "Preparing order",
+                            subtitle: "",
+                            isActive: false,
+                            status: item?.status),
+                        _buildStep(
+                            icon: "assets/icons/status_shipping.svg",
+                            title: "Shipping",
+                            subtitle: (item?.cnoteNo ?? "") != ""
+                                ? "Shipping Address \nReceipt: ${item?.cnoteNo ?? ""}"
+                                : "",
+                            isActive: item?.status == "on_delivery",
+                            status: item?.status),
+                        _buildStep(
+                            icon: "assets/icons/status_done.svg",
+                            title: "Done",
+                            subtitle: "",
+                            isActive: item?.status == "done",
+                            status: item?.status),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Shipment'),
-                      Text(StringUtil.formatMoney(shipmentPrice))
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Discount', style: TextStyle(color: Colors.red)),
-                      Text(StringUtil.formatMoney(totalDiscount),
-                          style: TextStyle(color: Colors.red))
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Divider(
-                    color: Colors.grey[300]!,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Total',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold)),
-                      Text(grandTotalPrice,
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold))
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
 
-            Visibility(
-              visible: item?.status == "unpaid",
-              child: Padding(
-                padding: const EdgeInsets.only(
-                    top: 12, bottom: 20, left: 16, right: 16),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      // String url = item?.paymentResponse?.redirectURL ?? "";
-                      // if (!await launchUrl(Uri.parse(url))) {
-                      //   ToastUtil.showToastError("", 'Could not launch $url');
-                      // }
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => WebViewPaymentPage(
-                            data: item!.toJson(),
+                  const SizedBox(height: 4),
+                  Divider(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Payment Summary',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 18)),
+                        const SizedBox(height: 12),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Subtotal'),
+                            Text(StringUtil.formatMoney(subtotalPrice),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ))
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Discount',
+                                style: TextStyle(color: Colors.red)),
+                            Text(StringUtil.formatMoney(totalDiscount),
+                                style: TextStyle(color: Colors.red))
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                                'Product ($totalItem ${totalItem > 1 ? "items" : "item"})'),
+                            Text(StringUtil.formatMoney(totalPrice),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ))
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Shipping Cost'),
+                            Text(StringUtil.formatMoney(shipmentPrice),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ))
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Divider(
+                          color: Colors.grey[300]!,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Total',
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold)),
+                            Text(grandTotalPrice,
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.blue))
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  Visibility(
+                    visible: item?.status == "unpaid",
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          top: 12, bottom: 20, left: 16, right: 16),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            // String url = item?.paymentResponse?.redirectURL ?? "";
+                            // if (!await launchUrl(Uri.parse(url))) {
+                            //   ToastUtil.showToastError("", 'Could not launch $url');
+                            // }
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => WebViewPaymentPage(
+                                  data: item!.toJson(),
+                                ),
+                              ),
+                            ).then((x) {
+                              refreshStatus();
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30)),
                           ),
+                          child: const Text('Continue to Payment',
+                              style:
+                                  TextStyle(fontSize: 16, color: Colors.white)),
                         ),
-                      ).then((x) {
-                        refreshStatus();
-                      });
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30)),
+                      ),
                     ),
-                    child: const Text('Continue to Payment',
-                        style: TextStyle(fontSize: 16, color: Colors.white)),
                   ),
-                ),
-              ),
-            ),
 
-            Visibility(
-              visible: item?.status == "on_delivery",
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      //download invoice
-                      String url = item?.shippingLabelPdfUrl ?? "";
-                      if (!await launchUrl(Uri.parse(url))) {
-                        ToastUtil.showToastError("", 'Could not launch $url');
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30)),
+                  Visibility(
+                    visible: item?.status == "on_delivery",
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            //download invoice
+                            String url = item?.shippingLabelPdfUrl ?? "";
+                            if (!await launchUrl(Uri.parse(url))) {
+                              ToastUtil.showToastError(
+                                  "", 'Could not launch $url');
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30)),
+                          ),
+                          child: const Text('Download Resi Pengiriman',
+                              style:
+                                  TextStyle(fontSize: 16, color: Colors.white)),
+                        ),
+                      ),
                     ),
-                    child: const Text('Download Resi Pengiriman',
-                        style: TextStyle(fontSize: 16, color: Colors.white)),
                   ),
-                ),
+                ],
               ),
-            ),
-          ],
-        ),
-      ),
+            );
+          }),
       resizeToAvoidBottomInset: false,
       floatingActionButton: Transform.translate(
         offset: Offset(0, 10), // ↓ Turunkan sedikit ke bawah

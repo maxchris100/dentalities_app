@@ -20,10 +20,12 @@ class ProductData {
   final ProductBundle? productBundle;
   final List<Product> listProduct;
   final List<Product> relatedProduct;
+  final List<ProductBundle> listProductBundle;
 
   ProductData({
     this.product,
     this.productBundle,
+    this.listProductBundle = const [],
     this.listProduct = const [],
     this.relatedProduct = const [],
     this.productDetailWishlist = false, // ✅ default false
@@ -33,6 +35,7 @@ class ProductData {
     bool? productDetailWishlist,
     Product? product,
     ProductBundle? productBundle,
+    List<ProductBundle>? listProductBundle,
     List<Product>? listProduct,
     List<Product>? relatedProduct,
   }) {
@@ -41,6 +44,7 @@ class ProductData {
           productDetailWishlist ?? this.productDetailWishlist,
       product: product ?? this.product,
       productBundle: productBundle ?? this.productBundle,
+      listProductBundle: listProductBundle ?? this.listProductBundle,
       listProduct: listProduct ?? this.listProduct,
       relatedProduct: relatedProduct ?? this.relatedProduct,
     );
@@ -221,6 +225,33 @@ class ProductCubit extends Cubit<ProductState> {
 // "categories" -> List (24 items)
 // 6 =
 // "brands" -> List (2 items)
+      emit(ProductLoaded(data));
+      return p;
+    } catch (e) {
+      emit(ProductError('Failed to load list product: $e'));
+      return [];
+    }
+  }
+
+  Future<List<ProductBundle>> getSearchProductBundle(String? keyword,
+      {int page = 1, int limit = 20, bool loadMore = false}) async {
+    try {
+      if (!loadMore) {
+        emit(ProductLoading());
+      }
+      final datas = await ProductRepository.getBundles(
+        page: page,
+        limit: limit,
+        keyword: keyword,
+      );
+      List<ProductBundle> p = ProductBundle.fromList(datas.data["data"]);
+      if (loadMore) {
+        data = data.copyWith(
+          listProductBundle: [...data.listProductBundle, ...p],
+        );
+      } else {
+        data = data.copyWith(listProductBundle: p);
+      }
       emit(ProductLoaded(data));
       return p;
     } catch (e) {

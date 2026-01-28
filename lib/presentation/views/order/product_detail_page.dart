@@ -291,7 +291,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           Row(
                             children: [
                               Text(
-                                StringUtil.formatMoney(product?.price),
+                                StringUtil.formatMoney(
+                                    selectedVariant?.price ?? product?.price),
+                                // StringUtil.formatMoney(product?.price),
                                 style: TextStyle(
                                   fontSize: 20,
                                   color: Colors.black,
@@ -353,7 +355,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             height: 8,
                           ),
                           Text(
-                            "SKU: ${product?.sku ?? ""}",
+                            "SKU: ${selectedVariant != null ? (selectedVariant?.sku ?? "") : (product?.sku ?? "")}",
                             style: TextStyle(fontSize: 12, color: Colors.grey),
                           ),
                           SizedBox(

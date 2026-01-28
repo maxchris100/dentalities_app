@@ -1,4 +1,5 @@
 import 'package:dentalities/core/router/app_router.dart';
+import 'package:dentalities/core/util/string_util.dart';
 import 'package:dentalities/data/models/product_bundle.dart';
 import 'package:flutter/material.dart';
 
@@ -71,7 +72,9 @@ class _BundleContentToggleState extends State<BundleContentToggle> {
                   child: Row(
                     children: [
                       Image.network(
-                        item.product?.featureImageUrl ?? "",
+                        (item.product?.featureImageUrl ?? "") != ""
+                            ? (item.product?.featureImageUrl ?? "")
+                            : ("https://mydentalshop.s3.ap-southeast-3.amazonaws.com/${item.product?.featureImage ?? ""}"),
                         width: 50,
                         height: 50,
                         errorBuilder: (_, __, ___) {
@@ -103,12 +106,42 @@ class _BundleContentToggleState extends State<BundleContentToggle> {
                               ),
                             ),
                             Text(
-                              "Varian: ${item.productVariant?.variantOneName ?? "-"}",
+                              "Variant: ${item.productVariant?.variantOneName ?? "-"}",
                               style: const TextStyle(
                                 fontWeight: FontWeight.w800,
                                 color: Colors.grey,
                                 fontSize: 11,
                               ),
+                            ),
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(right: 8),
+                                  child: Text(
+                                      StringUtil.formatMoney(
+                                          item.bundleItemPrice),
+                                      style: TextStyle(
+                                        color: item.bundleItemPrice == 'FREE'
+                                            ? Colors.red
+                                            : Colors.blue,
+                                        fontWeight: FontWeight.bold,
+                                      )),
+                                ),
+                                Visibility(
+                                  visible: item.bundleItemPrice !=
+                                      item.productVariant?.price,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 0),
+                                    child: Text(
+                                        "${StringUtil.formatMoney(item.productVariant?.price ?? "-")}",
+                                        style: TextStyle(
+                                            color: Colors.grey,
+                                            fontSize: 10,
+                                            decoration:
+                                                TextDecoration.lineThrough)),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),

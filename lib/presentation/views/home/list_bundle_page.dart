@@ -1,0 +1,532 @@
+import 'dart:developer';
+
+import 'package:dentalities/core/constant/constant.dart';
+import 'package:dentalities/core/util/toast_util.dart';
+import 'package:dentalities/data/models/recent_search.dart';
+import 'package:dentalities/presentation/blocs/cubit/home_cubit.dart';
+import 'package:dentalities/presentation/blocs/cubit/product_cubit.dart';
+import 'package:dentalities/presentation/widgets/bundling_product.dart';
+import 'package:flutter/material.dart';
+import 'package:dentalities/core/router/app_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+class ListBundlePage extends StatefulWidget {
+  const ListBundlePage({super.key});
+
+  @override
+  State<ListBundlePage> createState() => _ListBundlePageState();
+}
+
+class _ListBundlePageState extends State<ListBundlePage> {
+  FocusNode searchFocus = FocusNode();
+  TextEditingController searchController = TextEditingController();
+
+  bool isSearched = false;
+  bool isLoading = true;
+  HomeCubit? homeCubit;
+
+  late ProductCubit productCubit;
+  late ScrollController _scrollController;
+  late ScrollController recentSearchController;
+  bool isLoadingMore = false;
+  int _currentPage = 1;
+  final int _limit = 20;
+  bool _hasMore = true;
+
+  bool isRelatedProducts = false;
+
+  @override
+  void initState() {
+    super.initState();
+    productCubit = ProductCubit();
+
+    _scrollController = ScrollController();
+    _scrollController.addListener(() async {
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent - 200) {
+        if (!isLoadingMore && _hasMore) {
+          setState(() {
+            isLoadingMore = true;
+          });
+          _currentPage++;
+
+          final newProducts = await productCubit.getSearchProductBundle(
+              searchController.text.trim(),
+              page: _currentPage,
+              limit: _limit,
+              loadMore: true);
+
+          if (newProducts.isEmpty) {
+            // Tidak ada produk baru
+            _hasMore = false;
+          }
+          setState(() {
+            isLoadingMore = false;
+          });
+        }
+      }
+    });
+
+    recentSearchController = ScrollController();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final args = ModalRoute.of(context)?.settings.arguments as Map?;
+
+      if (args != null) {
+        if (args["search_focus"] == 1) {
+          searchFocus.requestFocus();
+        }
+      }
+      productCubit.getSearchProductBundle("", page: 1, limit: 20);
+      getRecentSearch();
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        homeCubit = context.read<HomeCubit>();
+      });
+    });
+  }
+
+  // final products = [
+  //   Product(
+  //     name: "Test",
+  //     // title: 'PureOffice Professional Intracanal Dental Whiten...',
+  //     // brand: Brand(name: ""),
+  //     // image: 'assets/images/banner.png',
+  //     price: 107000,
+  //     // oldPrice: 'Rp1.189.000',
+  //     // badge: 'New arrival 10%',
+  //   ),
+  //   Product(name: ""),
+  // ];
+
+  List<RecentSearch> recentSearch = [];
+  List<String> recentSearchProducts = [];
+  void getRecentSearch() {
+    // Constant.getRecentSearch().then((value) {
+    //   recentSearch = value;
+
+    //   var list = recentSearch
+    //       .where((e) => e.type == RecentSearchType.product.toString())
+    //       .map((e) => e.name)
+    //       .toList();
+    //   recentSearchProducts.addAll(list);
+    //   setState(() {});
+    // });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    recentSearchController.dispose();
+    super.dispose();
+  }
+
+  double getHeight(List filteredRecentSearch) {
+    log("@GET ${filteredRecentSearch.length}");
+    return filteredRecentSearch.length > 4
+        ? 200
+        : filteredRecentSearch.length == 4
+            ? 200
+            : filteredRecentSearch.length == 3
+                ? 140
+                : filteredRecentSearch.length == 2
+                    ? 90
+                    : filteredRecentSearch.length == 1
+                        ? 40
+                        : 0;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final query = searchController.text.trim().toLowerCase();
+
+    // Filter recent search berdasarkan teks yang diketik
+    final filteredRecentSearch = recentSearchProducts
+        .where((item) => item.toLowerCase().contains(query))
+        .toList();
+
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<ProductCubit>(
+          create: (context) => productCubit,
+        ),
+      ],
+      child: BlocBuilder<ProductCubit, ProductState>(
+          bloc: productCubit,
+          builder: (context, state) {
+            return Scaffold(
+              appBar: AppBar(
+                actions: [
+                  Padding(padding: EdgeInsets.only(left: 30)),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      child: TextField(
+                        focusNode: searchFocus,
+                        textInputAction: TextInputAction.search,
+                        controller: searchController,
+                        decoration: InputDecoration(
+                          suffixIcon: const Icon(Icons.search),
+                          hintText: 'Search bundles',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50),
+                            borderSide: BorderSide(color: Colors.grey),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50),
+                            borderSide: BorderSide(color: Colors.blue),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50),
+                            borderSide: BorderSide(color: Colors.grey),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                              vertical: 0, horizontal: 12),
+                        ),
+                        onChanged: (value) {
+                          if (value.isNotEmpty) {
+                            setState(() {
+                              isSearched = false;
+                            });
+                          } else {
+                            setState(() {
+                              isSearched = true;
+                            });
+                          }
+                          recentSearchController.animateTo(0,
+                              duration: Duration(milliseconds: 200),
+                              curve: Curves.easeInBack);
+                        },
+                        onSubmitted: (value) async {
+                          log("@search: $value");
+                          value = value.trim();
+                          setState(() {
+                            isSearched = true;
+                          });
+                          RecentSearch p = RecentSearch(
+                              name: value,
+                              type: RecentSearchType.product.toString());
+                          await Constant.saveRecentSearch(p);
+                          if (recentSearchProducts.contains(p.name)) {
+                            recentSearchProducts.remove(
+                                p.name); // hapus dulu biar nanti urutan update
+                          }
+                          recentSearchProducts.insert(0, p.name);
+                          // recentSearch.insert(0, p);
+                          // productCubit.getSearchProduct(value.trim());
+
+                          _currentPage = 1;
+                          _hasMore = true;
+                          final newProducts = await productCubit
+                              .getSearchProductBundle(value.trim(),
+                                  page: _currentPage);
+
+                          setState(() {});
+                          //search
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Padding(
+                      padding: EdgeInsets.only(right: 16),
+                      child: GestureDetector(
+                          onTap: () {
+                            Navigator.pushReplacementNamed(
+                                context, AppRouter.cart);
+                          },
+                          child: Icon(Icons.shopping_cart_outlined))),
+                  Padding(
+                      padding: EdgeInsets.only(right: 16),
+                      child: GestureDetector(
+                          onTap: () {
+                            Navigator.pushReplacementNamed(
+                                context, AppRouter.notification);
+                          },
+                          child: Icon(Icons.notifications_none)))
+                ],
+              ),
+              body: SafeArea(
+                  child: Stack(
+                children: [
+                  Column(
+                    children: [
+                      Visibility(
+                          visible: searchFocus.hasFocus &&
+                              !isSearched &&
+                              searchController.text.isNotEmpty,
+                          child: SizedBox(
+                            height: getHeight(filteredRecentSearch),
+                          )),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      Expanded(
+                          child: state is ProductLoading
+                              ? Center(
+                                  child: CircularProgressIndicator(),
+                                )
+                              : RefreshIndicator(
+                                  onRefresh: () async {
+                                    _currentPage = 1;
+                                    _hasMore = true;
+                                    final newProducts = await productCubit
+                                        .getSearchProductBundle(
+                                            searchController.text.trim(),
+                                            page: _currentPage,
+                                            limit: _limit,
+                                            loadMore: false);
+                                  },
+                                  child: productCubit
+                                          .data.listProductBundle.isEmpty
+                                      ? ListView(
+                                          physics:
+                                              const AlwaysScrollableScrollPhysics(), // <— dan ini juga
+
+                                          // perlu ListView biar RefreshIndicator bisa jalan
+                                          children: const [
+                                            SizedBox(height: 200),
+                                            Center(
+                                                child: Text("No Bundle found")),
+                                          ],
+                                        )
+                                      : SingleChildScrollView(
+                                          controller: _scrollController,
+                                          physics:
+                                              const AlwaysScrollableScrollPhysics(), // <— dan ini juga
+
+                                          child: Column(
+                                            children: [
+                                              GridView.count(
+                                                crossAxisCount: 2,
+                                                padding:
+                                                    const EdgeInsets.all(12),
+                                                crossAxisSpacing: 12,
+                                                mainAxisSpacing: 16,
+                                                childAspectRatio:
+                                                    0.54, // sesuaikan tinggi/lebarnya
+                                                shrinkWrap: true,
+                                                physics:
+                                                    NeverScrollableScrollPhysics(), // kalau sudah dalam scroll view
+                                                children: productCubit
+                                                    .data.listProductBundle
+                                                    .map((productBundle) {
+                                                  return ProductBundleCard(
+                                                    bundle: productBundle,
+                                                  );
+                                                }).toList(),
+                                              ),
+                                              if (isLoadingMore)
+                                                Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(vertical: 16),
+                                                  child: Center(
+                                                      child:
+                                                          CircularProgressIndicator()),
+                                                ),
+                                            ],
+                                          ),
+                                        ),
+                                )),
+                    ],
+                  ),
+                  Visibility(
+                    visible: searchFocus.hasFocus &&
+                        !isSearched &&
+                        searchController.text.isNotEmpty,
+                    child: Container(
+                      height: getHeight(filteredRecentSearch),
+                      color: Colors.white,
+                      child: ListView.separated(
+                        // reverse: true,
+                        itemCount: filteredRecentSearch.length,
+                        separatorBuilder: (_, __) => const Divider(),
+                        controller: recentSearchController,
+                        itemBuilder: (context, index) {
+                          final productSearched = filteredRecentSearch[index];
+                          final isHistory = index >= 4;
+
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 5),
+                            child: GestureDetector(
+                              onTap: () async {
+                                searchController.text = productSearched;
+                                // productCubit.getSearchProduct(null);
+
+                                _currentPage = 1;
+                                _hasMore = true;
+                                searchFocus.unfocus();
+                                setState(() {});
+                                final newProducts =
+                                    await productCubit.getSearchProductBundle(
+                                  productSearched,
+                                  page: _currentPage,
+                                );
+                              },
+                              child: Row(
+                                children: [
+                                  // SvgPicture.asset(
+                                  //   isHistory
+                                  //       ? 'assets/icons/search.svg'
+                                  //       : 'assets/icons/search.svg',
+                                  // ),
+                                  Icon(Icons.search, color: Colors.grey),
+                                  const SizedBox(width: 20),
+                                  Expanded(
+                                      child: Text(productSearched,
+                                          style:
+                                              const TextStyle(fontSize: 15))),
+                                  // if (isHistory)
+                                  GestureDetector(
+                                    onTap: () async {
+                                      final recent = RecentSearch(
+                                        name: productSearched,
+                                        type:
+                                            RecentSearchType.product.toString(),
+                                      );
+                                      await Constant.removeRecentSearch(recent);
+                                      recentSearchProducts.removeAt(index);
+                                      setState(() {});
+                                    },
+                                    child: const Icon(Icons.close,
+                                        color: Colors.grey),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  )
+                ],
+              )),
+              resizeToAvoidBottomInset: false,
+              floatingActionButton: Transform.translate(
+                offset: Offset(0, 10), // ↓ Turunkan sedikit ke bawah
+                child: FloatingActionButton(
+                  onPressed: () async {
+                    String url = "https://wa.me/6281212049191";
+                    if (!await launchUrl(Uri.parse(url))) {
+                      ToastUtil.showToastError("", 'Could not launch $url');
+                    }
+                  },
+                  shape: CircleBorder(),
+                  backgroundColor: Colors.blue,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        "assets/icons/home_cs.svg",
+                        color: Colors.white,
+                        height: 24,
+                      ),
+                      Text(
+                        "Chat",
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: homeCubit?.data.selectedIndex == 2
+                              ? Colors.white
+                              : Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              floatingActionButtonLocation:
+                  FloatingActionButtonLocation.centerDocked,
+              bottomNavigationBar: Material(
+                elevation: 12,
+                color: Colors.white,
+                shadowColor: Colors.black26, // lebih natural shadow-nya
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 10,
+                        offset: Offset(
+                            0, -2), // arah bayangan ke atas (karena dari bawah)
+                      ),
+                    ],
+                  ),
+                  child: BottomAppBar(
+                    elevation: 12,
+                    color: Colors.transparent,
+                    height: 64,
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                            child: _buildNavItem(
+                                homeCubit?.data.selectedIndex == 0
+                                    ? "assets/icons/home_home_selected.svg"
+                                    : "assets/icons/home_home.svg",
+                                "Home",
+                                0)),
+                        Expanded(
+                            child: _buildNavItem(
+                                "assets/icons/home_wishlist.svg",
+                                "Wishlist",
+                                1)),
+                        Spacer(flex: 1), // Space for FAB
+                        Expanded(
+                            child: _buildNavItem(
+                                "assets/icons/home_transaction.svg",
+                                "Transaction",
+                                3)),
+                        Expanded(
+                            child: _buildNavItem(
+                                "assets/icons/home_profile.svg", "Profile", 4)),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }),
+    );
+  }
+
+  void _onItemTapped(int index) {
+    Navigator.popUntil(context, (route) => route.isFirst);
+    if (index == 0) {
+      homeCubit?.setIndex(0);
+    } else if (index == 1) {
+      homeCubit?.setIndex(1);
+    } else if (index == 3) {
+      homeCubit?.setIndex(3);
+    } else if (index == 4) {
+      homeCubit?.setIndex(4);
+    }
+  }
+
+  Widget _buildNavItem(String iconPath, String label, int index) {
+    final isSelected = homeCubit?.data.selectedIndex == index;
+    return GestureDetector(
+      onTap: () => _onItemTapped(index),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SvgPicture.asset(
+            iconPath,
+            color: isSelected ? Colors.blue : Colors.grey,
+            height: 24,
+          ),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              color: isSelected ? Colors.blue : Colors.grey,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

@@ -19,14 +19,17 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  Map<int, bool> selected = {};
-  Map<int, CartItem> selectedCartItem = {};
-  Map<int, int> quantity = {};
   bool selectAll = true;
   bool isGrid = true;
-  Map<int, Timer> debounceTimers = {};
+  Map<String, bool> selected = {};
+  Map<String, CartItem> selectedCartItem = {};
+  Map<String, int> quantity = {};
+  Map<String, Timer> debounceTimers = {};
 
   CartCubit cartCubit = CartCubit();
+
+  String variantKey(int id) => 'p$id';
+  String bundleKey(int id) => 'b$id';
 
   @override
   void initState() {
@@ -39,16 +42,14 @@ class _CartPageState extends State<CartPage> {
       // Inisialisasi selected dan quantity jika belum ada
       final items = cartCubit.data.cart?.cartItems ?? [];
       for (var item in items) {
-        log("@PRODUCT: ${item.productVariantId}, ${item.quantity}");
-        if (item.productVariantId != null) {
-          selected.putIfAbsent(item.productVariantId!, () => true);
-          quantity.putIfAbsent(
-              item.productVariantId!, () => item.quantity ?? 1);
-        }
         if (item.isBundle && item.productBundle?.id != null) {
-          selected.putIfAbsent(item.productBundle!.id!, () => true);
-          quantity.putIfAbsent(
-              item.productBundle!.id!, () => item.quantity ?? 1);
+          final key = bundleKey(item.productBundle!.id!);
+          selected.putIfAbsent(key, () => true);
+          quantity.putIfAbsent(key, () => item.quantity ?? 1);
+        } else if (item.productVariantId != null) {
+          final key = variantKey(item.productVariantId!);
+          selected.putIfAbsent(key, () => true);
+          quantity.putIfAbsent(key, () => item.quantity ?? 1);
         }
       }
       setState(() {});
@@ -120,9 +121,10 @@ class _CartPageState extends State<CartPage> {
                         final item = items[index];
                         // if (id == null) return const SizedBox.shrink();
                         if (item.isBundle) {
-                          final id = item.productBundle?.id ?? 0;
+                          final key = bundleKey(item.productBundle!.id!);
+
                           return CartItemBundleWidget(
-                            isSelected: selected[id] ?? false,
+                            isSelected: selected[key] ?? false,
                             imageUrl: item.productBundle?.featureImageUrl ?? "",
                             name: item.productBundle?.name ?? "",
                             slug: item.productBundle?.slug ?? "",
@@ -131,18 +133,19 @@ class _CartPageState extends State<CartPage> {
                                 item.productBundle?.originalTotalPrice ?? 0),
                             priceAfterDiscount: StringUtil.formatMoney(
                                 item.productBundle?.bundlePrice ?? 0),
-                            quantity: quantity[id] ?? 0,
-                            onAdd: () => _changeQty(id, 1, item.isBundle),
-                            onRemove: () => _changeQty(id, -1, item.isBundle),
-                            onDelete: () => _removeCart(id, 0, item.isBundle),
-                            onChecked: (val) => _toggleItem(id, val),
+                            quantity: quantity[key] ?? 0,
+                            onAdd: () => _changeQty(key, 1, item.isBundle),
+                            onRemove: () => _changeQty(key, -1, item.isBundle),
+                            onDelete: () => _removeCart(key, 0, item.isBundle),
+                            onChecked: (val) => _toggleItem(key, val),
                             isGrid: isGrid,
                             itemBundle: item.productBundle?.bundleItems ?? [],
                           );
                         }
-                        final id = item.productVariantId ?? 0;
+                        final key = variantKey(item.productVariantId!);
+
                         return CartItemWidget(
-                          isSelected: selected[id] ?? false,
+                          isSelected: selected[key] ?? false,
                           imageUrl:
                               item.productVariant?.product?.featureImageUrl ??
                                   "",
@@ -159,11 +162,11 @@ class _CartPageState extends State<CartPage> {
                                   ? StringUtil.formatMoney(
                                       item.price_after_discount ?? 0)
                                   : null,
-                          quantity: quantity[id]!,
-                          onAdd: () => _changeQty(id, 1),
-                          onRemove: () => _changeQty(id, -1),
-                          onDelete: () => _removeCart(id, 0),
-                          onChecked: (val) => _toggleItem(id, val),
+                          quantity: quantity[key] ?? 0,
+                          onAdd: () => _changeQty(key, 1),
+                          onRemove: () => _changeQty(key, -1),
+                          onDelete: () => _removeCart(key, 0),
+                          onChecked: (val) => _toggleItem(key, val),
                           isGrid: isGrid,
                         );
                       },
@@ -184,47 +187,51 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
-  void _toggleItem(int id, bool? val) {
+  void _toggleItem(String key, bool? val) {
     setState(() {
-      selected[id] = val ?? false;
+      selected[key] = val ?? false;
       selectAll = selected.values.every((e) => e);
     });
   }
 
-  void _changeQty(int id, int delta, [bool isBundle = false]) {
+  void _changeQty(String key, int delta, [bool isBundle = false]) {
     setState(() {
-      quantity[id] = (quantity[id]! + delta).clamp(1, 99);
+      quantity[key] = (quantity[key]! + delta).clamp(1, 99);
     });
     // Cancel timer kalau sebelumnya ada
-    debounceTimers[id]?.cancel();
+    debounceTimers[key]?.cancel();
 
     // Start debounce baru
-    debounceTimers[id] = Timer(const Duration(milliseconds: 500), () {
+    debounceTimers[key] = Timer(const Duration(milliseconds: 500), () {
+      final id = int.parse(key.substring(1));
+
       if (isBundle) {
-        cartCubit.updateToCartBundle(id, quantity[id]!);
+        cartCubit.updateToCartBundle(id, quantity[key]!);
         return;
       }
-      cartCubit.updateToCartBundle(id, quantity[id]!);
+      cartCubit.addToCartVariant(id, quantity[key]!);
     });
   }
 
-  void _removeCart(int id, int delta, [bool isBundle = false]) {
-    quantity[id] = 0;
+  void _removeCart(String key, int delta, [bool isBundle = false]) {
+    quantity[key] = 0;
     // Cancel timer kalau sebelumnya ada
-    debounceTimers[id]?.cancel();
+    debounceTimers[key]?.cancel();
 
     // Start debounce baru
-    debounceTimers[id] = Timer(const Duration(milliseconds: 500), () {
+    debounceTimers[key] = Timer(const Duration(milliseconds: 500), () {
+      final id = int.parse(key.substring(1));
+
       if (isBundle) {
         cartCubit.updateToCartBundle(id, 0).then((res) {
-          selected.remove(id);
-          quantity.remove(id);
+          selected.remove(key);
+          quantity.remove(key);
         });
         return;
       }
       cartCubit.addToCartVariant(id, 0).then((res) {
-        selected.remove(id);
-        quantity.remove(id);
+        selected.remove(key);
+        quantity.remove(key);
       });
     });
   }
@@ -240,21 +247,39 @@ class _CartPageState extends State<CartPage> {
 
   Widget _buildBottomBar() {
     int total = 0;
-    selected.forEach((id, isSelected) {
+    int total_discount = 0;
+    selected.forEach((key, isSelected) {
       if (isSelected) {
-        final qty = quantity[id] ?? 1;
+        final qty = quantity[key] ?? 1;
         var price = ((cartCubit.state as CartLoaded)
                 .data
                 .cart
                 ?.cartItems
                 ?.firstWhere((e) {
-              if (e.isBundle && e.productBundle?.id == id) {
+              if (e.isBundle) {
+                final id = int.parse(key.substring(1));
                 return e.productBundle?.id == id;
               }
+              final id = int.parse(key.substring(1));
               return e.productVariantId == id;
-            }).price ??
+            }).price_after_discount ??
             0);
         total += (cartCubit.state is CartLoaded) ? price * qty : 0;
+
+        var discount = ((cartCubit.state as CartLoaded)
+                .data
+                .cart
+                ?.cartItems
+                ?.firstWhere((e) {
+              if (e.isBundle) {
+                final id = int.parse(key.substring(1));
+                return e.productBundle?.id == id;
+              }
+              final id = int.parse(key.substring(1));
+              return e.productVariantId == id;
+            }).discount ??
+            0);
+        total_discount += (cartCubit.state is CartLoaded) ? discount * qty : 0;
       }
     });
 
@@ -292,17 +317,22 @@ class _CartPageState extends State<CartPage> {
                     final listCart = cartCubit.data.cart?.cartItems ?? [];
                     selectedCartItem = {
                       for (var item in listCart)
-                        if (item.isBundle &&
-                            selected[item.productBundle?.id] == true)
-                          item.productBundle!.id!: item
-                        else if (selected[item.productVariantId] == true)
-                          item.productVariantId!: item
+                        if (item.isBundle && item.productBundle?.id != null)
+                          if (selected[bundleKey(item.productBundle!.id!)] ==
+                              true)
+                            bundleKey(item.productBundle!.id!): item
+                          else if (item.productVariantId != null)
+                            if (selected[variantKey(item.productVariantId!)] ==
+                                true)
+                              variantKey(item.productVariantId!): item
                     };
                     Navigator.pushNamed(context, AppRouter.orderCheckout,
                         arguments: {
                           "total": StringUtil.castToString(total),
                           "grand_total": StringUtil.castToString(total),
-                          "discount": StringUtil.castToString(0),
+                          "discount": StringUtil.castToString(total_discount),
+                          "subtotal":
+                              StringUtil.castToString(total + total_discount),
                           "selected": selected,
                           "selected_cart": selectedCartItem,
                           "quantity": quantity,

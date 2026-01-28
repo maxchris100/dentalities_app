@@ -67,6 +67,14 @@ class ProductBundle {
           .toList(),
     );
   }
+
+  static fromList(List<dynamic> jsonList) {
+    List<ProductBundle> bundles = [];
+    for (var item in jsonList) {
+      bundles.add(ProductBundle.fromJson(item));
+    }
+    return bundles;
+  }
 }
 
 class BundleItem {

@@ -2,6 +2,7 @@ import 'package:dentalities/core/constant/colors.dart';
 import 'package:dentalities/core/router/app_router.dart';
 import 'package:dentalities/core/util/string_util.dart';
 import 'package:dentalities/data/models/feature_product_bundle.dart';
+import 'package:dentalities/data/models/product_bundle.dart';
 import 'package:flutter/material.dart';
 
 class BundlingProductSection extends StatelessWidget {
@@ -24,7 +25,12 @@ class BundlingProductSection extends StatelessWidget {
               Text(title,
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      AppRouter.productBundleList,
+                    );
+                  },
                   child: const Text(
                     "See All",
                     style: TextStyle(
@@ -48,7 +54,7 @@ class BundlingProductSection extends StatelessWidget {
             itemBuilder: (context, index) {
               final featuredBundleItem =
                   bundles.first.featuredBundleItems![index];
-              return ProductBundleCard(bundle: featuredBundleItem);
+              return ProductBundleCardFeatured(bundle: featuredBundleItem);
             },
           ),
         ),
@@ -267,10 +273,10 @@ class BundlingProductSection extends StatelessWidget {
 //   }
 // }
 
-class ProductBundleCard extends StatelessWidget {
+class ProductBundleCardFeatured extends StatelessWidget {
   final FeaturedBundleItem bundle;
 
-  const ProductBundleCard({
+  const ProductBundleCardFeatured({
     super.key,
     required this.bundle,
   });
@@ -388,11 +394,11 @@ class ProductBundleCard extends StatelessWidget {
 
                       // STOCK
                       Text(
-                        (bundle.productBundle?.stockQuantity ?? 0) > 0
-                            ? "Stock: ${bundle.productBundle?.stockQuantity ?? 0} available"
+                        (bundle.productBundle?.isAvailable ?? false)
+                            ? "Stock: available"
                             : "Stock: out of stock",
                         style: TextStyle(
-                          color: (bundle.productBundle?.stockQuantity ?? 0) > 0
+                          color: (bundle.productBundle?.isAvailable ?? false)
                               ? Colors.grey
                               : Colors.red,
                           fontSize: 12,
@@ -428,6 +434,174 @@ class ProductBundleCard extends StatelessWidget {
                   ),
                   child: Text(
                       "${double.parse(StringUtil.castToString(bundle.productBundle?.discountPercentage ?? 0)).toStringAsFixed(1)}% OFF",
+                      style: TextStyle(color: Colors.white, fontSize: 10))),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ProductBundleCard extends StatelessWidget {
+  final ProductBundle bundle;
+
+  const ProductBundleCard({
+    super.key,
+    required this.bundle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(
+          context,
+          AppRouter.productBundleDetail,
+          arguments: {
+            "item": bundle,
+          },
+        );
+      },
+      child: Container(
+        width: 220,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+            )
+          ],
+        ),
+        child: Stack(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // IMAGE
+                Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: ClipRRect(
+                    borderRadius:
+                        const BorderRadius.vertical(top: Radius.circular(8)),
+                    child: AspectRatio(
+                      aspectRatio: 1,
+                      child: Image.network(
+                        bundle.featureImageUrl ?? '',
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) =>
+                            const Center(child: Icon(Icons.broken_image)),
+                      ),
+                    ),
+                  ),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // NAME
+                      Text(
+                        bundle.name ?? '-',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      // PRICE
+                      Text(
+                        StringUtil.formatMoney(bundle.bundlePrice),
+                        style: const TextStyle(
+                          fontSize: 18,
+                          color: Colors.blue,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+
+                      const SizedBox(height: 4),
+
+                      // ORIGINAL PRICE (STRIKETHROUGH)
+                      Text(
+                        StringUtil.formatMoney(bundle.originalTotalPrice),
+                        style: const TextStyle(
+                          decoration: TextDecoration.lineThrough,
+                          color: Colors.grey,
+                        ),
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      // SAVE
+                      if (bundle.savingsAmount != null)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.green.shade100,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            "Save ${StringUtil.formatMoney(bundle.savingsAmount)}",
+                            style: const TextStyle(
+                              color: Colors.green,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+
+                      const SizedBox(height: 8),
+
+                      // STOCK
+                      Text(
+                        (bundle.lowestStockQuantity ?? 0) > 0
+                            ? "Stock: ${bundle.lowestStockQuantity ?? 0} available"
+                            : "Stock: out of stock",
+                        style: TextStyle(
+                          color: (bundle.lowestStockQuantity ?? 0) > 0
+                              ? Colors.grey
+                              : Colors.red,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            Positioned(
+              top: 8,
+              left: 5,
+              child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Text("Bundle",
+                      style: TextStyle(color: Colors.white, fontSize: 10))),
+            ),
+            Positioned(
+              top: 33,
+              left: 5,
+              child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.pinkAccent,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Text(
+                      "${double.parse(StringUtil.castToString(bundle.discountPercentage ?? 0)).toStringAsFixed(1)}% OFF",
                       style: TextStyle(color: Colors.white, fontSize: 10))),
             ),
           ],

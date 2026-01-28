@@ -68,6 +68,8 @@ class _AddToCartWidgetState extends State<AddToCartWidget> {
         "${selectedVariant?.variantThreeName}");
 
     initCartVariantQty();
+
+    price = selectedVariant?.price ?? widget.product?.price ?? 0.0;
     setState(() {});
   }
 
@@ -75,6 +77,7 @@ class _AddToCartWidgetState extends State<AddToCartWidget> {
     if (selectedVariant == null) {
       return;
     }
+    price = selectedVariant?.price ?? widget.product?.price ?? 0.0;
 
     quantity = 1;
     for (CartItem e in cartCubit?.data.cart?.cartItems ?? []) {
@@ -84,6 +87,8 @@ class _AddToCartWidgetState extends State<AddToCartWidget> {
       }
     }
   }
+
+  double price = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -178,7 +183,7 @@ class _AddToCartWidgetState extends State<AddToCartWidget> {
                         style: TextStyle(fontWeight: FontWeight.w500),
                       ),
                       SizedBox(height: 4),
-                      Text(StringUtil.formatMoney(widget.product?.price),
+                      Text(StringUtil.formatMoney(price),
                           style: TextStyle(
                               fontSize: 16, fontWeight: FontWeight.bold)),
                     ],
@@ -186,7 +191,15 @@ class _AddToCartWidgetState extends State<AddToCartWidget> {
                 ),
               ],
             ),
+            SizedBox(
+              height: 8,
+            ),
+            Text(
+              "SKU: ${selectedVariant?.sku ?? ""}",
+              style: TextStyle(fontSize: 12, color: Colors.grey),
+            ),
             const SizedBox(height: 20),
+
             // --- VARIANT 1 ---
             Text(
               widget.product?.variantOne ?? "",

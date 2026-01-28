@@ -1,4 +1,5 @@
 import 'package:dentalities/presentation/views/home/doctor_testimony_page.dart';
+import 'package:dentalities/presentation/views/home/list_bundle_page.dart';
 import 'package:dentalities/presentation/views/home/product_video_page.dart';
 import 'package:dentalities/presentation/views/home/search_page.dart';
 import 'package:dentalities/presentation/views/login/account_oncheck_page.dart';
@@ -101,7 +102,7 @@ class AppRouter {
       "/notification": (context) => NotificationPage(),
       settings: (context) => SettingPage(),
       productBundleDetail: (context) => ProductBundleDetailPage(),
-      // productBundleList: (context) => ProductBundleListPage(),
+      productBundleList: (context) => ListBundlePage(),
     };
   }
 }

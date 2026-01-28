@@ -82,6 +82,7 @@ class _Checkout1PageState extends State<Checkout1Page> {
   @override
   Widget build(BuildContext context) {
     var args = ModalRoute.of(context)?.settings.arguments as Map?;
+    String subtotal = args?["subtotal"] ?? "0";
     String totalPrice = args?["total"] ?? "0";
     String grandTotalPrice = args?["grand_total"] ?? "0";
     String totalDiscount = args?["discount"] ?? "0";
@@ -90,7 +91,7 @@ class _Checkout1PageState extends State<Checkout1Page> {
     String grandGrandTotalPrice = StringUtil.formatMoney(
         int.parse(grandTotalPrice) +
             int.parse(selectedDeliveryMethod?.price ?? "0"));
-    Map<int, CartItem>? selectedCartItem = args?["selected_cart"];
+    Map<String, CartItem>? selectedCartItem = args?["selected_cart"];
 
     return Scaffold(
       appBar: AppBar(
@@ -593,17 +594,13 @@ class _Checkout1PageState extends State<Checkout1Page> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
+                              Text('Subtotal'),
                               Text(
-                                  'Product ($totalItem ${totalItem > 1 ? "items" : "item"})'),
-                              Text(StringUtil.formatMoney(totalPrice))
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text('Shipment'),
-                              Text(StringUtil.formatMoney(
-                                  selectedDeliveryMethod?.price ?? "0"))
+                                StringUtil.formatMoney(
+                                  subtotal,
+                                ),
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              )
                             ],
                           ),
                           Row(
@@ -613,6 +610,26 @@ class _Checkout1PageState extends State<Checkout1Page> {
                                   style: TextStyle(color: Colors.red)),
                               Text(StringUtil.formatMoney(totalDiscount),
                                   style: TextStyle(color: Colors.red))
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Total Product Price'
+                                  // 'Product ($totalItem ${totalItem > 1 ? "items" : "item"})'
+                                  ),
+                              Text(
+                                StringUtil.formatMoney(totalPrice),
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              )
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Shipment'),
+                              Text(StringUtil.formatMoney(
+                                  selectedDeliveryMethod?.price ?? "0"))
                             ],
                           ),
                           const Divider(),
@@ -626,7 +643,8 @@ class _Checkout1PageState extends State<Checkout1Page> {
                               Text(grandGrandTotalPrice,
                                   style: TextStyle(
                                       fontSize: 16,
-                                      fontWeight: FontWeight.bold))
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.blue))
                             ],
                           ),
                           const SizedBox(height: 24),

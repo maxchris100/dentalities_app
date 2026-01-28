@@ -94,8 +94,16 @@ class _HomeTabState extends State<HomeTab> {
                         }).toList()),
                   );
                 }),
-            BundlingProductSection(
-                title: "Deals", bundles: homeCubit.data.featuredBundles),
+            BlocBuilder(
+                bloc: homeCubit,
+                builder: (context, state) {
+                  return Visibility(
+                      visible:
+                          (homeCubit.data.featuredBundles ?? []).isNotEmpty,
+                      child: BundlingProductSection(
+                          title: "Deals",
+                          bundles: homeCubit.data.featuredBundles));
+                }),
             SizedBox(
               height: 20,
             ),
